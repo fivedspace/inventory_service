@@ -280,8 +280,8 @@ export default function SimpleContainer() {
         <React.Fragment>
             <CssBaseline/>
             <Container maxWidth="false">
-                <Typography component="div" style={{marginTop: '80px'}}>
-                    <h2 style={{textAlign: 'center', backgroundColor: 'darkgray', color: 'white'}}>全部商品</h2>
+                <Typography component="div" style={{marginTop: '30px'}}>
+                    <p style={{textAlign: 'center', backgroundColor: 'red', color: 'white'}}>全部商品</p>
                     <div className={classes.root}>
                         <Paper className={classes.paper}>
                             <EnhancedTableToolbar numSelected={selected.length}/>
