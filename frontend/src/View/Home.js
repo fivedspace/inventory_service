@@ -1,14 +1,16 @@
 import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
-import AppBar from '@material-ui/core/AppBar';
+// import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Toolbar from '@material-ui/core/Toolbar';
+// import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Header from '../components/header.js';
-import AllEchart from '../components/AllEchart';
+
+// import AllEchart from '../pages/AllEchart';
 import Meun from './Meun';
-import Allproducts from '../components/Allproducts'
+import Allproducts from '../pages/Allproducts';
+// import AddGoods from '../pages/AddGoods';
+
 
 const drawerWidth = 240;
 
@@ -40,17 +42,16 @@ export default function ClippedDrawer() {
     return (
         <div className={classes.root}>
             <CssBaseline/>
-            <AppBar position="fixed" className={classes.appBar}>
-                <Header/>
-            </AppBar>
+
             <Drawer className={classes.drawer} variant="permanent" classes={{paper: classes.drawerPaper}}>
-                <Toolbar/>
+
                 <Meun/>
             </Drawer>
             <main className={classes.content}>
                 <Typography paragraph>
-                        {/*<AllEchart/>*/}
+                    {/*<AllEchart/>*/}
                     <Allproducts/>
+                    {/*<AddGoods/>*/}
                 </Typography>
             </main>
         </div>

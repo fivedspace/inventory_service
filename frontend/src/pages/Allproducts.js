@@ -18,22 +18,23 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import InputBase from "_@material-ui_core@4.11.4@@material-ui/core/InputBase";
+// import InputBase from '@material-ui/core/InputBase';
 
 function createData(name, calories, fat, carbs, protein) {
     return { name, calories, fat, carbs, protein };
 }
 
 const rows = [
-    createData('1', '魔王', 3.7, 67, 4.3),
-    createData('2', '法爷', 25.0, 51, 4.9),
-    createData('3', 'E总', 16.0, 24, 6.0),
-    createData('4', '果冻龙', 6.0, 24, 4.0),
-    createData('5', '大聪明', 16.0, 49, 3.9),
+    createData('1', '语文', 4, '教育平台', '修改'),
+    createData('2', '家政1', 5, '家政平台', '修改'),
+    createData('3', '家政2', 5, '家政平台', '修改'),
+    createData('4', '数学', 6, '教育平台', '修改'),
+    createData('5', '英语', 1, '教育平台', '修改'),
 ];
+
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -186,6 +187,9 @@ EnhancedTableToolbar.propTypes = {
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
+        '& > *': {
+            margin: theme.spacing(1),
+        },
     },
     paper: {
         width: '100%',
@@ -270,10 +274,44 @@ export default function SimpleContainer() {
 
     return (
         <React.Fragment>
+            <div>
+                <div style={{margin:'20px 50px'}}>
+                    <a href="#" style={{
+                        color:'#858585',
+                        fontSize:'18px',
+                        textDecoration:'none'
+                    }}>
+                        <span>全部商品</span>
+                    </a>
+                </div>
+                <div style={{boxSizing:'border-box',padding:'0 50px'}}>
+                    <form className={classes.root}
+                          style={{
+                              width:'100%',
+                              padding:'2px 4px',
+                              display:'flex',
+                              backgroundColor:'#ab47bc',
+                          }}
+                          noValidate autoComplete="off"
+                    >
+                        <InputBase
+                            className={classes.margin}
+                            defaultValue="查询商品id"
+                            style={{
+                                // flex:'1',
+                                backgroundColor:'white',
+                                padding:'6px 0 7px 6px',
+                                border:'1px solid black'
+                            }}
+                            fullWidth='true'
+                            inputProps={{ 'aria-label': 'naked' }}
+                        />
+                    </form>
+                </div>
+            </div>
             <CssBaseline />
             <Container maxWidth="false">
-                <Typography component="div" style={{marginTop:'80px'}}>
-                    <h2 style={{textAlign:'center',backgroundColor:'darkgray',color:'white'}}>全部商品</h2>
+                <Typography component="div">
                     <div className={classes.root}>
                         <Paper className={classes.paper}>
                             <EnhancedTableToolbar numSelected={selected.length} />

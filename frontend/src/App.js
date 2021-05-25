@@ -1,4 +1,4 @@
-import Menu from './pages/Home.js'
+import Menu from './View/Home.js'
 
 
 function App() {
