@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import {lighten, makeStyles} from '@material-ui/core/styles';
+import { lighten, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -18,30 +18,23 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
+// import InputBase from "_@material-ui_core@4.11.4@@material-ui/core/InputBase";
+// import InputBase from '@material-ui/core/InputBase';
 
 function createData(name, calories, fat, carbs, protein) {
-    return {name, calories, fat, carbs, protein};
+    return { name, calories, fat, carbs, protein };
 }
 
 const rows = [
-    createData('1', 305, 3.7, 67, 4.3),
-    createData('2', 452, 25.0, 51, 4.9),
-    createData('3', 262, 16.0, 24, 6.0),
-    createData('4', 159, 6.0, 24, 4.0),
-    createData('5', 356, 16.0, 49, 3.9),
-    createData('6', 408, 3.2, 87, 6.5),
-    createData('7', 237, 9.0, 37, 4.3),
-    createData('8', 375, 0.0, 94, 0.0),
-    createData('9', 518, 26.0, 65, 7.0),
-    createData('10', 392, 0.2, 98, 0.0),
-    createData('11', 318, 0, 81, 2.0),
-    createData('12', 360, 19.0, 9, 37.0),
-    createData('13', 437, 18.0, 63, 4.0),
+    createData('1', '语文', 4, '教育平台', '修改'),
+    createData('2', '家政1', 5, '家政平台', '修改'),
+    createData('3', '家政2', 5, '家政平台', '修改'),
+    createData('4', '数学', 6, '教育平台', '修改'),
+    createData('5', '英语', 1, '教育平台', '修改'),
 ];
+
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -70,15 +63,15 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-    {id: 'name', numeric: false, disablePadding: true, label: '序号'},
-    {id: 'calories', numeric: true, disablePadding: false, label: '商品名称'},
-    {id: 'fat', numeric: true, disablePadding: false, label: '库存数量'},
-    {id: 'carbs', numeric: true, disablePadding: false, label: '备注'},
-    {id: 'protein', numeric: true, disablePadding: false, label: '操作'},
+    { id: 'name', numeric: false, disablePadding: true, label: '序号' },
+    { id: 'calories', numeric: true, disablePadding: false, label: '商品名称' },
+    { id: 'fat', numeric: true, disablePadding: false, label: '库存数量' },
+    { id: 'carbs', numeric: true, disablePadding: false, label: '备注' },
+    { id: 'protein', numeric: true, disablePadding: false, label: '操作' },
 ];
 
 function EnhancedTableHead(props) {
-    const {classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort} = props;
+    const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
     const createSortHandler = (property) => (event) => {
         onRequestSort(event, property);
     };
@@ -91,7 +84,7 @@ function EnhancedTableHead(props) {
                         indeterminate={numSelected > 0 && numSelected < rowCount}
                         checked={rowCount > 0 && numSelected === rowCount}
                         onChange={onSelectAllClick}
-                        inputProps={{'aria-label': 'select all desserts'}}
+                        inputProps={{ 'aria-label': 'select all desserts' }}
                     />
                 </TableCell>
                 {headCells.map((headCell) => (
@@ -152,7 +145,7 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
-    const {numSelected} = props;
+    const { numSelected } = props;
 
     return (
         <Toolbar
@@ -166,20 +159,20 @@ const EnhancedTableToolbar = (props) => {
                 </Typography>
             ) : (
                 <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-                    Nutrition
+                    商品信息
                 </Typography>
             )}
 
             {numSelected > 0 ? (
-                <Tooltip title="Delete">
-                    <IconButton aria-label="delete">
-                        <DeleteIcon/>
+                <Tooltip title="删除">
+                    <IconButton aria-label="删除">
+                        <DeleteIcon />
                     </IconButton>
                 </Tooltip>
             ) : (
                 <Tooltip title="Filter list">
                     <IconButton aria-label="filter list">
-                        <FilterListIcon/>
+                        <FilterListIcon />
                     </IconButton>
                 </Tooltip>
             )}
@@ -194,6 +187,9 @@ EnhancedTableToolbar.propTypes = {
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
+        '& > *': {
+            margin: theme.spacing(1),
+        },
     },
     paper: {
         width: '100%',
@@ -268,9 +264,9 @@ export default function SimpleContainer() {
         setPage(0);
     };
 
-    const handleChangeDense = (event) => {
-        setDense(event.target.checked);
-    };
+    // const handleChangeDense = (event) => {
+    //     setDense(event.target.checked);
+    // };
 
     const isSelected = (name) => selected.indexOf(name) !== -1;
 
@@ -278,13 +274,47 @@ export default function SimpleContainer() {
 
     return (
         <React.Fragment>
-            <CssBaseline/>
+            <div>
+                <div style={{margin:'20px 50px'}}>
+                    <a href="#" style={{
+                        color:'#858585',
+                        fontSize:'18px',
+                        textDecoration:'none'
+                    }}>
+                        <span>全部商品</span>
+                    </a>
+                </div>
+                <div style={{boxSizing:'border-box',padding:'0 50px'}}>
+                    <form className={classes.root}
+                          style={{
+                              width:'100%',
+                              padding:'2px 4px',
+                              display:'flex',
+                              backgroundColor:'#ab47bc',
+                          }}
+                          noValidate autoComplete="off"
+                    >
+                        {/*<InputBase*/}
+                        {/*    className={classes.margin}*/}
+                        {/*    defaultValue="查询商品id"*/}
+                        {/*    style={{*/}
+                        {/*        // flex:'1',*/}
+                        {/*        backgroundColor:'white',*/}
+                        {/*        padding:'6px 0 7px 6px',*/}
+                        {/*        border:'1px solid black'*/}
+                        {/*    }}*/}
+                        {/*    fullWidth='true'*/}
+                        {/*    inputProps={{ 'aria-label': 'naked' }}*/}
+                        {/*/>*/}
+                    </form>
+                </div>
+            </div>
+            <CssBaseline />
             <Container maxWidth="false">
-                <Typography component="div" style={{marginTop: '30px'}}>
-                    <p style={{textAlign: 'center', backgroundColor: 'red', color: 'white'}}>全部商品</p>
+                <Typography component="div">
                     <div className={classes.root}>
                         <Paper className={classes.paper}>
-                            <EnhancedTableToolbar numSelected={selected.length}/>
+                            <EnhancedTableToolbar numSelected={selected.length} />
                             <TableContainer>
                                 <Table
                                     className={classes.table}
@@ -321,11 +351,10 @@ export default function SimpleContainer() {
                                                         <TableCell padding="checkbox">
                                                             <Checkbox
                                                                 checked={isItemSelected}
-                                                                inputProps={{'aria-labelledby': labelId}}
+                                                                inputProps={{ 'aria-labelledby': labelId }}
                                                             />
                                                         </TableCell>
-                                                        <TableCell component="th" id={labelId} scope="row"
-                                                                   padding="none">
+                                                        <TableCell component="th" id={labelId} scope="row" padding="none">
                                                             {row.name}
                                                         </TableCell>
                                                         <TableCell align="right">{row.calories}</TableCell>
@@ -335,16 +364,16 @@ export default function SimpleContainer() {
                                                     </TableRow>
                                                 );
                                             })}
-                                        {emptyRows > 0 && (
-                                            <TableRow style={{height: (dense ? 33 : 53) * emptyRows}}>
-                                                <TableCell colSpan={6}/>
-                                            </TableRow>
-                                        )}
+                                        {/*{emptyRows > 0 && (*/}
+                                        {/*    <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>*/}
+                                        {/*        <TableCell colSpan={6} />*/}
+                                        {/*    </TableRow>*/}
+                                        {/*)}*/}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
                             <TablePagination
-                                rowsPerPageOptions={[5, 10, 25]}
+                                rowsPerPageOptions={[5, 10]}
                                 component="div"
                                 count={rows.length}
                                 rowsPerPage={rowsPerPage}
@@ -353,10 +382,10 @@ export default function SimpleContainer() {
                                 onChangeRowsPerPage={handleChangeRowsPerPage}
                             />
                         </Paper>
-                        <FormControlLabel
-                            control={<Switch checked={dense} onChange={handleChangeDense}/>}
-                            label="Dense padding"
-                        />
+                        {/*<FormControlLabel*/}
+                        {/*    control={<Switch checked={dense} onChange={handleChangeDense} />}*/}
+                        {/*    label="Dense padding"*/}
+                        {/*/>*/}
                     </div>
                 </Typography>
             </Container>

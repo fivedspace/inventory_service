@@ -6,9 +6,12 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 // import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
-// import AllEchart from '../components/AllEchart';
-import Meun from './Menu';
-import Allproducts from '../components/Allproducts'
+// import AllEchart from '../pages/AllEchart';
+import Meun from './Meun';
+import Allproducts from '../pages/Allproducts';
+import  Footer from '../pages/Footer/Footer'
+// import AddGoods from '../pages/AddGoods';
+
 
 const drawerWidth = 240;
 
@@ -30,7 +33,12 @@ const useStyles = makeStyles((theme) => ({
     content: {
         flexGrow: 1,
     },
-
+    footer:{
+        position:'absolute',
+        width:'85%',
+        bottom:0,
+        left:'280px',
+    }
 }));
 
 
@@ -47,10 +55,16 @@ export default function ClippedDrawer() {
             </Drawer>
             <main className={classes.content}>
                 <Typography paragraph>
-                        {/*<AllEchart/>*/}
+                    {/*<AllEchart/>*/}
                     <Allproducts/>
+                    {/*<AddGoods/>*/}
                 </Typography>
             </main>
+            <div className={classes.footer}
+            style={{display:'block'}}
+            >
+                <Footer />
+            </div>
         </div>
     );
 }

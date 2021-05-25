@@ -3,8 +3,7 @@ import {
     container,
     primaryColor,
     grayColor
-} from "../jss/material-dashboard-react";
-import Background from '../images/sidebar-2.jpg'
+} from "../../material-dashboard-react";
 
 const footerStyle = {
     block: {
@@ -17,11 +16,11 @@ const footerStyle = {
         display: "block",
         ...defaultFont,
         fontWeight: "500",
-        fontSize: "15px",
+        fontSize: "12px"
     },
     left: {
         float: "left!important",
-        display: "block",
+        display: "block"
     },
     right: {
         padding: "15px 0",
@@ -30,15 +29,17 @@ const footerStyle = {
         float: "right!important"
     },
     footer: {
-        position:'relative',
-        color:'#fff',
-        ...defaultFont,
+        bottom: "0",
+        borderTop: "1px solid " + grayColor[11],
+        padding: "15px 0",
+        ...defaultFont
     },
     container,
     a: {
+        color: primaryColor,
         textDecoration: "none",
+        backgroundColor: "transparent"
     },
-
     list: {
         // marginBottom: "0",
         width: "100%",
@@ -46,32 +47,13 @@ const footerStyle = {
         // marginTop: "0"
         margin: "auto",
         textAlign: "center",
-
     },
     inlineBlock: {
-
         display: "inline-block",
-        marginTop:'10px',
+        padding: "0px",
+        width: "auto",
+        margin: "auto",
         textAlign: "center",
-    },
-    TOPLoGo: {
-        width: "100%",
-        textAlign: "center",
-        lineHeight: "50px",
-        fontSize: 19,
-        fontWeight: 800,
-        paddingLeft:'60px',
-        borderBottom: "1px solid #505051"
-    },
-    bgt:{
-        position:'absolute ',
-        top:0,
-        left: 0,
-        height:'100vh',
-        backgroundColor: 'rgba(0,0,0,.80)',
-    },
-    pick:{
-        backgroundColor:'#00ACC1'
-    },
+    }
 };
 export default footerStyle;

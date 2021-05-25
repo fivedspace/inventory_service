@@ -29,9 +29,9 @@ export default function Footer(props) {
                                 库存系统后台管理
                             </ListItem>
                             <ListItem className={classes.inlineBlock}
-                            style={{
-                                backgroundColor:'#00ACC1'
-                            }}
+                                      style={{
+                                          backgroundColor:'#00ACC1'
+                                      }}
                             >
                                 <a href="/admin/dashboard" className={classes.block}>
                                     首页
