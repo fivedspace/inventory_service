@@ -5,6 +5,7 @@ import {
     grayColor
 } from "../jss/material-dashboard-react";
 import Background from '../images/sidebar-2.jpg'
+import { Hidden } from "_@material-ui_core@4.11.4@@material-ui/core";
 
 const footerStyle = {
     block: {
@@ -15,6 +16,7 @@ const footerStyle = {
         textDecoration: "none",
         position: "relative",
         display: "block",
+
         ...defaultFont,
         fontWeight: "500",
         fontSize: "15px",
@@ -31,8 +33,10 @@ const footerStyle = {
     },
     footer: {
         position:'relative',
+        overflow:'hidden',
         color:'#fff',
         ...defaultFont,
+       
     },
     container,
     a: {
@@ -46,12 +50,10 @@ const footerStyle = {
         // marginTop: "0"
         margin: "auto",
         textAlign: "center",
-
     },
     inlineBlock: {
-
         display: "inline-block",
-        marginTop:'10px',
+        padding: "10px",
         textAlign: "center",
     },
     TOPLoGo: {
@@ -59,7 +61,7 @@ const footerStyle = {
         textAlign: "center",
         lineHeight: "50px",
         fontSize: 19,
-        fontWeight: 800,
+        fontWeight: 1000,
         paddingLeft:'60px',
         borderBottom: "1px solid #505051"
     },

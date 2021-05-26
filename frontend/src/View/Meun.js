@@ -8,6 +8,8 @@ import List from "@material-ui/core/List";
 // core components
 import styles from "../assets/css/menu.js";
 import bgImage from '../assets/images/sidebar-2.jpg';
+import routes from "./routes";
+import AddGoods from "../pages/AddGoods";
 
 const useStyles = makeStyles(styles);
 
@@ -33,28 +35,28 @@ export default function Footer(props) {
                                           backgroundColor:'#00ACC1'
                                       }}
                             >
-                                <a href="/admin/dashboard" className={classes.block}>
+                                <a href="/admin/AllEchart" className={classes.block}>
                                     首页
                                 </a>
                             </ListItem>
                             <ListItem className={classes.inlineBlock}>
-                                <a href="/admin/orders" className={classes.block}>
-                                    订单管理
+                                <a href="/admin/Allproducts" className={classes.block}>
+                                    全部商品
                                 </a>
                             </ListItem>
                             <ListItem className={classes.inlineBlock}>
                                 <a href="/admin/find_app" className={classes.block}>
-                                    系统管理
+                                    全部规格
                                 </a>
                             </ListItem>
                             <ListItem className={classes.inlineBlock}>
-                                <a href="/admin/find_merchant" className={classes.block}>
-                                    商户管理
+                                <a href="/admin/AddGoods" className={classes.block}>
+                                    添加商品
                                 </a>
                             </ListItem>
                             <ListItem className={classes.inlineBlock}>
                                 <a href="/admin/reconciliation" className={classes.block}>
-                                    对账
+                                    管理员管理
                                 </a>
                             </ListItem>
                         </List>

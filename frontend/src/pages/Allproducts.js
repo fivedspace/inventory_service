@@ -20,7 +20,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
-// import InputBase from "_@material-ui_core@4.11.4@@material-ui/core/InputBase";
+import InputBase from "_@material-ui_core@4.11.4@@material-ui/core/InputBase";
 // import InputBase from '@material-ui/core/InputBase';
 
 function createData(name, calories, fat, carbs, protein) {
@@ -294,18 +294,18 @@ export default function SimpleContainer() {
                           }}
                           noValidate autoComplete="off"
                     >
-                        {/*<InputBase*/}
-                        {/*    className={classes.margin}*/}
-                        {/*    defaultValue="查询商品id"*/}
-                        {/*    style={{*/}
-                        {/*        // flex:'1',*/}
-                        {/*        backgroundColor:'white',*/}
-                        {/*        padding:'6px 0 7px 6px',*/}
-                        {/*        border:'1px solid black'*/}
-                        {/*    }}*/}
-                        {/*    fullWidth='true'*/}
-                        {/*    inputProps={{ 'aria-label': 'naked' }}*/}
-                        {/*/>*/}
+                        <InputBase
+                            className={classes.margin}
+                            defaultValue="查询商品id"
+                            style={{
+                                // flex:'1',
+                                backgroundColor:'white',
+                                padding:'6px 0 7px 6px',
+                                border:'1px solid black'
+                            }}
+                            fullWidth='true'
+                            inputProps={{ 'aria-label': 'naked' }}
+                        />
                     </form>
                 </div>
             </div>
