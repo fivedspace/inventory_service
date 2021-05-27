@@ -9,9 +9,9 @@ import List from "@material-ui/core/List";
 import styles from "../assets/css/menu.js";
 import bgImage from '../assets/images/sidebar-2.jpg';
 import routes from "./routes";
-import AddGoods from "../pages/AddGoods";
 
 const useStyles = makeStyles(styles);
+
 
 export default function Footer(props) {
     const classes = useStyles();

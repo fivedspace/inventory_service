@@ -20,19 +20,30 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import InputBase from "_@material-ui_core@4.11.4@@material-ui/core/InputBase";
-// import InputBase from '@material-ui/core/InputBase';
+// import InputBase from "_@material-ui_core@4.11.4@@material-ui/core/InputBase";
+import InputBase from '@material-ui/core/InputBase';
+import Button from "@material-ui/core/Button";
 
 function createData(name, calories, fat, carbs, protein) {
     return { name, calories, fat, carbs, protein };
 }
 
+function change(){
+    return (
+        <div>
+            <Button variant="outlined" color="primary" href="#outlined-buttons">
+                修改
+            </Button>
+        </div>
+    )
+}
+
 const rows = [
-    createData('1', '语文', 4, '教育平台', '修改'),
-    createData('2', '家政1', 5, '家政平台', '修改'),
-    createData('3', '家政2', 5, '家政平台', '修改'),
-    createData('4', '数学', 6, '教育平台', '修改'),
-    createData('5', '英语', 1, '教育平台', '修改'),
+    createData('1', '语文', 4, '教育平台', change()),
+    createData('2', '家政1', 5, '家政平台', change()),
+    createData('3', '家政2', 5, '家政平台', change()),
+    createData('4', '数学', 6, '教育平台', change()),
+    createData('5', '英语', 1, '教育平台', change()),
 ];
 
 
