@@ -2,7 +2,7 @@
 import sys
 
 sys.path.append('../')
-
+import json
 from core import schemas
 from sql_app.models import *
 from typing import List, Any
@@ -45,12 +45,16 @@ def db_modify_type(modify_type: schemas.CommType, db: Session):
     :param modify_type
     :return:
     """
-    db.query(Type).filter(Type.type_id == modify_type.type_id).update(
-        {Type.type: modify_type.type})
-    db.commit()
-    local_type = db.query(Type).filter(
-        Type.type_id == modify_type.type_id).first()
-    return local_type
+    result = db.query(Type).filter(Type.type_id == modify_type.type_id).first()
+    if result is None:
+        return {"Message: Error!"}
+    else:
+        db.query(Type).filter(Type.type_id == modify_type.type_id).update(
+                              {Type.type: modify_type.type})
+        db.commit()
+        local_type = db.query(Type).filter(
+                              Type.type_id == modify_type.type_id).first()
+        return local_type
 
 
 def db_del_type(type_id: int, db: Session):
@@ -70,26 +74,6 @@ def db_del_type(type_id: int, db: Session):
         return {"Message": "Type id is error."}
 
 
-def db_create_spec(spec: schemas.Spec, db: Session):
-    """
-    添加规格
-    :param spec:
-    :param db:
-    :return:
-    """
-    datatype_id = list()
-    list_addspec = list()
-    for item in spec:
-        add_spec = Spec(
-            spec_name=item.spec_name,
-            data_type_id=item.data_type_id,
-            spec_remark=item.spec_remark
-        )
-        db.add(add_spec)
-        db.commit()
-        db.refresh(add_spec)
-        
-
 def db_get_datatype(db: Session):
     """
     查询所有规格值数据类型
@@ -99,4 +83,45 @@ def db_get_datatype(db: Session):
     fetch_datatype: List[Any] = db.query(Datatype.data_type_id,
                                          Datatype.data_type).all()
     return fetch_datatype
+
+
+def db_create_spec(spec: schemas.Spec, db: Session):
+    """
+    添加规格
+    :param spec:
+    :param db:
+    :return:
+    """
+    # 存放新增数据返回的 主键id
+    list_id_spec = list()
+
+    # 需要返回新增的数据列表
+    list_add_spec = list()
+    for item in spec:
+        add_spec = Spec(
+            spec_name=item.spec_name,
+            data_type_id=item.data_type_id,
+            spec_remark=item.spec_remark
+        )
+        db.add(add_spec)
+        db.commit()
+        db.refresh(add_spec)
+
+        # 拿到主键 id 存放到列表.
+        if add_spec.spec_id not in list_id_spec:
+            list_id_spec.append(add_spec.spec_id)
+        else:
+            pass
+
+    # 对新增值所返回的 id 查询。
+    for ID in list_id_spec:
+        res = db.query(Spec.spec_id, Spec.spec_name,
+                       Spec.spec_remark, Datatype.data_type).outerjoin(
+                       Datatype, Spec.data_type_id == Datatype.data_type_id
+                      ).filter(Spec.spec_id == ID).first()
+        print(res)
+        list_add_spec.append(res)
+    return list_add_spec
+
+
 

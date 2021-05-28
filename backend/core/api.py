@@ -51,17 +51,18 @@ async def get_type(type_id: int, db: Session = Depends(get_database)):
     return crud.db_del_type(type_id=type_id, db=db)
 
 
+# 查询所有规格值数据类型
+@app.get("/data_type", response_model=List[schemas.DataType])
+async def get_datatype(db: Session = Depends(get_database)):
+    return crud.db_get_datatype(db=db)
+
+
 # 添加规格
-@app.post("/spec",
-          response_model=List[schemas.CommSpec],
-          response_model_exclude=["data_type_id"])
+@app.post("/spec")
 async def add_spec(*,
                    spec: List[schemas.Spec] = Body(..., embed=True),
                    db: Session = Depends(get_database)):
     return crud.db_create_spec(spec=spec, db=db)
 
 
-# 查询所有规格值数据类型
-@app.get("/data_type", response_model=schemas.DataType)
-async def get_datatype(db: Session = Depends(get_database)):
-    return crud.db_get_datatype(db=db)
+
