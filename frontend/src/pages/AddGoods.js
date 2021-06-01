@@ -38,15 +38,15 @@ export default function Inputs() {
 
     return (
         <div style={{position:'relative',margin:'0px 50px'}}>
-            <div style={{margin:'20px 0px'}}>
-                <a href="#" style={{
-                    color:'#858585',
-                    fontSize:'18px',
-                    textDecoration:'none'
-                }}>
-                    <span>添加商品</span>
-                </a>
-            </div>
+            {/*<div style={{margin:'20px 0px'}}>*/}
+                {/*<a href="#" style={{*/}
+                {/*    color:'#858585',*/}
+                {/*    fontSize:'18px',*/}
+                {/*    textDecoration:'none'*/}
+                {/*}}>*/}
+                {/*    <span>添加商品</span>*/}
+                {/*</a>*/}
+            {/*</div>*/}
             <div style={{boxSizing:'border-box',marginBottom:'50px'}}>
                 <form className={classes.root}
                       style={{
@@ -97,7 +97,7 @@ export default function Inputs() {
                                 <TableCell align="right">{row.calories}</TableCell>
                                 <TableCell align="right">{row.fat}</TableCell>
                                 <TableCell align="right">{row.carbs}</TableCell>
-                                <TableCell align="right">{row.protein}</TableCell>
+                                {/*<TableCell align="right">{row.protein}</TableCell>*/}
                             </TableRow>
                         ))}
                     </TableBody>

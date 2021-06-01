@@ -30,14 +30,11 @@ export default function Footer(props) {
                             <ListItem className={classes.TOPLoGo}>
                                 库存系统后台管理
                             </ListItem>
-                            <ListItem className={classes.inlineBlock}
-                                      style={{
-                                          backgroundColor:'#00ACC1'
-                                      }}
-                            >
-                                <a href="/admin/AllEchart" className={classes.block}>
+                            <ListItem className={classes.inlineBlock} style={{backgroundColor:'#00ACC1'}}>
+                                <link to={ ' /admin/AllEchart ' + ' 1 ' }  activeClassName='active' className={classes.block}>
                                     首页
-                                </a>
+                                </link>
+                                <NavLink></NavLink>
                             </ListItem>
                             <ListItem className={classes.inlineBlock}>
                                 <a href="/admin/Allproducts" className={classes.block}>
@@ -45,7 +42,7 @@ export default function Footer(props) {
                                 </a>
                             </ListItem>
                             <ListItem className={classes.inlineBlock}>
-                                <a href="/admin/find_app" className={classes.block}>
+                                <a href="/admin/AllSpace" className={classes.block}>
                                     全部规格
                                 </a>
                             </ListItem>

@@ -3,7 +3,7 @@ import {
   container,
   primaryColor,
   grayColor
-} from "assets/jss/material-dashboard-react.jss";
+} from "../../material-dashboard-react";
 
 const footerStyle = {
   block: {
