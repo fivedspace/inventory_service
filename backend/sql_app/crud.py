@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 import sys
 
 sys.path.append('../')
@@ -6,6 +7,8 @@ import json
 from core import schemas
 from sql_app.models import *
 from typing import List, Any
+from oslo_utils import uuidutils
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 
@@ -50,10 +53,10 @@ def db_modify_type(modify_type: schemas.CommType, db: Session):
         return {"Message: Error!"}
     else:
         db.query(Type).filter(Type.type_id == modify_type.type_id).update(
-                              {Type.type: modify_type.type})
+            {Type.type: modify_type.type})
         db.commit()
         local_type = db.query(Type).filter(
-                              Type.type_id == modify_type.type_id).first()
+            Type.type_id == modify_type.type_id).first()
         return local_type
 
 
@@ -117,11 +120,49 @@ def db_create_spec(spec: schemas.Spec, db: Session):
     for ID in list_id_spec:
         res = db.query(Spec.spec_id, Spec.spec_name,
                        Spec.spec_remark, Datatype.data_type).outerjoin(
-                       Datatype, Spec.data_type_id == Datatype.data_type_id
-                      ).filter(Spec.spec_id == ID).first()
-        print(res)
+            Datatype, Spec.data_type_id == Datatype.data_type_id
+        ).filter(Spec.spec_id == ID).first()
         list_add_spec.append(res)
+
     return list_add_spec
 
 
+def db_get_spec(db: Session):
+    """
+    查询所有规格
+    :param db:
+    :return:
+    """
+    fetch_spec: List[Any] = db.query(Spec.spec_id, Spec.spec_name,
+                                     Spec.spec_remark,
+                                     Datatype.data_type).outerjoin(
+        Datatype, Spec.data_type_id == Datatype.data_type_id).all()
 
+    return fetch_spec
+
+
+def db_modify_spec(spec_datatype: schemas.SpecDatatype, db: Session):
+    result = db.query(Spec). \
+        filter(Spec.spec_id == spec_datatype.spec_id).first()
+    if result is None:
+        raise HTTPException(status_code=404, detail="规格id错误或id不存在")
+    else:
+
+        db.query(Spec).filter(Spec.spec_id == spec_datatype.spec_id). \
+            update({
+                    Spec.spec_name: spec_datatype.spec_name,
+                    Spec.data_type_id: spec_datatype.data_type_id,
+                    Spec.spec_remark: spec_datatype.spec_remark
+                })
+        db.commit()
+        local_modify_spec = db.query(
+            Spec.spec_id, Spec.spec_name, Spec.spec_remark,
+            Datatype.data_type). \
+            outerjoin(Datatype,
+                      Spec.data_type_id == Datatype.data_type_id). \
+            filter(Spec.spec_id == spec_datatype.spec_id).first()
+
+        return local_modify_spec
+
+
+def 

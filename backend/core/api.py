@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 import sys
 
 sys.path.append('../')
@@ -58,11 +59,25 @@ async def get_datatype(db: Session = Depends(get_database)):
 
 
 # 添加规格
-@app.post("/spec")
+@app.post("/create_spec")
 async def add_spec(*,
                    spec: List[schemas.Spec] = Body(..., embed=True),
                    db: Session = Depends(get_database)):
     return crud.db_create_spec(spec=spec, db=db)
 
+
+# 查询所有规格
+@app.get("/spec")
+async def get_all_spec(db: Session = Depends(get_database)):
+    return crud.db_get_spec(db=db)
+
+
+# 修改规格
+@app.patch("/spec", response_model=schemas.ReturnSpec)
+async def modify_spec(*,
+                      spec_datatype: schemas.SpecDatatype,
+                      db: Session = Depends(get_database)):
+
+    return crud.db_modify_spec(spec_datatype=spec_datatype, db=db)
 
 
