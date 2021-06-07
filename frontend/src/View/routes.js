@@ -5,6 +5,8 @@ import AssignmentIcon from '@material-ui/icons/Assignment';
 import AddGoods from "../pages/AddGoods";
 import AllEchart from "../pages/AllEchart";
 import Allproducts from "../pages/Allproducts";
+import AllSpace from '../pages/AllSpace';
+import Admin from '../pages/Admin';
 
 
 // import View2Home from './views2/view2'
@@ -24,25 +26,25 @@ const dashboardRoutes = [
         component: Allproducts,
         layout: "/admin"
     },{
-        path: "/AddGoods",
+        path: "/AllSpace",
         name: "全部规格",
         icon: AssessmentIcon,
-        component: AddGoods,
+        component: AllSpace,
         layout: "/admin",
+    }, {
+        path: "/AddGoods",
+        name: "添加商品",
+        icon: AssignmentIcon,
+        component: AddGoods,
+        layout: "/admin"
     },
-    // {
-    //     path: "/find_merchant",
-    //     name: "添加商品",
-    //     icon: AssignmentIcon,
-    //     component: MerchantList,
-    //     layout: "/admin"
-    // },{
-    //     path: "/reconciliation",
-    //     name: "管理员管理",
-    //     icon: AssignmentIcon,
-    //     component: Reconciliation,
-    //     layout: "/admin"
-    // },
+    {
+        path: "/Admin",
+        name: "管理员管理",
+        icon: AssignmentIcon,
+        component: Admin,
+        layout: "/admin"
+    },
     // {
     //   path: "/pageView",
     //   name: "无权限可以访问的页面",
