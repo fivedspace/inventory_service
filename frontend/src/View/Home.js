@@ -53,8 +53,6 @@ export default function Home({...rest}) {
     // const [fixedClasses, setFixedClasses] = React.useState("dropdown");//主题设置功能开关
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
-    // setImage(bgImage)
-    // setColor(color)
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);

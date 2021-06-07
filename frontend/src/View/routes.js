@@ -2,10 +2,10 @@ import HomeIcon from '@material-ui/icons/Home';
 import ReorderIcon from '@material-ui/icons/Reorder';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-import AddGoods from "../pages/AddGoods";
-import AllEchart from "../pages/AllEchart";
+import AddGoods from "../pages/Goods/AddGoods";
+import AllEchart from "../pages/Echarts/AllEchart";
 import Allproducts from "../pages/Allproducts";
-import AllSpace from '../pages/AllSpace';
+import AllSpace from '../pages/Spce/AllSpce';
 import Admin from '../pages/Admin';
 
 
