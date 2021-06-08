@@ -1,42 +1,35 @@
-import React from "react";
-import axios from 'axios';
-import { Component } from "react";
+import React, { Component } from "react";
+import axios from "axios";
+import config from '../config/config.json'
 
 
-
-
-
-class Admin extends Component {
-
-    constructor(props) {
-        super(props)
-        this.state = {
-            list: []
-        }
-        this.handclick = this.handclick.bind(this)
-    };
-    handclick() {
-        let url="http://tzw160702.work:8000/"
-        axios.get(url)
-            .then((res) => {
-                console.log(JSON.stringify(res.data))
-                this.setState({
-                    list: res.data.list
-                })
-            })
-            // .catch((error) => { console.log(error+'+++') })
-            alert('获取失败！！！')
+const abs='';
+export default class index extends Component {
+    state = {
+        abs: '',
+        abb:''
     }
-    render() {
-        return (
+    headen = () => {
+        axios({url:config.httpUrl1})
+            .then((res) => {
+                console.log(res);
+                this.setState({
+                    abs:res.data.type_list[0].type,
+                    abb:res.data.type_list[0].type_id
+                })
+                console.log(abs);
+            })
+            .catch((err) => {
+                console.log('err')
+            })
+    }
+    render() {
+        return (
             <div>
-                <button onClick={this.handclick}>
-                    点击点击
-            </button>
+                <button onClick={this.headen}></button>
+                <div>{this.state.abs}</div>
+                <div>{this.state.abb}</div>
             </div>
         )
     }
-};
-export default Admin;
-
-
+}

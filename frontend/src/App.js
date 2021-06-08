@@ -1,13 +1,13 @@
-// import Menu from './View/Home.js'
+import Menu from './View/Home.js'
 
 
-// function App() {
+function App() {
 
-//     return (
-//         <div>
-//             <Menu/>
-//         </div>
-//     );
-// }
+    return (
+        <div>
+            <Menu/>
+        </div>
+    );
+}
 
-// export default App;
+export default App;

@@ -16,4 +16,3 @@ export default function toSignIn(currentUrl, callbackUrl, publicKey, singleUrl) 
     window.location.href = singleUrl + "/" + rsaCurrentUrl + "/" + rsaCallbackUrl;
 }
 
- 

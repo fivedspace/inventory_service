@@ -2,7 +2,7 @@ import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import {Switch, Route, Redirect,} from "react-router-dom";
 import Footer from "../components/Footer/Footer.js";
-import routes from "./routes";
+import routes from "./Routes";
 import PerfectScrollbar from "perfect-scrollbar";
 import Sidebar from "../components/Sidebar/Sidebar";
 import bgImage from "../assets/images/sidebar-2.jpg";
@@ -53,8 +53,6 @@ export default function Home({...rest}) {
     // const [fixedClasses, setFixedClasses] = React.useState("dropdown");//主题设置功能开关
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
-    // setImage(bgImage)
-    // setColor(color)
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -124,6 +122,7 @@ export default function Home({...rest}) {
     return (
         <div className={classes.wrapper}>
             {/*侧边栏*/}
+
             <Sidebar
                 routes={routes}
                 logoText={"库存服务管理界面"}
@@ -133,7 +132,6 @@ export default function Home({...rest}) {
                 color={color}
                 {...rest}
             />
-
 
             <div className={classes.mainPanel} ref={mainPanel}>
                 {/*头部*/}
@@ -148,6 +146,8 @@ export default function Home({...rest}) {
                     <div className={classes.container}>{switchRoutes}</div>
                 </div>
                 {/*页脚*/}
+
+                {/*                               底部导航栏*/}
                 <Footer/>
                 {/*主题变更*/}
                 {/*<FixedPlugin

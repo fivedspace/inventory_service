@@ -18,7 +18,7 @@ const isToken = (props) => {
         cookie.save('token', props.match.params.token, { expires: inFifteenMinutes });
         isToken = true;
     } else {    //判断缓存中是否有token
-        const token = cookie.load("token");       // 读取 cookie 中的 token
+        const token = cookie.load("token");   // 读取 cookie 中的 token
         if (token) {                                // token 存在
             isToken = true;
         } else {                                    // token 不存在 

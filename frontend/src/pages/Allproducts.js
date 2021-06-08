@@ -10,6 +10,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
+
 const useStyles = makeStyles((theme) => ({
     root: {
         '& > *': {
@@ -46,27 +47,18 @@ const rows = [
     createData('5', '家政', '7', '家政系统',change()),
 ];
 
-export default function Inputs() {
+export default function Inputs(props) {
     const classes = useStyles();
 
     return (
         <div style={{position:'relative',margin:'0px 50px'}}>
-            {/*<div style={{margin:'20px 0px'}}>*/}
-            {/*    <a href="#" style={{*/}
-            {/*        color:'#858585',*/}
-            {/*        fontSize:'18px',*/}
-            {/*        textDecoration:'none'*/}
-            {/*    }}>*/}
-            {/*        <span>全部商品</span>*/}
-            {/*    </a>*/}
-            {/*</div>*/}
             <div style={{boxSizing:'border-box',marginBottom:'50px'}}>
                 <form className={classes.root}
                       style={{
                           width:'100%',
                           padding:'2px 4px',
                           display:'flex',
-                          backgroundColor:'#ab47bc',
+                          backgroundColor:'#eb81fd',
                       }}
                       noValidate autoComplete="off"
                 >
@@ -79,15 +71,10 @@ export default function Inputs() {
                             padding:'6px 0 7px 6px',
                             border:'1px solid black'
                         }}
-                        fullWidth='true'
+                        fullWidth={true}
                         inputProps={{ 'aria-label': 'naked' }}
                     />
                 </form>
-            </div>
-            <div style={{position:'absolute',top:'120px', right:'30px'}}>
-                <Button variant="outlined" color="primary" href="#outlined-buttons">
-                    新增
-                </Button>
             </div>
 
 

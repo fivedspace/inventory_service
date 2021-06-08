@@ -11,7 +11,7 @@ ReactDOM.render(
     {/*<Router >*/}
         <BrowserRouter>
             <Switch>
-                <Route path="/admin" component={Home} s/>
+                <Route path="/admin" component={Home} />
                 <Redirect from="/" to="/admin/AllEchart" />
             </Switch>
         </BrowserRouter>
