@@ -1,19 +1,14 @@
 import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import NewSpace from "./NewSpce";
 import DialogActions from "@material-ui/core/DialogActions";
+import Table from '../../components/Table/Table'
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -26,8 +21,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
+function createData(name, calories, fat, carbs) {
+    return { name, calories, fat, carbs};
 }
 
 function change(){
@@ -45,10 +40,6 @@ function change(){
 
 const rows = [
     createData('1', '规格id', '规格名称', change()),
-    createData('2', '规格id', '规格名称', change()),
-    createData('3', '规格id', '规格名称', change()),
-    createData('4', '规格id', '规格名称', change()),
-    createData('5', '规格id', '规格名称', change()),
 ];
 
 export default function Inputs() {
@@ -61,7 +52,6 @@ export default function Inputs() {
     function dialogOpen(){
         setOpen(false)
     }
-
     return (
         <div style={{position:'relative',margin:'0px 50px'}}>
             <Dialog
@@ -122,8 +112,14 @@ export default function Inputs() {
                 </Button>
             </div>
 
-
-            <TableContainer component={Paper}>
+            <Table
+                tableHead={['序号','规格名称','规格数据类型','备注','操作']}
+                tableData={[
+                    ['1','名1','string','备注',change()],
+                    [createData.name,createData.calories,createData.fat,createData.carbs],
+                ]}
+            />
+            {/* <TableContainer component={Paper}>
                 <Table className={classes.table} aria-label="simple table">
                     <TableHead>
                         <TableRow>
@@ -140,12 +136,11 @@ export default function Inputs() {
                                 <TableCell align="center">{row.calories}</TableCell>
                                 <TableCell align="center">{row.fat}</TableCell>
                                 <TableCell align="center">{row.carbs}</TableCell>
-                                {/*<TableCell align="right">{row.protein}</TableCell>*/}
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
-            </TableContainer>
+            </TableContainer> */}
         </div>
     );
 }

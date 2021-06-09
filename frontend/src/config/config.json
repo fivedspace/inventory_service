@@ -1,7 +1,7 @@
 {
   "httpUrl1": "http://tzw160702.work:8000/type",
-  "httpUrl2": "http://192.168.0.124:8000/docs#/default/add_type_type_post",
-  "httpUrl": "http://192.168.0.124:8000/docs#/default/alter_type_type_patch",
+  "spec1": "http://tzw160702.work:8000/spec",
+  "spec2": "http://tzw160702.work:8000/create_spec",
   "httpUrlApplication": "http://192.168.0.124:8000/create_space",
   "httpUrlMerchant": "http://192.168.0.124:8000/space",
   "httpUrlOrder": "http://192.168.0.124:8000/picture",
