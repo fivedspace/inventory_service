@@ -1,53 +1,63 @@
 import React, { Component } from "react";
 import axios from "axios";
 import config from '../config/config.json';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+import Table from '../components/Table/Table'
 
-function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
-}
-const abs = '';
-const rows = [
-    createData('1', '规格id', '规格名称', 'asdas'),
-];
 export default class index extends Component {
-    state = {
-        abs: '',
+    constructor() {
+        super();
+        this.state = {
+            abs: [],
+        }
     }
+
     headen = () => {
         axios({ url: config.spec1 })
             .then((res) => {
-                console.log(res);
                 this.setState({
-                    abs: res.data[0].spec_id,
-                    abb: res.data[0].spec_name,
-                    abc: res.data[0].spec_remark,
-                    abd: res.data[0].data_type
+                    abs: res.data,
                 })
-                console.log(abs);
             })
             .catch((err) => {
                 console.log('err')
             })
     }
+
+    /* 将数组对象列表转换为数组包含数组的形式,table组件所接受的数据结构*/
+    tableData = () => {
+        const tabData = [];
+        const tableJson = this.state.abs;
+        if (Array.isArray(tableJson) && tableJson.length) {
+            for (let i = 0; i < tableJson.length; i++) {
+                tabData.push(
+                    [
+                        tableJson[i].spec_id,
+                        tableJson[i].spec_name,
+                        tableJson[i].data_type,
+                        tableJson[i].spec_remark,
+                        // <SearchTwoToneIcon color="secondary" onClick={()=>{setMerchantOneItem(tableJson[i]);setOpen(true);setDialogTitle("查看公私钥")}} className={classes.pointer} titleAccess="查看公钥"/>
+                    ]
+                )
+            }
+        } else {
+            tabData.push([
+                tableJson.spec_id,
+                tableJson.spec_name,
+                tableJson.data_type,
+                tableJson.spec_remark,
+            ])
+        }
+        return tabData
+    }
+
     render() {
         return (
             <div>
                 <button onClick={this.headen}>点击</button>
-                <div>{this.state.abs}</div>
-                <div>{this.state.abb}</div>
-                <div>{this.state.abc}</div>
-                <div>{this.state.abd}</div>
-                <div>{rows.map((row) => (
-                    <TableRow key={row.name}>
-                        <TableCell component="th" scope="row" align="center">{row.name}</TableCell>
-                        <TableCell align="center">{row.calories}</TableCell>
-                        <TableCell align="center">{row.fat}</TableCell>
-                        <TableCell align="center">{row.carbs}</TableCell>
-                        {/*<TableCell align="right">{row.protein}</TableCell>*/}
-                    </TableRow>
-                ))}</div>
+                <Table
+                    tableHead={['序号','规格名称','规格数据类型','备注',]}
+                    tableData={this.tableData()}
+                />
             </div>
         )
     }

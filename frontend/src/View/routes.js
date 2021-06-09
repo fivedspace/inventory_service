@@ -2,9 +2,8 @@ import HomeIcon from '@material-ui/icons/Home';
 import ReorderIcon from '@material-ui/icons/Reorder';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-import AddGoods from "../pages/Goods/AddGoods";
 import AllEchart from "../pages/Echarts/AllEchart";
-import Allproducts from "../pages/Allproducts";
+import Allproducts from "../pages/Goods/Allproducts";
 import AllSpace from '../pages/Spce/AllSpce';
 import Admin from '../pages/Admin';
 
@@ -31,12 +30,6 @@ const dashboardRoutes = [
         icon: AssessmentIcon,
         component: AllSpace,
         layout: "/admin",
-    }, {
-        path: "/AddGoods",
-        name: "添加商品",
-        icon: AssignmentIcon,
-        component: AddGoods,
-        layout: "/admin"
     },
     {
         path: "/Admin",

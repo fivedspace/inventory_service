@@ -8,6 +8,9 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import NewSpace from "./NewSpce";
 import DialogActions from "@material-ui/core/DialogActions";
 import Table from '../../components/Table/Table'
+import config from "../../config/config.json";
+import axios from "axios";
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -20,10 +23,6 @@ const useStyles = makeStyles((theme) => ({
         minWidth: 650,
     },
 }));
-
-function createData(name, calories, fat, carbs) {
-    return { name, calories, fat, carbs};
-}
 
 function change(){
     return (
@@ -38,16 +37,59 @@ function change(){
     )
 }
 
-const rows = [
-    createData('1', '规格id', '规格名称', change()),
-];
-
 export default function Inputs() {
+    // constructor() {
+    //     super();
+    //     this.state = {
+    //         abs: [],
+    //     }
+    // }
     const classes = useStyles();
 
     const [open, setOpen] = React.useState(false);         //设置提示框的显示隐藏
     const [title, setTitle] = React.useState(true);        //标识 MerchantProfile组件的功能状态，true=>修改 ，false=>添加
-    const [dialogTitle, setDialogTitle] = useState("查看公私钥")     //设置对话框提示内容
+    const [dialogTitle, setDialogTitle] = useState("查看公私钥");     //设置对话框提示内容
+    const [abs, setAbs] = useState([])
+
+     const headen = () => {
+        axios.get( 'http://tzw160702.work:8000/spec' )
+            .then((res) => {
+                console.log(res.data)
+                this.setState({
+                    abs: res.data,
+                })
+            })
+            .catch((err) => {
+                console.log('asdfgh')
+            })
+    }
+
+    const tableData = () => {
+        const tabData = [];
+        const tableJson = setAbs;
+        if (Array.isArray(tableJson) && tableJson.length) {
+            for (let i = 0; i < tableJson.length; i++) {
+                tabData.push(
+                    [
+                        tableJson[i].spec_id,
+                        tableJson[i].spec_name,
+                        tableJson[i].data_type,
+                        tableJson[i].spec_remark,
+                        // <SearchTwoToneIcon color="secondary" onClick={()=>{setMerchantOneItem(tableJson[i]);setOpen(true);setDialogTitle("查看公私钥")}} className={classes.pointer} titleAccess="查看公钥"/>
+                    ]
+                )
+            }
+        } else {
+            tabData.push([
+                tableJson.spec_id,
+                tableJson.spec_name,
+                tableJson.data_type,
+                tableJson.spec_remark,
+            ])
+        }
+        return tabData
+    }
+
 
     function dialogOpen(){
         setOpen(false)
@@ -94,7 +136,7 @@ export default function Inputs() {
                 >
                     <InputBase
                         className={classes.margin}
-                        defaultValue="全部规格"
+                        placeholder="全部规格"
                         style={{
                             // flex:'1',
                             backgroundColor:'white',
@@ -111,36 +153,11 @@ export default function Inputs() {
                     新增
                 </Button>
             </div>
-
+            <button onClick={headen()}>点击</button>
             <Table
-                tableHead={['序号','规格名称','规格数据类型','备注','操作']}
-                tableData={[
-                    ['1','名1','string','备注',change()],
-                    [createData.name,createData.calories,createData.fat,createData.carbs],
-                ]}
+                tableHead={['序号','规格名称','规格数据类型','备注',]}
+                tableData={tableData()}
             />
-            {/* <TableContainer component={Paper}>
-                <Table className={classes.table} aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell align="center">序号</TableCell>
-                            <TableCell align="center">规格id</TableCell>
-                            <TableCell align="center">规格名称</TableCell>
-                            <TableCell align="center">备注</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {rows.map((row) => (
-                            <TableRow key={row.name}>
-                                <TableCell component="th" scope="row" align="center">{row.name}</TableCell>
-                                <TableCell align="center">{row.calories}</TableCell>
-                                <TableCell align="center">{row.fat}</TableCell>
-                                <TableCell align="center">{row.carbs}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer> */}
         </div>
     );
 }

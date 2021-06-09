@@ -39,7 +39,7 @@ export default function Sidebar(props) {
                     });
                 } else {
                     listItemClasses = classNames({
-                        [" " + classes[color]]: activeRoute(prop.layout + prop.pathz)
+                        [" " + classes[color]]: activeRoute(prop.layout + prop.path)
                     });
                 }
                 const whiteFontClasses = classNames({
