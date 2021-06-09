@@ -51,7 +51,7 @@ export default function MerchantProfile(props) {
 
     const classes = useStyles();
     const [message] = React.useState("");
-    const [commodity_nameItem, setcommodity_nameItem] = React.useState({ name: 'commodity_name', tips: '商品名称', error: false, help_text: '', value: "" });
+    const [commodity_nameItem, setcommodity_nameItem] = React.useState({ name: 'commodity_name', tips: '类型', error: false, help_text: '', value: "" });
     const [quantity_in_stock, setquantity_in_stock] = React.useState({ name: 'quantity_in_stock', tips: '库存数量', error: false, help_text: '', value: "" });
     const [remark, setremark] = React.useState({ name: 'remark', tips: '备注', error: false, help_text: '', value: "" });
 
@@ -130,68 +130,68 @@ export default function MerchantProfile(props) {
                                         }}
                                     />
                                 </GridItem>
-                                <GridItem xs={12} sm={12} md={5}>
-                                    <InputLabel style={{ color: "red" }}>{quantity_in_stock.help_text}</InputLabel>
-                                    <CustomInput
-                                        labelText={quantity_in_stock.tips}
-                                        id={quantity_in_stock.name}
-                                        name={quantity_in_stock.name}
-                                        value={quantity_in_stock.value}
-                                        formControlProps={{
-                                            fullWidth: true
-                                        }}
-                                        inputProps={{
-                                            disabled: false,
-                                            error: quantity_in_stock.error,
-                                            value: quantity_in_stock.value,
-                                            onChange: (e) => {
-                                                textChange(e, quantity_in_stock.name);
-                                            }
-                                        }}
-                                    />
-                                </GridItem>
-                                <GridItem xs={12} sm={12} md={5}>
-                                    <InputLabel style={{ color: "red" }}>{remark.help_text}</InputLabel>
-                                    <CustomInput
-                                        labelText={remark.tips}
-                                        id={remark.name}
-                                        name={remark.name}
-                                        value={remark.value}
-                                        formControlProps={{
-                                            fullWidth: true
-                                        }}
-                                        inputProps={{
-                                            disabled: false,
-                                            error: remark.error,
-                                            value: remark.value,
-                                            onChange: (e) => {
-                                                textChange(e, remark.name);
-                                            }
-                                        }}
-                                    />
-                                </GridItem>
-                                <GridItem xs={12} sm={12} md={5}>
-                                    <div className={classes.root}>
-                                        <input
-                                            accept="image/*"
-                                            className={classes.input}
-                                            id="contained-button-file"
-                                            multiple
-                                            type="file"
-                                        />
-                                        <label htmlFor="contained-button-file">
-                                            <Button variant="contained" color="primary" component="span">
-                                                上传图片
-                                            </Button>
-                                        </label>
-                                        <input accept="image/*" className={classes.input} id="icon-button-file" type="file" />
-                                        <label htmlFor="icon-button-file">
-                                            <IconButton color="primary" aria-label="上传图片" component="span">
-                                                <PhotoCamera />
-                                            </IconButton>
-                                        </label>
-                                    </div>
-                                </GridItem>
+                                {/*<GridItem xs={12} sm={12} md={5}>*/}
+                                {/*    <InputLabel style={{ color: "red" }}>{quantity_in_stock.help_text}</InputLabel>*/}
+                                {/*    <CustomInput*/}
+                                {/*        labelText={quantity_in_stock.tips}*/}
+                                {/*        id={quantity_in_stock.name}*/}
+                                {/*        name={quantity_in_stock.name}*/}
+                                {/*        value={quantity_in_stock.value}*/}
+                                {/*        formControlProps={{*/}
+                                {/*            fullWidth: true*/}
+                                {/*        }}*/}
+                                {/*        inputProps={{*/}
+                                {/*            disabled: false,*/}
+                                {/*            error: quantity_in_stock.error,*/}
+                                {/*            value: quantity_in_stock.value,*/}
+                                {/*            onChange: (e) => {*/}
+                                {/*                textChange(e, quantity_in_stock.name);*/}
+                                {/*            }*/}
+                                {/*        }}*/}
+                                {/*    />*/}
+                                {/*</GridItem>*/}
+                                {/*<GridItem xs={12} sm={12} md={5}>*/}
+                                {/*    <InputLabel style={{ color: "red" }}>{remark.help_text}</InputLabel>*/}
+                                {/*    <CustomInput*/}
+                                {/*        labelText={remark.tips}*/}
+                                {/*        id={remark.name}*/}
+                                {/*        name={remark.name}*/}
+                                {/*        value={remark.value}*/}
+                                {/*        formControlProps={{*/}
+                                {/*            fullWidth: true*/}
+                                {/*        }}*/}
+                                {/*        inputProps={{*/}
+                                {/*            disabled: false,*/}
+                                {/*            error: remark.error,*/}
+                                {/*            value: remark.value,*/}
+                                {/*            onChange: (e) => {*/}
+                                {/*                textChange(e, remark.name);*/}
+                                {/*            }*/}
+                                {/*        }}*/}
+                                {/*    />*/}
+                                {/*</GridItem>*/}
+                                {/*<GridItem xs={12} sm={12} md={5}>*/}
+                                {/*    <div className={classes.root}>*/}
+                                {/*        <input*/}
+                                {/*            accept="image/*"*/}
+                                {/*            className={classes.input}*/}
+                                {/*            id="contained-button-file"*/}
+                                {/*            multiple*/}
+                                {/*            type="file"*/}
+                                {/*        />*/}
+                                {/*        <label htmlFor="contained-button-file">*/}
+                                {/*            <Button variant="contained" color="primary" component="span">*/}
+                                {/*                上传图片*/}
+                                {/*            </Button>*/}
+                                {/*        </label>*/}
+                                {/*        <input accept="image/*" className={classes.input} id="icon-button-file" type="file" />*/}
+                                {/*        <label htmlFor="icon-button-file">*/}
+                                {/*            <IconButton color="primary" aria-label="上传图片" component="span">*/}
+                                {/*                <PhotoCamera />*/}
+                                {/*            </IconButton>*/}
+                                {/*        </label>*/}
+                                {/*    </div>*/}
+                                {/*</GridItem>*/}
                             </GridContainer>
                         </CardBody>
                         <CardFooter>

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
@@ -24,49 +24,46 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function change(){
+const change=()=>{
     return (
         <div>
             <Button variant="outlined" color="primary" href="#outlined-buttons">
                 修改
-            </Button>
-            <Button variant="outlined" color="secondary" href="#outlined-buttons" style={{marginLeft:'10px'}}>
-                删除
             </Button>
         </div>
     )
 }
 
 export default function Inputs() {
-    // constructor() {
-    //     super();
-    //     this.state = {
-    //         abs: [],
-    //     }
-    // }
     const classes = useStyles();
 
     const [open, setOpen] = React.useState(false);         //设置提示框的显示隐藏
     const [title, setTitle] = React.useState(true);        //标识 MerchantProfile组件的功能状态，true=>修改 ，false=>添加
     const [dialogTitle, setDialogTitle] = useState("查看公私钥");     //设置对话框提示内容
-    const [abs, setAbs] = useState([])
+    const [abs, setAbs] = useState([]);
+
+    useEffect(()=>{
+        headen()
+    },[])
 
      const headen = () => {
-        axios.get( 'http://tzw160702.work:8000/spec' )
+        axios.get( config.spec1 )
             .then((res) => {
                 console.log(res.data)
-                this.setState({
-                    abs: res.data,
-                })
+                setAbs(
+                    res.data
+                )
             })
             .catch((err) => {
                 console.log('asdfgh')
             })
+         // console.log(abs)
     }
 
     const tableData = () => {
+        console.log(abs)
         const tabData = [];
-        const tableJson = setAbs;
+        const tableJson = abs;
         if (Array.isArray(tableJson) && tableJson.length) {
             for (let i = 0; i < tableJson.length; i++) {
                 tabData.push(
@@ -75,6 +72,7 @@ export default function Inputs() {
                         tableJson[i].spec_name,
                         tableJson[i].data_type,
                         tableJson[i].spec_remark,
+                        change()
                         // <SearchTwoToneIcon color="secondary" onClick={()=>{setMerchantOneItem(tableJson[i]);setOpen(true);setDialogTitle("查看公私钥")}} className={classes.pointer} titleAccess="查看公钥"/>
                     ]
                 )
@@ -94,6 +92,7 @@ export default function Inputs() {
     function dialogOpen(){
         setOpen(false)
     }
+
     return (
         <div style={{position:'relative',margin:'0px 50px'}}>
             <Dialog
@@ -153,9 +152,9 @@ export default function Inputs() {
                     新增
                 </Button>
             </div>
-            <button onClick={headen()}>点击</button>
+
             <Table
-                tableHead={['序号','规格名称','规格数据类型','备注',]}
+                tableHead={['序号','规格名称','规格数据类型','备注','操作']}
                 tableData={tableData()}
             />
         </div>

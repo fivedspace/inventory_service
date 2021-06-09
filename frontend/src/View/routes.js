@@ -31,13 +31,13 @@ const dashboardRoutes = [
         component: AllSpace,
         layout: "/admin",
     },
-    {
-        path: "/Admin",
-        name: "管理员管理",
-        icon: AssignmentIcon,
-        component: Admin,
-        layout: "/admin"
-    },
+    // {
+    //     path: "/Admin",
+    //     name: "管理员管理",
+    //     icon: AssignmentIcon,
+    //     component: Admin,
+    //     layout: "/admin"
+    // },
     // {
     //   path: "/pageView",
     //   name: "无权限可以访问的页面",

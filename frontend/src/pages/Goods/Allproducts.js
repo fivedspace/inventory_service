@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
@@ -8,6 +8,8 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Newpage from "./Newpage";
+import config from "../../config/config.json";
+import axios from "axios";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -24,19 +26,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
-}
 
 
 
-// const rows = [
-//     createData('1', '语文', '10', '教育系统',change()),
-//     createData('2', '数学', '15', '教育系统',change()),
-//     createData('3', '英语', '5', '教育系统',change()),
-//     createData('4', '家政', '4', '家政系统',change()),
-//     createData('5', '家政', '7', '家政系统',change()),
-// ];
+
 
 export default function Inputs(props) {
     const classes = useStyles();
@@ -44,12 +37,12 @@ export default function Inputs(props) {
     const [open, setOpen] = React.useState(false);         //设置提示框的显示隐藏
     const [title, setTitle] = React.useState(true);        //标识 MerchantProfile组件的功能状态，true=>修改 ，false=>添加
     const [dialogTitle, setDialogTitle] = useState("查看公私钥")     //设置对话框提示内容
+    const [abs, setAbs] = useState([]);
 
-    function dialogOpen(){
-        setOpen(false)
-    }
-
-    function change(){
+    useEffect(()=>{
+        headen()
+    },[])
+    const change=()=>{
         return (
             <div>
                 <Button variant="outlined" color="primary" onClick={()=>{setDialogTitle("修改商户信息");setOpen(true);setTitle(false);}}>
@@ -61,6 +54,53 @@ export default function Inputs(props) {
             </div>
         )
     }
+
+    const headen = () => {
+        axios.get( config.httpUrl1 )
+            .then((res) => {
+                console.log(res.data)
+                setAbs(
+                    res.data.type_list
+                )
+            })
+            .catch((err) => {
+                console.log('err')
+            })
+        // console.log(abs)
+    }
+
+    const tableData = () => {
+        console.log(abs)
+        const tabData = [];
+        const tableJson = abs;
+        if (Array.isArray(tableJson) && tableJson.length) {
+            for (let i = 0; i < tableJson.length; i++) {
+                tabData.push(
+                    [
+                        tableJson[i].type_id,
+                        tableJson[i].type,
+                        // tableJson[i].data_type,
+                        // tableJson[i].spec_remark,
+                        change()
+                        // <SearchTwoToneIcon color="secondary" onClick={()=>{setMerchantOneItem(tableJson[i]);setOpen(true);setDialogTitle("查看公私钥")}} className={classes.pointer} titleAccess="查看公钥"/>
+                    ]
+                )
+            }
+        } else {
+            tabData.push([
+                tableJson.spec_id,
+                tableJson.spec_name,
+                tableJson.data_type,
+                tableJson.spec_remark,
+            ])
+        }
+        return tabData
+    }
+    function dialogOpen(){
+         setOpen(false)
+    }
+
+
 
     return (
         <div style={{position:'relative',margin:'0px 50px'}}>
@@ -128,15 +168,8 @@ export default function Inputs(props) {
                 </div>
             </div>
             <Table
-                tableHead={['序号','商品名称','库存数量','备注','操作']}
-                tableData={[
-                    [createData.name,createData.calories,createData.fat,createData.carbs,change()],
-                    [createData.name,createData.calories,createData.fat,createData.carbs,createData.protein],
-                    [createData.name,createData.calories,createData.fat,createData.carbs,createData.protein],
-                    [createData.name,createData.calories,createData.fat,createData.carbs,createData.protein],
-                    [createData.name,createData.calories,createData.fat,createData.carbs,createData.protein],
-                    [createData.name,createData.calories,createData.fat,createData.carbs,createData.protein],
-                ]}
+                tableHead={['序号','类型','操作']}
+                tableData={tableData()}
             />
         </div>
     );
