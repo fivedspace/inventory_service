@@ -1,16 +1,15 @@
-import React, {useEffect, useState} from 'react';
+import React,{useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
+import Table from '../../components/Table/Table';
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import NewSpace from "./NewSpce";
 import DialogActions from "@material-ui/core/DialogActions";
-import Table from '../../components/Table/Table'
+import DialogContentText from '@material-ui/core/DialogContentText';
+import Newtype from "./Newtype";
 import config from "../../config/config.json";
 import axios from "axios";
-
 
 
 const useStyles = makeStyles((theme) => ({
@@ -19,6 +18,9 @@ const useStyles = makeStyles((theme) => ({
             margin: theme.spacing(1),
         },
     },
+    rightStyle: {
+        textAlign: "right"
+    },
     table: {
         minWidth: 650,
     },
@@ -26,76 +28,92 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function Inputs() {
+
+
+
+export default function Inputs(props) {
     const classes = useStyles();
 
     const [open, setOpen] = React.useState(false);         //设置提示框的显示隐藏
     const [title, setTitle] = React.useState(true);        //标识 MerchantProfile组件的功能状态，true=>修改 ，false=>添加
-    const [dialogTitle, setDialogTitle] = useState("查看公私钥");     //设置对话框提示内容
+    const [dialogTitle, setDialogTitle] = useState("查看公私钥")     //设置对话框提示内容
     const [abs, setAbs] = useState([]);
     const [zxc, setZxc] = useState({});
-    const [pop, setPop] = useState({});
+    const [type_id, setType_id] = useState({});
+
 
     useEffect(()=>{
         headen()
     },[])
-
     const change=(item,id)=>{
         return (
             <div>
-                <Button variant="outlined" color="primary"  onClick={()=>{setPop(id);setDialogTitle("修改规格信息");setOpen(true);setTitle(true);setZxc(item)}}>
+                <Button variant="outlined" color="primary" onClick={()=>{setDialogTitle("修改商户信息");setOpen(true);setTitle(true);setType_id(id);setZxc(item)}}>
                     修改
+                </Button>
+                <Button variant="outlined" color="secondary" onClick={()=>{Delete(id)}} style={{marginLeft:'10px'}}>
+                    删除
                 </Button>
             </div>
         )
     }
 
-     const headen = () => {
-        axios.get( config.spec1 )
+    const Delete=(id)=>{
+        axios.delete(config.httpUrl2+id)
             .then((res) => {
-                // console.log(res.data)
+                console.log(res.data)
+            })
+            .catch((err) => {
+                console.log('err')
+            })
+    }
+
+    const headen = () => {
+        axios.get( config.httpUrl1 )
+            .then((res) => {
+                console.log(res.data)
                 setAbs(
-                    res.data
+                    res.data.type_list
                 )
             })
             .catch((err) => {
                 console.log('err')
             })
-         // console.log(abs)
+        // console.log(abs)
     }
 
     const tableData = () => {
-        // console.log(abs)
+        console.log(abs)
         const tabData = [];
         const tableJson = abs;
         if (Array.isArray(tableJson) && tableJson.length) {
             for (let i = 0; i < tableJson.length; i++) {
                 tabData.push(
                     [
-                        tableJson[i].spec_id,
-                        tableJson[i].spec_name,
-                        tableJson[i].data_type,
-                        tableJson[i].spec_remark,
-                        change(tableJson[i],tableJson[i].spec_id)
+                        tableJson[i].type_id,
+                        tableJson[i].type,
+                        // tableJson[i].data_type,
+                        // tableJson[i].spec_remark,
+                        change(tableJson[i],tableJson[i].type_id)
                         // <SearchTwoToneIcon color="secondary" onClick={()=>{setMerchantOneItem(tableJson[i]);setOpen(true);setDialogTitle("查看公私钥")}} className={classes.pointer} titleAccess="查看公钥"/>
                     ]
                 )
             }
         } else {
             tabData.push([
-                tableJson.spec_id,
-                tableJson.spec_name,
-                tableJson.data_type,
-                tableJson.spec_remark,
+                tableJson.type_id,
+                tableJson.type,
+                // tableJson.data_type,
+                // tableJson.spec_remark,
             ])
         }
         return tabData
     }
-
-
     function dialogOpen(){
         setOpen(false)
     }
+
+
 
     return (
         <div style={{position:'relative',margin:'0px 50px'}}>
@@ -109,14 +127,20 @@ export default function Inputs() {
                     {
                         dialogTitle === "查看公私钥"
                             ? (<div>
-                                <h6>规格名称:</h6>
+                                <h6>商品名称:</h6>
+                                <DialogContentText>
+                                </DialogContentText>
+                                <h6>库存数量:</h6>
+                                <DialogContentText>
+                                </DialogContentText>
+                                <h6>备注:</h6>
                                 <DialogContentText>
                                 </DialogContentText>
                             </div>)
-                            : (<NewSpace
+                            : (<Newtype
                                 // setMerchant={(item)=>{setMerchantOneItem(item)}} //传递当前选择的一条商户信息
                                 query={zxc}
-                                specId={pop}
+                                TypeId={type_id}
                                 title={title}
                             />)
                         // 对话框显示新增修改入口
@@ -140,7 +164,7 @@ export default function Inputs() {
                 >
                     <InputBase
                         className={classes.margin}
-                        placeholder="全部规格"
+                        placeholder="全部商品"
                         style={{
                             // flex:'1',
                             backgroundColor:'white',
@@ -153,13 +177,12 @@ export default function Inputs() {
                 </form>
             </div>
             <div style={{position:'absolute',top:'90px', right:'30px'}}>
-                <Button variant="outlined" color="primary" onClick={()=>{setDialogTitle("添加规格信息");setOpen(true);setTitle(false);}}>
-                    新增
-                </Button>
+                <div className={classes.rightStyle}>
+                    <Button variant="outlined" color="primary" onClick={()=>{setDialogTitle("添加商品信息");setOpen(true);setTitle(false);}}>添加</Button>
+                </div>
             </div>
-
             <Table
-                tableHead={['序号','规格名称','规格数据类型','备注','操作']}
+                tableHead={['序号','类型','操作']}
                 tableData={tableData()}
             />
         </div>
