@@ -2,7 +2,7 @@
   "httpUrl1": "http://tzw160702.work:8000/type",
   "spec1": "http://tzw160702.work:8000/spec",
   "spec2": "http://tzw160702.work:8000/create_spec",
-  "httpUrlApplication": "http://192.168.0.124:8000/create_space",
+  "httpUrl2": "http://tzw160702.work:8000/type/",
   "httpUrlMerchant": "http://192.168.0.124:8000/space",
   "httpUrlOrder": "http://192.168.0.124:8000/picture",
   "publicKey": "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDPG6hadnK5WuzSUAoXgAqduPP3\n40eSFMw5BDnGBKAY7bU33+xJQs+dg4Fv46N43xTVzkC9FgUYFLK+Sp59HwmBlghN\nAiNIgre3srp+i/eO6ZHn7zAS+38Ev3g5wTiRlxN6k3MSpmgoGJlIWzk2NRHyDbTq\nWmx76jHwxllAkjjRhQIDAQAB\n-----END PUBLIC KEY-----"

@@ -42,17 +42,27 @@ export default function Inputs(props) {
     useEffect(()=>{
         headen()
     },[])
-    const change=()=>{
+    const change=(id)=>{
         return (
             <div>
                 <Button variant="outlined" color="primary" onClick={()=>{setDialogTitle("修改商户信息");setOpen(true);setTitle(false);}}>
                     修改
                 </Button>
-                <Button variant="outlined" color="secondary" href="#outlined-buttons" style={{marginLeft:'10px'}}>
+                <Button variant="outlined" color="secondary" onClick={()=>{Delete(id)}} style={{marginLeft:'10px'}}>
                     删除
                 </Button>
             </div>
         )
+    }
+
+    const Delete=(id)=>{
+        axios.delete(config.httpUrl2+id)
+            .then((res) => {
+                console.log(res.data)
+            })
+            .catch((err) => {
+                console.log('err')
+            })
     }
 
     const headen = () => {
@@ -81,7 +91,7 @@ export default function Inputs(props) {
                         tableJson[i].type,
                         // tableJson[i].data_type,
                         // tableJson[i].spec_remark,
-                        change()
+                        change(tableJson[i].type_id)
                         // <SearchTwoToneIcon color="secondary" onClick={()=>{setMerchantOneItem(tableJson[i]);setOpen(true);setDialogTitle("查看公私钥")}} className={classes.pointer} titleAccess="查看公钥"/>
                     ]
                 )
@@ -164,7 +174,7 @@ export default function Inputs(props) {
             </div>
             <div style={{position:'absolute',top:'90px', right:'30px'}}>
                 <div className={classes.rightStyle}>
-                    <Button variant="outlined" color="primary" onClick={()=>{setDialogTitle("添加商户信息");setOpen(true);setTitle(false);}}>添加</Button>
+                    <Button variant="outlined" color="primary" onClick={()=>{setDialogTitle("添加商品信息");setOpen(true);setTitle(false);}}>添加</Button>
                 </div>
             </div>
             <Table

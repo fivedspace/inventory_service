@@ -24,15 +24,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const change=()=>{
-    return (
-        <div>
-            <Button variant="outlined" color="primary" href="#outlined-buttons">
-                修改
-            </Button>
-        </div>
-    )
-}
+
 
 export default function Inputs() {
     const classes = useStyles();
@@ -41,27 +33,38 @@ export default function Inputs() {
     const [title, setTitle] = React.useState(true);        //标识 MerchantProfile组件的功能状态，true=>修改 ，false=>添加
     const [dialogTitle, setDialogTitle] = useState("查看公私钥");     //设置对话框提示内容
     const [abs, setAbs] = useState([]);
+    const [zxc, setZxc] = useState({});
 
     useEffect(()=>{
         headen()
     },[])
 
+    const change=(item)=>{
+        return (
+            <div>
+                <Button variant="outlined" color="primary"  onClick={()=>{setDialogTitle("修改规格信息");setOpen(true);setTitle(true);setZxc(item)}}>
+                    修改
+                </Button>
+            </div>
+        )
+    }
+
      const headen = () => {
         axios.get( config.spec1 )
             .then((res) => {
-                console.log(res.data)
+                // console.log(res.data)
                 setAbs(
                     res.data
                 )
             })
             .catch((err) => {
-                console.log('asdfgh')
+                console.log('err')
             })
          // console.log(abs)
     }
 
     const tableData = () => {
-        console.log(abs)
+        // console.log(abs)
         const tabData = [];
         const tableJson = abs;
         if (Array.isArray(tableJson) && tableJson.length) {
@@ -72,7 +75,7 @@ export default function Inputs() {
                         tableJson[i].spec_name,
                         tableJson[i].data_type,
                         tableJson[i].spec_remark,
-                        change()
+                        change(tableJson[i])
                         // <SearchTwoToneIcon color="secondary" onClick={()=>{setMerchantOneItem(tableJson[i]);setOpen(true);setDialogTitle("查看公私钥")}} className={classes.pointer} titleAccess="查看公钥"/>
                     ]
                 )
@@ -111,7 +114,7 @@ export default function Inputs() {
                             </div>)
                             : (<NewSpace
                                 // setMerchant={(item)=>{setMerchantOneItem(item)}} //传递当前选择的一条商户信息
-                                // query={merchantOneItem}
+                                query={zxc}
                                 title={title}
                             />)
                         // 对话框显示新增修改入口
@@ -148,7 +151,7 @@ export default function Inputs() {
                 </form>
             </div>
             <div style={{position:'absolute',top:'90px', right:'30px'}}>
-                <Button variant="outlined" color="primary" onClick={()=>{setDialogTitle("添加商户信息");setOpen(true);setTitle(false);}}>
+                <Button variant="outlined" color="primary" onClick={()=>{setDialogTitle("添加规格信息");setOpen(true);setTitle(false);}}>
                     新增
                 </Button>
             </div>
