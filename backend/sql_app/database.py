@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import sys
-
 sys.path.append('../')
 
 import pymysql
@@ -11,11 +10,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
-app = FastAPI()
+database_app = FastAPI()
 
 pymysql.install_as_MySQLdb()
 SQLALCHEMY_DATABASE_URL =\
-    "mysql+pymysql://root:root@192.168.230.128:3306/inventory_service"
+    "mysql+pymysql://root:root@192.168.230.129:3306/inventory_service"
+    # "mysql+pymysql://root:password@tzw160702.work:3307/inventory_service"
+
 
 # 初始化数据库
 engine = create_engine(SQLALCHEMY_DATABASE_URL, encoding='utf-8')

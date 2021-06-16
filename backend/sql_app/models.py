@@ -16,8 +16,7 @@ class Commodity(Base):
 
     commodity_id = Column(Integer, primary_key=True, autoincrement=True,
                           comment='商品ID')
-    commodity_name = Column(String(30), nullable=False, unique=True,
-                            comment='商品名称')
+    commodity_name = Column(String(30), nullable=False, comment='商品名称')
     quantity_in_stock = Column(Integer, default=0, comment='库存剩余数量')
     remark = Column(String(50), nullable=False, comment='备注')
     status = Column(Integer, server_default='0', comment='状态:{0：可用，1：已删除}')
@@ -46,11 +45,11 @@ class Spec(Base):
 
     spec_id = Column(Integer, primary_key=True, autoincrement=True,
                      comment='规格ID')
-    spec_name = Column(String(30), comment='规格名称')
+    spec_name = Column(String(30), nullable=False, comment='规格名称')
     data_type_id = Column(Integer, ForeignKey('data_type.data_type_id'),
                           comment='规格值数据类型,关联数据类型表主键id')
     data_type = relationship('Datatype', backref="spec_of_data_type")
-    spec_remark = Column(String(120), comment='规格描述')
+    spec_remark = Column(String(120), nullable=False, comment='规格描述')
     created_time = Column(DateTime(timezone=True), server_default=func.now(),
                           comment='创建时间')
     updated_time = Column(DateTime(timezone=True), server_default=func.now(),
@@ -66,7 +65,7 @@ class SpecInfo(Base):
     spec_id = Column(Integer, ForeignKey('spec.spec_id'),
                      comment='规格id，关联规格表 spec')
     spec = relationship('Spec', backref='spec_info_of_spec')
-    spec_info_val = Column(String(120), unique=True, comment='规格值')
+    spec_info_val = Column(String(120), comment='规格值')
     created_time = Column(DateTime(timezone=True), server_default=func.now(),
                           comment='创建时间')
     updated_time = Column(DateTime(timezone=True), server_default=func.now(),
@@ -129,7 +128,7 @@ class Picture(Base):
                         comment='图片ID')
     picture_name = Column(String(30), nullable=False, unique=True,
                           comment='图片名称')
-    path = Column(String(50), nullable=True, unique=True, comment='图片路径')
+    path = Column(String(50), nullable=False, comment='图片路径')
     commodity_id = Column(Integer, ForeignKey('commodity.commodity_id'),
                           comment='关联商品表 commodity')
     commodity = relationship('Commodity', backref='picture_of_commodity')

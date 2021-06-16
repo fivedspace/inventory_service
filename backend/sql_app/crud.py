@@ -1,15 +1,15 @@
 #!/usr/bin/python3
 
-import sys
-
-sys.path.append('../')
-import json
+import os
+import shutil
+from pathlib import Path
 from core import schemas
 from sql_app.models import *
 from typing import List, Any
-from oslo_utils import uuidutils
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import and_
+from tempfile import NamedTemporaryFile
+from fastapi import File, HTTPException
 
 
 def db_create_type(db: Session, comm_type: schemas.Type):
@@ -142,6 +142,12 @@ def db_get_spec(db: Session):
 
 
 def db_modify_spec(spec_datatype: schemas.SpecDatatype, db: Session):
+    """
+    修改商品规格
+    :param spec_datatype:
+    :param db:
+    :return:
+    """
     result = db.query(Spec). \
         filter(Spec.spec_id == spec_datatype.spec_id).first()
     if result is None:
@@ -150,10 +156,10 @@ def db_modify_spec(spec_datatype: schemas.SpecDatatype, db: Session):
 
         db.query(Spec).filter(Spec.spec_id == spec_datatype.spec_id). \
             update({
-                    Spec.spec_name: spec_datatype.spec_name,
-                    Spec.data_type_id: spec_datatype.data_type_id,
-                    Spec.spec_remark: spec_datatype.spec_remark
-                })
+                Spec.spec_name: spec_datatype.spec_name,
+                Spec.data_type_id: spec_datatype.data_type_id,
+                Spec.spec_remark: spec_datatype.spec_remark
+            })
         db.commit()
         local_modify_spec = db.query(
             Spec.spec_id, Spec.spec_name, Spec.spec_remark,
@@ -165,4 +171,234 @@ def db_modify_spec(spec_datatype: schemas.SpecDatatype, db: Session):
         return local_modify_spec
 
 
-def 
+def db_create_commodity(commodity: schemas.Commodity, db: Session):
+    """
+    新增商品
+    :param commodity:
+    :param db:
+    :return:
+    """
+    # Commodity 表添加数据
+    add_comm = Commodity(
+        commodity_name=commodity.commodity_name,
+        quantity_in_stock=commodity.quantity_in_stock,
+        remark=commodity.remark)
+    db.add(add_comm)
+    db.commit()
+
+    # Commodity 表与 Commoditytype 表关联数据
+    for typeid in commodity.type:
+        add_comm_type = CommodityType(
+            commodity_id=add_comm.commodity_id,
+            type_id=typeid.type_id
+        )
+        db.add(add_comm_type)
+        db.commit()
+
+    spec_info_id = list()
+    # Specinfo 表添加数据
+    for spec in commodity.spec:
+        add_comm_spec_info = SpecInfo(
+            spec_id=spec.spec_id,
+            spec_info_val=spec.spec_info_val
+        )
+        db.add(add_comm_spec_info)
+        db.commit()
+
+        # 拿到新添加的数据返回的主键ID
+        spec_info_id.append(add_comm_spec_info.spec_info_id)
+
+    # Commodity 表与 SpecInfo 表关联数据
+    for sii in spec_info_id:
+        add_comm_spec = CommoditySpec(
+            commodity_id=add_comm.commodity_id,
+            spec_info_id=sii
+        )
+        db.add(add_comm_spec)
+        db.commit()
+
+    # 获取新增的这条数据的信息
+    # 商品表
+    local_add_comm = db.query(
+        Commodity.commodity_id, Commodity.commodity_name,
+        Commodity.quantity_in_stock, Commodity.remark,
+    ).filter(Commodity.commodity_id == add_comm.commodity_id).first()
+
+    # 类型表
+    get_type = db.query(CommodityType.type_id, Type.type).outerjoin(
+        Type, CommodityType.type_id == Type.type_id).filter(
+        CommodityType.commodity_id == add_comm.commodity_id).all()
+
+    # 规格表
+    get_spec = db.query(
+        Spec.spec_id, Spec.spec_name, SpecInfo.spec_info_val). \
+        outerjoin(SpecInfo, and_(Spec.spec_id == SpecInfo.spec_id)). \
+        outerjoin(CommoditySpec, and_(
+                  SpecInfo.spec_info_id == CommoditySpec.spec_info_id)).filter(
+                  CommoditySpec.commodity_id == add_comm.commodity_id).all()
+
+    return {"commodity_id": local_add_comm.commodity_id,
+            "commodity_name": local_add_comm.commodity_name,
+            "quantity_in_stock": local_add_comm.quantity_in_stock,
+            "type": get_type,
+            "spec": get_spec,
+            "remark": local_add_comm.remark}
+
+
+def db_create_picture(commodity_id: int, files: File, db: Session):
+    """
+    新增商品图片
+    :param commodity_id:
+    :param files:
+    :param db:
+    :return:
+    """
+    # 文件保存的目录
+    save_dir = "resources/images"
+
+    # 判断目录是否存在
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
+
+    tmp_filename = list()
+    for file in files:
+        try:
+            suffix = Path(file.filename).suffix
+            with NamedTemporaryFile(delete=False, suffix=suffix, dir=save_dir) as \
+                    tmp:
+                shutil.copyfileobj(file.file, tmp)
+                tmp_filename.append(Path(tmp.name).name)
+        finally:
+            file.close()
+    picture_id = list()
+    for one_name in tmp_filename:
+        add_comm = Picture(path="backend/images/",
+                           picture_name=one_name,
+                           commodity_id=commodity_id)
+        db.add(add_comm)
+        db.commit()
+        db.refresh(add_comm)
+        picture_id.append(add_comm.picture_id)
+    query_result = list()
+    for Id in picture_id:
+        query = db.query(
+            Picture.path,
+            Picture.picture_id,
+            Picture.picture_name).filter(Picture.picture_id == Id).\
+            filter(Picture.commodity_id == commodity_id).first()
+        query_result.append(query)
+    return query_result
+
+
+def db_modify_commodity(modify_commodity: schemas.ModifyCommodity, db: Session):
+    """
+    修改商品信息
+    :param modify_commodity:
+    :param db:
+    :return:
+    """
+    result = db.query(Commodity). \
+        filter(Commodity.commodity_id == modify_commodity.commodity_id).first()
+    if result is None:
+        raise HTTPException(status_code=404, detail="规格id错误或id不存在")
+    else:
+        db.query(Commodity).\
+            filter(Commodity.commodity_id == modify_commodity.commodity_id).\
+            update({
+                Commodity.commodity_name: modify_commodity.commodity_name,
+                Commodity.quantity_in_stock: modify_commodity.quantity_in_stock,
+                Commodity.remark: modify_commodity.remark
+            })
+
+        # 有单个值或者多个值,直接对原有数据删除重新关联
+        db.query(CommodityType).filter(
+            CommodityType.commodity_id == modify_commodity.commodity_id).delete()
+        db.commit()
+        for typeid in modify_commodity.type:
+            add_comm_type = CommodityType(
+                commodity_id=modify_commodity.commodity_id,
+                type_id=typeid.type_id)
+            db.add(add_comm_type)
+            db.commit()
+
+        print(modify_commodity.spec)
+        # 修改 SpecInfo 表字段的值
+        query_id = db.query(CommoditySpec.spec_info_id).filter(
+            CommoditySpec.commodity_id == modify_commodity.commodity_id).all()
+        spec_info_id =[spec_info_id for Id in query_id for spec_info_id in Id]
+        for index, spec in enumerate(modify_commodity.spec):
+            db.query(SpecInfo).\
+                filter(SpecInfo.spec_info_id == spec_info_id[index]). \
+                update({SpecInfo.spec_id: spec.spec_id,
+                        SpecInfo.spec_info_val: spec.spec_info_val})
+            db.commit()
+
+        # 获取修改信息
+        # 商品表
+        modify_comm = db.query(
+            Commodity.commodity_id, Commodity.commodity_name,
+            Commodity.quantity_in_stock, Commodity.remark,
+        ).filter(Commodity.commodity_id == modify_commodity.commodity_id).first()
+
+        # 类型表
+        get_type = db.query(CommodityType.type_id, Type.type).outerjoin(
+            Type, CommodityType.type_id == Type.type_id).filter(
+            CommodityType.commodity_id == modify_commodity.commodity_id).all()
+
+        # 规格表
+        get_spec = db.query(
+            Spec.spec_id, Spec.spec_name, SpecInfo.spec_info_val). \
+            outerjoin(SpecInfo, and_(Spec.spec_id == SpecInfo.spec_id)). \
+            outerjoin(CommoditySpec, and_(
+                SpecInfo.spec_info_id == CommoditySpec.spec_info_id)).filter(
+            CommoditySpec.commodity_id == modify_commodity.commodity_id).all()
+
+        return {"commodity_id": modify_comm.commodity_id,
+                "commodity_name": modify_comm.commodity_name,
+                "quantity_in_stock": modify_comm.quantity_in_stock,
+                "type": get_type,
+                "spec": get_spec,
+                "remark": modify_comm.remark}
+
+
+def db_assign_commodity(commodity_id: int, db: Session):
+    """
+    查询指定商品
+    :param commodity_id:
+    :param db:
+    :return:
+    """
+    # 商品表
+    local_add_comm = db.query(
+        Commodity.commodity_id, Commodity.commodity_name,
+        Commodity.quantity_in_stock, Commodity.remark,
+    ).filter(Commodity.commodity_id == commodity_id).first()
+
+    # 类型表
+    get_type = db.query(CommodityType.type_id, Type.type).outerjoin(
+        Type, CommodityType.type_id == Type.type_id).filter(
+        CommodityType.commodity_id == commodity_id).all()
+
+    # 规格表
+    get_spec = db.query(
+        Spec.spec_id, Spec.spec_name, SpecInfo.spec_info_val). \
+        outerjoin(SpecInfo, and_(Spec.spec_id == SpecInfo.spec_id)). \
+        outerjoin(CommoditySpec, and_(
+                  SpecInfo.spec_info_id == CommoditySpec.spec_info_id)).filter(
+        CommoditySpec.commodity_id == commodity_id).all()
+
+    # 图片表
+    get_picture = db.query(Picture.path, Picture.picture_name).filter(
+        Picture.commodity_id == commodity_id).all()
+    print(get_picture)
+    return {"commodity_id": local_add_comm.commodity_id,
+            "commodity_name": local_add_comm.commodity_name,
+            "quantity_in_stock": local_add_comm.quantity_in_stock,
+            "type": get_type,
+            "picture": get_picture,
+            "spec": get_spec,
+            "remark": local_add_comm.remark}
+
+
+# def db_modify_images(commodity_id: int, picture_id: List[int],  db: Session):
+#     return ...
