@@ -53,7 +53,6 @@ export default function MerchantProfile(props) {
     const [pageType, setPageType] = React.useState(flag?"新增规格信息":"修改规格信息");
     const [spec_nameItem,setspec_nameItem] = React.useState({name:'spec_name',tips:'规格名称',error:false,help_text:'',value:""+merchant.spec_name});
     const [spec_remarkItem,setspec_remarkItem] = React.useState({name:'spec_remark',tips:'备注',error:false,help_text:'',value:""+merchant.spec_remark});
-    // const [abs, setAbs] = useState([]);
 
 
     /* 设置提示框的显示数据，过期时间*/
@@ -84,6 +83,7 @@ export default function MerchantProfile(props) {
         "spec_remark": spec_remarkItem.value,
     }
 
+
     /* 新增或修改触发事件*/
     function submitBtn(){
         if(flag){
@@ -100,15 +100,15 @@ export default function MerchantProfile(props) {
         // props.change(props.flag);
     }
 
+
     //新增
     function subAdd(res_data){
-        console.log(res_data)
+        // console.log(res_data)
         if((spec_nameItem.error && spec_remarkItem.error) || (!spec_nameItem.value && !spec_remarkItem.value) ){
-            alert("请正确录入规格信息！");
+            alert("请正确录入规格信息");
         }else {
-            axios.post(config.spec2,{'spec':[{"spec_name": spec_nameItem.value,"data_type_id":4, "spec_remark": spec_remarkItem.value}]},{headers:{}})
+            axios.post(config.spec2,{'spec':[{"spec_name": spec_nameItem.value,"data_type_id":6, "spec_remark": spec_remarkItem.value}]},{headers:{}})
                 .then((res)=>{
-                    alert(res.data)
                     if(res){
                         alert("添加规格信息成功！");
                         flag = !flag

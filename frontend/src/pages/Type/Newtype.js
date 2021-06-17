@@ -11,8 +11,6 @@ import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
 import Snackbar from "../../components/Snackbar/Snackbar";
 import { AddAlert } from "@material-ui/icons";
-import IconButton from '@material-ui/core/IconButton';
-import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import axios from "_axios@0.20.0@axios";
 import config from "../../config/config.json";
 

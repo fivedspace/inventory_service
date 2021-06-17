@@ -20,13 +20,13 @@ const dashboardRoutes = [
         component: AllEchart,
         layout: "/admin"
     },
-    // {
-    //     path: "/Allproducts",
-    //     name: "全部商品",
-    //     icon: ReorderIcon,
-    //     component: Allproducts,
-    //     layout: "/admin"
-    // },
+    {
+        path: "/Allproducts",
+        name: "全部商品",
+        icon: ReorderIcon,
+        component: Allproducts,
+        layout: "/admin"
+    },
     {
         path: "/AllType",
         name: "类型管理",

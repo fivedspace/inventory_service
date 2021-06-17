@@ -1,8 +1,12 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Echarts from './echarts.js';
 import Echart from './echart.js';
+import config from "../../config/config.json";
+import index from "../Admin";
+import axios from "axios";
+
 
 // const drawerWidth = 240;
 
@@ -20,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ClippedDrawer() {
     const classes = useStyles();
+
 
     return (
         <div>

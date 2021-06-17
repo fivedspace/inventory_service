@@ -72,7 +72,7 @@ export default function Inputs() {
             for (let i = 0; i < tableJson.length; i++) {
                 tabData.push(
                     [
-                        tableJson[i].spec_id,
+                        i+1,
                         tableJson[i].spec_name,
                         tableJson[i].data_type,
                         tableJson[i].spec_remark,
@@ -94,7 +94,8 @@ export default function Inputs() {
 
 
     function dialogOpen(){
-        setOpen(false)
+        setOpen(false);
+        window.history.go(0);
     }
 
     return (
@@ -123,7 +124,7 @@ export default function Inputs() {
                     }
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={()=>dialogOpen()} color="primary" variant="outlined">
+                    <Button onClick={()=>dialogOpen()} color="primary" variant="outlined" >
                         关闭
                     </Button>
                 </DialogActions>

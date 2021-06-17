@@ -38,45 +38,55 @@ export default function Inputs(props) {
     const [title, setTitle] = React.useState(true);        //标识 MerchantProfile组件的功能状态，true=>修改 ，false=>添加
     const [dialogTitle, setDialogTitle] = useState("查看公私钥")     //设置对话框提示内容
     const [abs, setAbs] = useState([]);
+    const [proId,setProId] =useState({});
+    const [pro,setPro] =useState({});
 
     useEffect(()=>{
         headen()
     },[])
-    const change=(id)=>{
+    const change=(item,id)=>{
         return (
             <div>
-                <Button variant="outlined" color="primary" onClick={()=>{setDialogTitle("修改商户信息");setOpen(true);setTitle(false);}}>
+                <Button variant="outlined" color="primary" onClick={()=>{
+                    setDialogTitle("修改商品信息");
+                    setOpen(true);
+                    setTitle(true);
+                    setProId(id);
+                    setPro(item)
+                }}>
                     修改
                 </Button>
-                <Button variant="outlined" color="secondary" onClick={()=>{Delete(id)}} style={{marginLeft:'10px'}}>
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    // onClick={()=>{Delete(id)}}
+                    style={{marginLeft:'10px'}}>
                     删除
                 </Button>
             </div>
         )
     }
 
-    const Delete=(id)=>{
-        axios.delete(config.httpUrl2+id)
-            .then((res) => {
-                console.log(res.data)
-            })
-            .catch((err) => {
-                console.log('err')
-            })
-    }
+    // const Delete=(id)=>{
+    //     axios.delete(config.httpUrl2+id)
+    //         .then((res) => {
+    //             console.log(res.data)
+    //         })
+    //         .catch((err) => {
+    //             console.log('err')
+    //         })
+    // }
 
     const headen = () => {
-        axios.get( config.httpUrl1 )
+        axios.get( config.httpUrlpro1 )
             .then((res) => {
-                console.log(res.data)
                 setAbs(
-                    res.data.type_list
+                    res.data
                 )
             })
             .catch((err) => {
                 console.log('err')
             })
-        // console.log(abs)
     }
 
     const tableData = () => {
@@ -87,27 +97,30 @@ export default function Inputs(props) {
             for (let i = 0; i < tableJson.length; i++) {
                 tabData.push(
                     [
-                        tableJson[i].type_id,
+                        i+1,
+                        // tableJson[i].commodity_id,
+                        tableJson[i].commodity_name,
+                        tableJson[i].quantity_in_stock,
                         tableJson[i].type,
-                        // tableJson[i].data_type,
-                        // tableJson[i].spec_remark,
-                        change(tableJson[i].type_id)
+                        tableJson[i].remark,
+                        change(tableJson[i],tableJson[i].commodity_id)
                         // <SearchTwoToneIcon color="secondary" onClick={()=>{setMerchantOneItem(tableJson[i]);setOpen(true);setDialogTitle("查看公私钥")}} className={classes.pointer} titleAccess="查看公钥"/>
                     ]
                 )
             }
         } else {
             tabData.push([
-                tableJson.spec_id,
-                tableJson.spec_name,
-                tableJson.data_type,
-                tableJson.spec_remark,
+                tableJson.commodity_name,
+                tableJson.quantity_in_stock,
+                tableJson.type,
+                tableJson.remark,
             ])
         }
         return tabData
     }
     function dialogOpen(){
-         setOpen(false)
+        setOpen(false);
+        window.history.go(0);
     }
 
 
@@ -137,6 +150,8 @@ export default function Inputs(props) {
                             : (<Newpage
                                 // setMerchant={(item)=>{setMerchantOneItem(item)}} //传递当前选择的一条商户信息
                                 // query={merchantOneItem}
+                                query={pro}
+                                proId={proId}
                                 title={title}
                             />)
                         // 对话框显示新增修改入口
@@ -169,7 +184,14 @@ export default function Inputs(props) {
                         }}
                         fullWidth={true}
                         inputProps={{ 'aria-label': 'naked' }}
+                        // value={this.state.value}
+                        // onChange={(e) => {
+                        //     this.setState({
+                        //         value: e.target.value.toUpperCase(),
+                        //     });
+                        // }}
                     />
+                    {/*<button onClick={()=>{headen()}}>查询</button>*/}
                 </form>
             </div>
             <div style={{position:'absolute',top:'90px', right:'30px'}}>
@@ -178,7 +200,7 @@ export default function Inputs(props) {
                 </div>
             </div>
             <Table
-                tableHead={['序号','类型','操作']}
+                tableHead={['序号','商品名称','库存数量','类型','备注','操作']}
                 tableData={tableData()}
             />
         </div>
