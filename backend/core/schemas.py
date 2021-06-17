@@ -83,3 +83,11 @@ class Picture(BaseModel):
     class Config:
         orm_mode = True
 
+
+# 所有商品
+class AllCommodity(BaseModel):
+    commodity_id: int
+    commodity_name: str = Field(..., description="商品名称")
+    quantity_in_stock: int = Field(..., description="库存数量")
+    remark: str = Field(..., description="商品备注")
+

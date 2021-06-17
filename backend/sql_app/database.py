@@ -14,8 +14,8 @@ database_app = FastAPI()
 
 pymysql.install_as_MySQLdb()
 SQLALCHEMY_DATABASE_URL =\
-    "mysql+pymysql://root:root@192.168.230.129:3306/inventory_service"
-    # "mysql+pymysql://root:password@tzw160702.work:3307/inventory_service"
+    "mysql+pymysql://root:password@tzw160702.work:3307/inventory_service"
+    # "mysql+pymysql://root:root@192.168.230.129:3306/inventory_service"
 
 
 # 初始化数据库
@@ -28,7 +28,7 @@ database_session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 session = database_session()
 
 # 数据库中生成表 (如果表已经存在，则不会创建)
-# Base.metadata.create_all(engine)
+Base.metadata.create_all(engine)
 
 # 删除所有表 (数据库更改、调试)
 # Base.metadata.drop_all(engine)

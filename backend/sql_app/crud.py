@@ -1,13 +1,16 @@
 #!/usr/bin/python3
 
 import os
+import sys
+sys.path.append("../")
+
 import shutil
 from pathlib import Path
 from core import schemas
 from sql_app.models import *
 from typing import List, Any
-from sqlalchemy.orm import Session
 from sqlalchemy.sql import and_
+from sqlalchemy.orm import Session
 from tempfile import NamedTemporaryFile
 from fastapi import File, HTTPException
 
@@ -302,6 +305,26 @@ def db_modify_commodity(modify_commodity: schemas.ModifyCommodity, db: Session):
     if result is None:
         raise HTTPException(status_code=404, detail="规格id错误或id不存在")
     else:
+        # 有单个值或者多个值,直接对原有数据删除重新关联
+        db.query(CommodityType).filter(
+            CommodityType.commodity_id == modify_commodity.commodity_id).delete()
+        db.commit()
+
+        # 拿到 CommoditySpec 表和 SpecInfo 表关联的 spec_info_id 外键
+        query_id = db.query(CommoditySpec.spec_info_id).filter(
+            CommoditySpec.commodity_id == modify_commodity.commodity_id).all()
+        spec_info_id = [Id for spec_info_id in query_id for Id in spec_info_id]
+
+        # 删除 CommoditySpec 表
+        db.query(CommoditySpec).filter(
+            CommoditySpec.commodity_id == modify_commodity.commodity_id).delete()
+        # 删除 SpecIfo 表
+        for commodity_spec_info_id in spec_info_id:
+            db.query(SpecInfo). \
+                filter(SpecInfo.spec_info_id == commodity_spec_info_id).delete()
+            db.commit()
+
+        # 更新 Commodity 表
         db.query(Commodity).\
             filter(Commodity.commodity_id == modify_commodity.commodity_id).\
             update({
@@ -310,10 +333,7 @@ def db_modify_commodity(modify_commodity: schemas.ModifyCommodity, db: Session):
                 Commodity.remark: modify_commodity.remark
             })
 
-        # 有单个值或者多个值,直接对原有数据删除重新关联
-        db.query(CommodityType).filter(
-            CommodityType.commodity_id == modify_commodity.commodity_id).delete()
-        db.commit()
+        # 更新 CommodityType 表
         for typeid in modify_commodity.type:
             add_comm_type = CommodityType(
                 commodity_id=modify_commodity.commodity_id,
@@ -321,19 +341,29 @@ def db_modify_commodity(modify_commodity: schemas.ModifyCommodity, db: Session):
             db.add(add_comm_type)
             db.commit()
 
-        print(modify_commodity.spec)
-        # 修改 SpecInfo 表字段的值
-        query_id = db.query(CommoditySpec.spec_info_id).filter(
-            CommoditySpec.commodity_id == modify_commodity.commodity_id).all()
-        spec_info_id =[spec_info_id for Id in query_id for spec_info_id in Id]
-        for index, spec in enumerate(modify_commodity.spec):
-            db.query(SpecInfo).\
-                filter(SpecInfo.spec_info_id == spec_info_id[index]). \
-                update({SpecInfo.spec_id: spec.spec_id,
-                        SpecInfo.spec_info_val: spec.spec_info_val})
+        # 更新 SpecInfo 表
+        spec_info_id = list()
+        for spec in modify_commodity.spec:
+            add_comm_spec_info = SpecInfo(
+                spec_id=spec.spec_id,
+                spec_info_val=spec.spec_info_val
+            )
+            db.add(add_comm_spec_info)
             db.commit()
 
-        # 获取修改信息
+            # 拿到新添加的数据返回的主键ID
+            spec_info_id.append(add_comm_spec_info.spec_info_id)
+
+        # CommoditySpec 表与 SpecInfo 表关联数据
+        for sii in spec_info_id:
+            add_comm_spec = CommoditySpec(
+                commodity_id=modify_commodity.commodity_id,
+                spec_info_id=sii
+            )
+            db.add(add_comm_spec)
+            db.commit()
+
+        # -------------------获取修改信息------------------------
         # 商品表
         modify_comm = db.query(
             Commodity.commodity_id, Commodity.commodity_name,
@@ -359,6 +389,65 @@ def db_modify_commodity(modify_commodity: schemas.ModifyCommodity, db: Session):
                 "type": get_type,
                 "spec": get_spec,
                 "remark": modify_comm.remark}
+
+
+def db_modify_images(commodity_id: int, files: File, db: Session):
+    """
+    修改商品图片
+    :param commodity_id:
+    :param files:
+    :param db:
+    :return:
+    """
+    query_picture = db.query(Picture.picture_name).filter(
+        Picture.commodity_id == commodity_id).all()
+    print(query_picture)
+    # [('tmp70n0srot.jpg',), ('tmpenj2vscn.jpg',), ('tmpvkuet5lr.jpg',)]
+    if query_picture is not None:
+        for picture in query_picture:
+            path = "F:/PythonDevelpment/backend/resources/images/"
+            if os.path.exists(path+picture.picture_name):
+                os.remove(path+picture.picture_name)
+            else:
+                db.query(Picture).filter(
+                    Picture.commodity_id == commodity_id).delete()
+
+    # 文件保存的目录
+    save_dir = "resources/images"
+
+    # 判断目录是否存在
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
+
+    tmp_filename = list()
+    for file in files:
+        try:
+            suffix = Path(file.filename).suffix
+            with NamedTemporaryFile(
+                    delete=False, suffix=suffix, dir=save_dir) as tmp:
+                shutil.copyfileobj(file.file, tmp)
+                tmp_filename.append(Path(tmp.name).name)
+        finally:
+            file.close()
+    picture_id = list()
+    for one_name in tmp_filename:
+        add_comm = Picture(path="backend/images/",
+                           picture_name=one_name,
+                           commodity_id=commodity_id)
+        db.add(add_comm)
+        db.commit()
+        db.refresh(add_comm)
+        picture_id.append(add_comm.picture_id)
+    query_result = list()
+    for Id in picture_id:
+        query = db.query(
+            Picture.path,
+            Picture.picture_id,
+            Picture.picture_name).filter(Picture.picture_id == Id).\
+            filter(Picture.commodity_id == commodity_id).first()
+        query_result.append(query)
+
+    return query_result
 
 
 def db_assign_commodity(commodity_id: int, db: Session):
@@ -400,5 +489,15 @@ def db_assign_commodity(commodity_id: int, db: Session):
             "remark": local_add_comm.remark}
 
 
-# def db_modify_images(commodity_id: int, picture_id: List[int],  db: Session):
-#     return ...
+def fetchall_commodity(db: Session):
+    """
+    查询所有商品
+    :param db:
+    :return:
+    """
+    all_commodity = db.query(
+        Commodity.commodity_id, Commodity.commodity_name, Commodity.remark,
+        Commodity.quantity_in_stock).all()
+    db.commit()
+
+    return all_commodity

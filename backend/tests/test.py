@@ -38,7 +38,15 @@
 # for i in get_spec:
 #     print(i["spec_id"])
 
-li = [(59, 60)]
-ls = [{'spec_id': 3, 'spec_info_val':'喝茶'}, {'spec_id':4, 'spec_info_val':'容器'}]
-for index, val in enumerate(ls):
-    print(index, val)
+# li = [(59, 60)]
+# ls = [{'spec_id': 3, 'spec_info_val':'喝茶'}, {'spec_id':4, 'spec_info_val':'容器'}]
+# for index, val in enumerate(ls):
+#     print(index, val)
+#
+# import os
+#
+# path = "F:/PythonDevelpment/backend/sql_app/tmpenj2vscn.jpg"
+# os.remove(path)
+
+# for infile in glob.glob(os.path.join(path, 'tmp70n0srot.jpg')):
+#     os.remove(infile)

@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 from sql_app.database import session
 from fastapi import (Body,
                      Form,
-                     Query,
                      File,
                      Depends,
                      FastAPI,
@@ -120,16 +119,21 @@ async def alter_commodity(modify_commodity: schemas.ModifyCommodity,
     return crud.db_modify_commodity(modify_commodity=modify_commodity, db=db)
 
 
+# 修改商品图片
+@app.patch("/commodity_image")
+async def alter_comm_image(commodity_id: int = Form(...),
+                           files: List[UploadFile] = File(...),
+                           db: Session = Depends(get_database)):
+    return crud.db_modify_images(commodity_id=commodity_id, files=files, db=db)
+
+
 # 查询指定商品
 @app.get('/commodity/{commodity_id}')
 async def get_commodity(commodity_id: int, db: Session = Depends(get_database)):
     return crud.db_assign_commodity(commodity_id=commodity_id, db=db)
 
 
-# # 修改商品图片
-# @app.patch("/commodity_image")
-# async def alter_comm_image(
-#                             files: List[UploadFile] = File(...),
-#                             db: Session = Depends(get_database)):
-#     return modify_id
-
+# 查询所有商品
+@app.get("/commodity", response_model=List[schemas.AllCommodity])
+async def get_all_commodity(db: Session = Depends(get_database)):
+    return crud.fetchall_commodity(db=db)
