@@ -8,6 +8,7 @@ from sql_app.database import session
 from fastapi import (Body,
                      Form,
                      File,
+                     Query,
                      Depends,
                      FastAPI,
                      UploadFile,
@@ -59,7 +60,7 @@ async def alter_type(modify_type: schemas.CommType,
 
 # 删除商品
 @app.delete("/type/{type_id}")
-async def get_type(type_id: int, db: Session = Depends(get_database)):
+async def del_type(type_id: int, db: Session = Depends(get_database)):
     if type_id is None:
         raise HTTPException(status_code=404, detail="类型id错误或id不存在")
     return crud.db_del_type(type_id=type_id, db=db)
@@ -137,3 +138,16 @@ async def get_commodity(commodity_id: int, db: Session = Depends(get_database)):
 @app.get("/commodity", response_model=List[schemas.AllCommodity])
 async def get_all_commodity(db: Session = Depends(get_database)):
     return crud.fetchall_commodity(db=db)
+
+
+# 根据类型查商品
+@app.get("/type_commodity")
+async def get_type_commodity(type_id: List[int] = Query(...),
+                             db: Session = Depends(get_database)):
+    return crud.fetch_type_commodity(type_id=type_id, db=db)
+
+
+# 删除商品
+@app.delete("/commodity/{commodity_id}")
+async def del_commodity(commodity_id:int, db: Session = Depends(get_database)):
+    return crud.db_del_commodity(commodity_id=commodity_id, db=db)

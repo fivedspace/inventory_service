@@ -70,7 +70,7 @@ def db_del_type(type_id: int, db: Session):
     :param type_id:
     :return:
     """
-    all_type: List[Any] = db.query(Type.type_id, Type.type).all()
+    all_type: List[Any] = db.query(Type.type_id).all()
     all_type_id = [item[0] for item in all_type]
     if type_id in all_type_id:
         db.query(Type).filter(Type.type_id == type_id).delete()
@@ -501,3 +501,92 @@ def fetchall_commodity(db: Session):
     db.commit()
 
     return all_commodity
+
+
+def fetch_type_commodity(type_id: List, db: Session):
+    """
+    根据类型查询所有商品
+    :param type_id:
+    :param db:
+    :return:
+    """
+    commodity_id = list()
+    for Id in type_id:
+        query = db.query(Commodity.commodity_id).outerjoin(CommodityType, and_(
+            Commodity.commodity_id == CommodityType.commodity_id)).filter(
+            CommodityType.type_id == Id).all()
+        commodity_id.append(query)
+
+    one_comm = list()
+    for commodity_list in commodity_id:
+        for commodity in commodity_list:
+            for one in commodity:
+                one_comm.append(one)
+    transform = set(one_comm)
+
+    # 拿到所有查询类型的 commodity_id 进行查询
+    all_commodity_type = list()
+    local_comm_type_id = list(transform)
+    for commodity_id in local_comm_type_id:
+        # 商品表
+        all_type_comm = db.query(Commodity.commodity_id,
+                                 Commodity.commodity_name,
+                                 Commodity.quantity_in_stock,
+                                 Commodity.remark).filter(
+                            Commodity.commodity_id == commodity_id).filter(
+                            Commodity.status == 0).first()
+
+        # ---------------------------改动位置-----------------------------
+        # if all_type_comm is None:
+        #     return
+
+        # 类型表
+        get_type = db.query(CommodityType.type_id, Type.type).outerjoin(
+            Type, CommodityType.type_id == Type.type_id).filter(
+            CommodityType.commodity_id == commodity_id).all()
+
+        # 规格表
+        get_spec = db.query(
+            Spec.spec_id, Spec.spec_name, SpecInfo.spec_info_val). \
+            outerjoin(SpecInfo, and_(Spec.spec_id == SpecInfo.spec_id)). \
+            outerjoin(CommoditySpec, and_(
+                SpecInfo.spec_info_id == CommoditySpec.spec_info_id)). \
+            filter(CommoditySpec.commodity_id == commodity_id).all()
+
+        # 图片表
+        get_picture = db.query(Picture.path, Picture.picture_name).filter(
+            Picture.commodity_id == commodity_id).all()
+        query = {"commodity_id": all_type_comm.commodity_id,
+                 "commodity_name": all_type_comm.commodity_name,
+                 "quantity_in_stock": all_type_comm.quantity_in_stock,
+                 "type": get_type,
+                 "picture": get_picture,
+                 "spec": get_spec,
+                 "remark": all_type_comm.remark}
+        all_commodity_type.append(query)
+    return all_commodity_type
+
+
+def db_del_commodity(commodity_id: int, db: Session):
+    """
+    删除指定商品
+    :param commodity_id:
+    :param db:
+    :return:
+    """
+    result = db.query(Commodity).filter(
+        Commodity.commodity_id == commodity_id).first()
+
+    if result is not None:
+        db.query(Commodity).filter(
+            Commodity.commodity_id == commodity_id).update({Commodity.status: 1})
+        db.commit()
+
+        # 查询
+        query = db.query(Commodity).filter(Commodity.status == 0).\
+            filter(Commodity.commodity_id == commodity_id).first()
+        print(query)
+        if query is None:
+            return {"Message": "Success!"}
+    else:
+        return {"Message": "Type id is error."}
