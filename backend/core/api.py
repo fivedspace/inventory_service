@@ -58,11 +58,9 @@ async def alter_type(modify_type: schemas.CommType,
     return crud.db_modify_type(modify_type=modify_type, db=db)
 
 
-# 删除商品
+# 删除商品类型
 @app.delete("/type/{type_id}")
 async def del_type(type_id: int, db: Session = Depends(get_database)):
-    if type_id is None:
-        raise HTTPException(status_code=404, detail="类型id错误或id不存在")
     return crud.db_del_type(type_id=type_id, db=db)
 
 
@@ -149,5 +147,5 @@ async def get_type_commodity(type_id: List[int] = Query(...),
 
 # 删除商品
 @app.delete("/commodity/{commodity_id}")
-async def del_commodity(commodity_id:int, db: Session = Depends(get_database)):
+async def del_commodity(commodity_id: int, db: Session = Depends(get_database)):
     return crud.db_del_commodity(commodity_id=commodity_id, db=db)

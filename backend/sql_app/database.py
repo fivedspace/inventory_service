@@ -1,8 +1,5 @@
 #!/usr/bin/python3
 
-import sys
-sys.path.append('../')
-
 import pymysql
 from fastapi import FastAPI
 from sql_app.models import Base
