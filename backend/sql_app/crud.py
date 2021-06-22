@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import os
-
 import shutil
 from pathlib import Path
 from core import schemas
@@ -263,13 +262,13 @@ def db_create_picture(commodity_id: int, files: File, db: Session):
     for file in files:
         try:
             suffix = Path(file.filename).suffix
-            with NamedTemporaryFile(delete=False, suffix=suffix,
-                                    dir=save_dir) as \
-                    tmp:
+            with NamedTemporaryFile(
+                    delete=False, suffix=suffix, dir=save_dir) as tmp:
                 shutil.copyfileobj(file.file, tmp)
                 tmp_filename.append(Path(tmp.name).name)
-        finally:
-            file.close()
+        except:
+            raise
+
     picture_id = list()
     for one_name in tmp_filename:
         add_comm = Picture(path="backend/images/",
@@ -399,7 +398,7 @@ def db_modify_images(commodity_id: int, files: File, db: Session):
 
     if query_picture is not None:
         for picture in query_picture:
-            path = "F:/PythonDevelopment/backend/resources/images/"
+            path = "resources/images/"
             if os.path.exists(path + picture.picture_name):
                 os.remove(path + picture.picture_name)
             else:
@@ -418,8 +417,9 @@ def db_modify_images(commodity_id: int, files: File, db: Session):
                     delete=False, suffix=suffix, dir=save_dir) as tmp:
                 shutil.copyfileobj(file.file, tmp)
                 tmp_filename.append(Path(tmp.name).name)
-        finally:
-            file.close()
+        except:
+            raise
+
     picture_id = list()
     for one_name in tmp_filename:
         add_comm = Picture(path="backend/images/",
