@@ -14,12 +14,14 @@
     "components": "^0.1.0",
     "echarts": "^5.1.1",
     "echarts-for-react": "^3.0.1",
+    "encryptlong": "^3.1.4",
     "history": "^5.0.0",
     "perfect-scrollbar": "^1.5.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
+    "react-cookies": "^0.1.1",
     "web-vitals": "^1.1.2"
   },
   "scripts": {
@@ -47,6 +49,7 @@
     ]
   },
   "devDependencies": {
+    "js-cookie": "^2.2.1",
     "prop-types": "^15.7.2",
     "react-cookies": "^0.1.1"
   }

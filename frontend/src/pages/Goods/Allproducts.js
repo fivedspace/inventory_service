@@ -1,4 +1,4 @@
-import React,{useEffect, useState} from 'react';
+import React,{useEffect, useState,useRef} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
@@ -25,11 +25,6 @@ const useStyles = makeStyles((theme) => ({
         minWidth: 650,
     },
 }));
-
-
-
-
-
 
 export default function Inputs(props) {
     const classes = useStyles();
@@ -59,23 +54,34 @@ export default function Inputs(props) {
                 <Button
                     variant="outlined"
                     color="secondary"
-                    // onClick={()=>{Delete(id)}}
+                    onClick={()=>{Delete(id)}}
                     style={{marginLeft:'10px'}}>
                     删除
                 </Button>
             </div>
         )
     }
+    const details=()=>{
+        return(
+            <div>
+                <Button variant="outlined" color="primary">详情>></Button>
+            </div>
+        )
+    }
 
-    // const Delete=(id)=>{
-    //     axios.delete(config.httpUrl2+id)
-    //         .then((res) => {
-    //             console.log(res.data)
-    //         })
-    //         .catch((err) => {
-    //             console.log('err')
-    //         })
-    // }
+    const Delete=(id)=>{
+        axios.delete(config.httpUrlpro1+id)
+            .then((res) => {
+                console.log(res.data);
+                window.history.go(0)
+
+            })
+            .catch((err) => {
+                console.log('err')
+            })
+    }
+
+    const inputData = useRef(null);
 
     const headen = () => {
         axios.get( config.httpUrlpro1 )
@@ -101,9 +107,10 @@ export default function Inputs(props) {
                         // tableJson[i].commodity_id,
                         tableJson[i].commodity_name,
                         tableJson[i].quantity_in_stock,
-                        tableJson[i].type,
+                        // tableJson[i].type,
                         tableJson[i].remark,
-                        change(tableJson[i],tableJson[i].commodity_id)
+                        change(tableJson[i],tableJson[i].commodity_id),
+                        details()
                         // <SearchTwoToneIcon color="secondary" onClick={()=>{setMerchantOneItem(tableJson[i]);setOpen(true);setDialogTitle("查看公私钥")}} className={classes.pointer} titleAccess="查看公钥"/>
                     ]
                 )
@@ -164,7 +171,7 @@ export default function Inputs(props) {
                 </DialogActions>
             </Dialog>
             <div style={{boxSizing:'border-box',marginBottom:'50px'}}>
-                <form className={classes.root}
+                <div className={classes.root}
                       style={{
                           width:'100%',
                           padding:'2px 4px',
@@ -184,15 +191,15 @@ export default function Inputs(props) {
                         }}
                         fullWidth={true}
                         inputProps={{ 'aria-label': 'naked' }}
-                        // value={this.state.value}
-                        // onChange={(e) => {
-                        //     this.setState({
-                        //         value: e.target.value.toUpperCase(),
-                        //     });
-                        // }}
+                        onKeyDown={(data)=>{
+                            if(data.key==='Enter'){
+                                console.log(inputData.current.lastChild.value);
+                            }}}
+                        // ref={current=>{this.inputData=current}}
+                        ref={inputData}
                     />
                     {/*<button onClick={()=>{headen()}}>查询</button>*/}
-                </form>
+                </div>
             </div>
             <div style={{position:'absolute',top:'90px', right:'30px'}}>
                 <div className={classes.rightStyle}>
@@ -200,7 +207,7 @@ export default function Inputs(props) {
                 </div>
             </div>
             <Table
-                tableHead={['序号','商品名称','库存数量','类型','备注','操作']}
+                tableHead={['序号','商品名称','库存数量','备注','操作','详情']}
                 tableData={tableData()}
             />
         </div>

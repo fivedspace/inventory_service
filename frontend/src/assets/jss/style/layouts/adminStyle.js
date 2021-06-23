@@ -25,7 +25,11 @@ const appStyle = theme => ({
   content: {
     marginTop: "70px",
     padding: "30px 15px",
-    minHeight: "calc(100vh - 200px)"
+    overflow: "scroll",
+    overflowX:'hidden',
+    overflowY:'auto',
+    minHeight:"calc(100vh - 200px)",
+    maxHeight: "calc(100vh - 200px)"
   },
   container,
   map: {

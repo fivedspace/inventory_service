@@ -167,6 +167,7 @@ export default function MerchantProfile(props) {
     // 新增、修改后都会改变父组件的flag，从而更新页面数据
     //新增
     function subAdd(res_data){
+        console.log("sadfg")
         if((commodity_nameItem.error && quantity_in_stockItem.error && spec_info_valItem.error && remarkItem.error) ||
             (!commodity_nameItem.value && !quantity_in_stockItem.value && !spec_info_valItem.value && !remarkItem.value)){
             alert("请正确录入规格信息！");
@@ -194,7 +195,6 @@ export default function MerchantProfile(props) {
             (!commodity_nameItem.value && !quantity_in_stockItem.value && !spec_info_valItem.value && !remarkItem.value)){
             alert("请正确录入商品信息！");
         }else {
-            // console.log(props.TypeId)
             // axios.patch(config.httpUrlpro,{
             //     "commodity_name": commodity_nameItem.value,
             //     "quantity_in_stock": quantity_in_stockItem.value,
