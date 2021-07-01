@@ -8,26 +8,23 @@ import toSignIn from "./util/toSignIn/toSignIn";
 import config from 'config/config.json'
 
 const hist = createBrowserHistory();
-console.log("111")
-let token = window.location.pathname.substring(17,window.location.pathname.length);
+let token = window.location.pathname.substring(16,window.location.pathname.length);
 document.cookie="token=" + token + ";path=/"
 const toke = Cookie.load("token")
 // document.cookie="token=token;path=/"
 
 
-// toSignIn(document.location.href, config.callbackUrl, config.publicKey, config.singleUrl)
 
 ReactDOM.render(
     <Router history={hist} >
-        {!toke ? toSignIn(document.location.href, config.callbackUrl, config.publicKey, config.singleUrl) :
+        {/*{!toke ? toSignIn(document.location.href, config.callbackUrl, config.publicKey, config.singleUrl) :*/}
             <BrowserRouter>
-                {console.log("首页")}
             <Switch>
                 <Route path="/admin" component={Home} />
                 <Redirect from="/" to="/admin/AllEchart" />
             </Switch>
         </BrowserRouter>
-        }
+        {/*}*/}
 
     </Router>,
     document.getElementById('root')

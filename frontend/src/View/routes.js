@@ -5,7 +5,8 @@ import AssignmentIcon from '@material-ui/icons/Assignment';
 import AllEchart from "../pages/Echarts/AllEchart";
 import Allproducts from "../pages/Goods/Allproducts";
 import AllSpace from '../pages/Spce/AllSpce';
-import AllType from '../pages/Type/Alltype'
+import AllType from '../pages/Type/Alltype';
+import DetailsPage from "../pages/Goods/DetailsPage";
 import Admin from '../pages/Admin';
 
 
@@ -27,6 +28,13 @@ const dashboardRoutes = [
         component: Allproducts,
         layout: "/admin"
     },
+    // {
+    //     path: "/DetailsPage",
+    //     name: "上传图片",
+    //     icon: AssignmentIcon,
+    //     component: DetailsPage,
+    //     layout: "/admin"
+    // },
     {
         path: "/AllType",
         name: "类型管理",
@@ -40,13 +48,6 @@ const dashboardRoutes = [
         icon: AssessmentIcon,
         component: AllSpace,
         layout: "/admin",
-    },
-    {
-        path: "/Admin",
-        name: "登录",
-        icon: AssignmentIcon,
-        component: Admin,
-        layout: "/admin"
     },
     // {
     //   path: "/pageView",

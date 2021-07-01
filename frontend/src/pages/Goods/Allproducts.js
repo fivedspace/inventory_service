@@ -8,8 +8,11 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Newpage from "./Newpage";
+import DetailsPage from "./DetailsPage";
 import config from "../../config/config.json";
 import axios from "axios";
+import Home from "../../View/Home";
+import {Route} from "react-router-dom";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -30,11 +33,15 @@ export default function Inputs(props) {
     const classes = useStyles();
 
     const [open, setOpen] = React.useState(false);         //设置提示框的显示隐藏
+    const [openq, setOpenq] = React.useState(false);         //设置提示框的显示隐藏
     const [title, setTitle] = React.useState(true);        //标识 MerchantProfile组件的功能状态，true=>修改 ，false=>添加
+    const [titleq, setTitleq] = React.useState(true);        //标识 MerchantProfile组件的功能状态，true=>修改 ，false=>添加
     const [dialogTitle, setDialogTitle] = useState("查看公私钥")     //设置对话框提示内容
+    const [dialogTitleq, setDialogTitleq] = useState("查看公私钥")     //设置对话框提示内容
     const [abs, setAbs] = useState([]);
     const [proId,setProId] =useState({});
     const [pro,setPro] =useState({});
+    const [det,setDet] =useState({});
 
     useEffect(()=>{
         headen()
@@ -61,13 +68,28 @@ export default function Inputs(props) {
             </div>
         )
     }
-    const details=()=>{
-        return(
-            <div>
-                <Button variant="outlined" color="primary">详情>></Button>
-            </div>
-        )
-    }
+    // const details=(id)=>{
+    //     return(
+    //         <div>
+    //             <Button variant="outlined" color="primary" onClick={()=>{page(id)}}>添加图片</Button>
+    //         </div>
+    //     )
+    // }
+
+    // axios.post(this.url+uri, new FormData().append("",""),{headers: {'content-type': 'multipart/form-data'}})
+    // const page=(id)=>{
+    //     console.log(id)
+    //     axios.post(config.picture,
+    //         new FormData().append("commodity_id","files"),
+    //         {headers: {'content-type': 'multipart/form-data'}})
+    //         .then((res)=>{
+    //             console.log(res.data);
+    //         })
+    //         .catch((err)=>{
+    //             console.log('err')
+    //         })
+    //
+    // }
 
     const Delete=(id)=>{
         axios.delete(config.httpUrlpro1+id)
@@ -95,8 +117,33 @@ export default function Inputs(props) {
             })
     }
 
+    // const deta=(id)=>{
+    //     axios.get(config.httpUrlpro1+id)
+    //         .then((res) => {
+    //             console.log(res.data);
+    //
+    //         })
+    //         .catch((err) => {
+    //             console.log('err')
+    //         })
+    // }
+
+    const details =(id)=> {
+        return(
+            <div>
+                <Button onClick={()=>{
+                    // deta(id);
+                    setDet(id)
+                    setDialogTitleq("修改商品信息");
+                    setOpenq(true);
+                    setTitleq(false);
+                }}>详情>></Button>
+            </div>
+        )
+    }
+
     const tableData = () => {
-        console.log(abs)
+        // console.log(abs)
         const tabData = [];
         const tableJson = abs;
         if (Array.isArray(tableJson) && tableJson.length) {
@@ -109,8 +156,9 @@ export default function Inputs(props) {
                         tableJson[i].quantity_in_stock,
                         // tableJson[i].type,
                         tableJson[i].remark,
+                        // details(tableJson[i].commodity_id),
                         change(tableJson[i],tableJson[i].commodity_id),
-                        details()
+                        details(tableJson[i].commodity_id)
                         // <SearchTwoToneIcon color="secondary" onClick={()=>{setMerchantOneItem(tableJson[i]);setOpen(true);setDialogTitle("查看公私钥")}} className={classes.pointer} titleAccess="查看公钥"/>
                     ]
                 )
@@ -127,7 +175,11 @@ export default function Inputs(props) {
     }
     function dialogOpen(){
         setOpen(false);
+        setOpenq(false);
         window.history.go(0);
+    }
+    function dialogOpenq(){
+        setOpenq(false);
     }
 
 
@@ -170,6 +222,41 @@ export default function Inputs(props) {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Dialog
+                open={openq}
+                onClose={()=>{dialogOpen()}}
+                aria-labelledby="scroll-dialog-title"
+                aria-describedby="scroll-dialog-description"
+            >
+                <DialogContent dividers>
+                    {
+                        dialogTitleq === "查看公私钥"
+                            ? (<div>
+                                <h6>商品名称:</h6>
+                                <DialogContentText>
+                                </DialogContentText>
+                                <h6>库存数量:</h6>
+                                <DialogContentText>
+                                </DialogContentText>
+                                <h6>备注:</h6>
+                                <DialogContentText>
+                                </DialogContentText>
+                            </div>)
+                            : (<DetailsPage
+                                // setMerchant={(item)=>{setMerchantOneItem(item)}} //传递当前选择的一条商户信息
+                                // query={merchantOneItem}
+                                query={det}
+                                title={titleq}
+                            />)
+                        // 对话框显示新增修改入口
+                    }
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={()=>dialogOpenq()} color="primary" variant="outlined">
+                        关闭
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <div style={{boxSizing:'border-box',marginBottom:'50px'}}>
                 <div className={classes.root}
                       style={{
@@ -194,11 +281,17 @@ export default function Inputs(props) {
                         onKeyDown={(data)=>{
                             if(data.key==='Enter'){
                                 console.log(inputData.current.lastChild.value);
+                                const typeid = inputData.current.lastChild.value;
+                                axios.get(config.httpUrlType,[{"type_id": typeid}],{headers:{}})
+                                    .then((res)=>{
+                                        console.log(res)
+                                    })
+                                    .catch((err)=>{
+                                        console.log('err')
+                                    })
                             }}}
-                        // ref={current=>{this.inputData=current}}
                         ref={inputData}
                     />
-                    {/*<button onClick={()=>{headen()}}>查询</button>*/}
                 </div>
             </div>
             <div style={{position:'absolute',top:'90px', right:'30px'}}>

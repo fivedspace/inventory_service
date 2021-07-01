@@ -90,8 +90,8 @@ export default function Inputs(props) {
             for (let i = 0; i < tableJson.length; i++) {
                 tabData.push(
                     [
-                        // tableJson[i].type_id,
                         i+1,
+                        tableJson[i].type_id,
                         tableJson[i].type,
                         // tableJson[i].data_type,
                         // tableJson[i].spec_remark,
@@ -184,7 +184,7 @@ export default function Inputs(props) {
                 </div>
             </div>
             <Table
-                tableHead={['序号','类型','操作']}
+                tableHead={['序号','类型ID','类型','操作']}
                 tableData={tableData()}
             />
         </div>
