@@ -24,7 +24,7 @@ export default function Footer(props) {
                         </ListItem>
                         <ListItem className={classes.inlineBlock}>
                             <a href="/admin/Allproducts" className={classes.block}>
-                                全部商品
+                                商品管理
                             </a>
                         </ListItem>
                         <ListItem className={classes.inlineBlock}>
@@ -32,11 +32,11 @@ export default function Footer(props) {
                                 类型管理
                             </a>
                         </ListItem>
-                        <ListItem className={classes.inlineBlock}>
-                            <a href="/admin/AllSpace" className={classes.block}>
-                                全部规格
-                            </a>
-                        </ListItem>
+                        {/*<ListItem className={classes.inlineBlock}>*/}
+                        {/*    <a href="/admin/AllSpace" className={classes.block}>*/}
+                        {/*        全部规格*/}
+                        {/*    </a>*/}
+                        {/*</ListItem>*/}
                     </List>
                 </div>
             </div>

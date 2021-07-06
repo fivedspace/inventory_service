@@ -1,131 +1,94 @@
+
 import React from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import {Component} from 'react'
+// import './App.css';
 
-function Copyright() {
-    return (
-        <Typography variant="body2" color="textSecondary" align="center">
-            {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        height: '100vh',
-    },
-    image: {
-        backgroundImage: 'url(https://source.unsplash.com/random)',
-        backgroundRepeat: 'no-repeat',
-        backgroundColor:
-            theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-    },
-    paper: {
-        margin: theme.spacing(8, 4),
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-    },
-    avatar: {
-        margin: theme.spacing(1),
-        backgroundColor: theme.palette.secondary.main,
-    },
-    form: {
-        width: '100%', // Fix IE 11 issue.
-        marginTop: theme.spacing(1),
-    },
-    submit: {
-        margin: theme.spacing(3, 0, 2),
-    },
-}));
-
-export default function SignInSide() {
-    const classes = useStyles();
-
-    return (
-        <Grid container component="main" className={classes.root}>
-            <CssBaseline />
-            <Grid item xs={false} sm={4} md={7} className={classes.image} />
-            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-                <div className={classes.paper}>
-                    <Avatar className={classes.avatar}>
-                        <LockOutlinedIcon />
-                    </Avatar>
-                    <Typography component="h1" variant="h5">
-                        登 录
-                    </Typography>
-                    <form className={classes.form} noValidate>
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="email"
-                            label="请输入用户名或邮箱"
-                            name="email"
-                            autoComplete="email"
-                            autoFocus
-                        />
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            label="Password"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                        />
-                        <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
-                            label="Remember me"
-                        />
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            className={classes.submit}
-                        >
-                            Sign In
-                        </Button>
-                        <Grid container>
-                            <Grid item xs>
-                                <Link href="#" variant="body2">
-                                    Forgot password?
-                                </Link>
-                            </Grid>
-                            <Grid item>
-                                <Link href="#" variant="body2">
-                                    {"Don't have an account? Sign Up"}
-                                </Link>
-                            </Grid>
-                        </Grid>
-                        <Box mt={5}>
-                            <Copyright />
-                        </Box>
-                    </form>
+class Admin extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            searchValue:'',
+            ifConfirm:true,
+            firmsList:[]
+        };
+    }
+    //中文输入开始
+    onCompositionStart = () => {
+        this.setState({ifConfirm:false})
+    }
+    //中文输入结束
+    onCompositionEnd = () => {
+        this.setState({ifConfirm:true})
+    }
+    handleChange = event => {
+        //在setState函数中绑定一个回调函数
+        this.setState(
+            {searchValue:event.target.value},
+            () => {
+                if (this.state.searchValue === ''){
+                    //输入为空时
+                    this.setState({firmsList:[]})
+                }
+                clearTimeout(this.timer);
+                this.timer = setTimeout(async () => {
+                    //中文输入结束并且输入不为空
+                    if(this.state.ifConfirm && this.state.searchValue){
+                        //调取后端接口，返回数据库结果
+                        fetch('http://localhost:3000/match?wexp='+(this.state.searchValue),{
+                            mode:'no-cors'
+                        })
+                            .then(response => response.json())
+                            .then(myJson => this.setState({firmsList:myJson}))
+                    }
+                },300)
+            }
+        );
+    }
+    //input输入框点击事件
+    inputClick = () =>{
+        let adepsp = document.getElementById("adepsp");
+        let adepmatch = document.getElementById("adepmatch");
+        adepsp.style.border = "0.1rem solid #32CD32";
+        adepmatch.style.display = "block";
+    }
+    //匹配列鼠标点击事件
+    onClick = event =>{
+        //点击<li>，将<li>内容赋值给input;
+        this.setState({searchValue:event.target.innerHTML});
+        let adepmatch = document.getElementById("adepmatch");
+        event.target.style.display = "none";
+        adepmatch.style.display="none";
+    }
+    //渲染节点
+    render(){
+        return (
+            <React.Fragment>
+                <div>
+		        <span className="adepstyle" id="adepsp">
+		            <span className="adeplable">
+		        	    起飞机场
+		        	</span>
+		        	<span className="adepspan">
+		        	    <input className="adepinput" id="adep"
+                               type="text" name="adep" value={this.state.searchValue}
+                               onClick={this.inputClick}
+                            // onBlur={this.onBlur}
+                               onChange={this.handleChange} />
+		        	</span>
+		        </span>
                 </div>
-            </Grid>
-        </Grid>
-    );
+                <div className="match" id="adepmatch" >
+                    <ul>
+                        {this.state.firmsList.map((adep) =>
+                            <li key={adep.id} onClick={this.onClick}>
+                                {adep.wexp + adep.cfullname}
+                            </li>
+                        )}
+                    </ul>
+                </div>
+            </React.Fragment>
+        );
+    }
 }
+
+export default Admin;

@@ -1,5 +1,4 @@
 import axios from 'axios';
-import {base_url} from "../base/base";
 
 
 /**
@@ -13,6 +12,7 @@ export default function request(options){
     /*
     *  Promise 异步操作对象
     * */
+   const base_url = "http://192.168.0.124:8000";
     return new Promise((resolve, reject) => {
         axios({
             url: base_url+options.url,

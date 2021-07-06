@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -11,8 +11,9 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Snackbar from "../../components/Snackbar/Snackbar";
-import {AddAlert} from "@material-ui/icons";
+import { AddAlert } from "@material-ui/icons";
 import request from "../../networks/requist";
+import axios from "axios";
 
 function Copyright() {
     return (
@@ -53,80 +54,114 @@ export default function SignUp() {
     const [message, setMessage] = useState("");
     const [dialogOpen, setDialogOpen] = useState(false);
 
-    const [uTitle,setUTitle] = useState({id:"emailOrName",label:"邮箱地址/用户名",name:"emailOrName",value:"",helperText:""})
-    const [password,setPassword] = useState({id:"password",label:"密码",name:"password",value:"",helperText:""})
-    const [phone,setPhone] = useState({id:"phone",label:"联系方式",name:"phone",value:"",helperText:""})
+    const [uTitle, setUTitle] = useState({ id: "emailOrName", label: "邮箱地址/用户名", name: "emailOrName", value: "", helperText: "" })
+    const [password, setPassword] = useState({ id: "password", label: "密码", name: "password", value: "", helperText: "" })
+    const [code, setCode] = useState({ id: "code", label: "请输入验证码", name: "code", value: "", helperText: "" })
 
-    const flagSnackbar = (messages) =>{
-        if(!dialogOpen){
+    const flagSnackbar = (messages) => {
+        if (!dialogOpen) {
             setDialogOpen(true)
             setMessage(messages)
-            setTimeout(function() {
+            setTimeout(function () {
                 setDialogOpen(false);
                 setMessage("")
             }, 6000);
         }
     }
 
-    function InputChange(e,name){
-        switch (name){
+    function InputChange(e, name) {
+        // console.log(e.target.value)
+        switch (name) {
 
             case "emailOrName":
                 const email = /^([a-zA-Z]|[0-9])(\w|-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
-                if(email.test(e.target.value) || e.target.value.trim()){
-                    setUTitle({id:"emailOrName",label:"邮箱地址/用户名",name:"emailOrName",value:""+e.target.value,helperText:""})
+                if (email.test(e.target.value) || e.target.value.trim()) {
+                    setUTitle({ id: "emailOrName", label: "邮箱地址/用户名", name: "emailOrName", value: "" + e.target.value, helperText: "" })
                     break;
                 }
-                setUTitle({id:"emailOrName",label:"邮箱地址/用户名",name:"emailOrName",value:""+e.target.value,helperText:"请正确输入邮箱/用户名"})
+                setUTitle({ id: "emailOrName", label: "邮箱地址/用户名", name: "emailOrName", value: "" + e.target.value, helperText: "请正确输入邮箱/用户名" })
                 break;
             case "password":
-                if(e.target.value.trim()){
-                    setPassword({id:"password",label:"密码",name:"password",value:""+e.target.value,helperText:""})
+                if (e.target.value.trim()) {
+                    setPassword({ id: "password", label: "密码", name: "password", value: "" + e.target.value, helperText: "" })
                     break;
                 }
-                setPassword({id:"password",label:"密码",name:"password",value:""+e.target.value,helperText:"密码不能为空格"})
+                setPassword({ id: "password", label: "密码", name: "password", value: "" + e.target.value, helperText: "密码不能为空格" })
                 break;
-            case "phone":
-                const phone = /^1(3[0-9]|4[5,7]|5[0,1,2,3,5,6,7,8,9]|6[2,5,6,7]|7[0,1,7,8]|8[0-9]|9[1,8,9])\d{8}$/;
-                if(phone.test(e.target.value)){
-                    setPhone({id:"phone",label:"联系方式",name:"phone",value:""+e.target.value,helperText:""})
+            case "code":
+                // const code = /^1(3[0-9]|4[5,7]|5[0,1,2,3,5,6,7,8,9]|6[2,5,6,7]|7[0,1,7,8]|8[0-9]|9[1,8,9])\d{8}$/;
+                if (e.target.value.trim()) {
+                    setCode({ id: "code", label: "请输入验证码", name: "code", value: "" + e.target.value, helperText: "" })
                     break;
                 }
-                setPhone({id:"phone",label:"联系方式",name:"phone",value:""+e.target.value,helperText:"请正确录入手机信息!"})
+                setCode({ id: "code", label: "请输入验证码", name: "code", value: "" + e.target.value, helperText: "验证码不能为空" })
                 break;
             default:
                 break;
         }
     }
 
-    function submitRegister(){
+    function submitRegister() {
         console.log("注册 ？？？")
 
-        if((uTitle.value && !uTitle.helperText) &&
+        if ((uTitle.value && !uTitle.helperText) &&
             (password.value && !password.helperText) &&
-            (phone.value && !phone.helperText)) {
+            (code.value && !code.helperText)) {
 
             request({
-                url:"/Admin/auth/register",
-                method:"POST",
-                data:{
-                    "admin_name": uTitle.value,
-                    "password": password.value,
-                    "is_lock": 0,
-                    "phone": phone.value,
-                    "nickname": "test"
+                url: "/auth/register",
+                method: "POST",
+                data: {
+                    "number": uTitle.value,
+                    "pwd": password.value,
+                    "verify_code": code.value
+                    // "admin_name": uTitle.value,
+                    // "password": password.value,
+                    // "is_lock": 0,
+                    // "code": code.value,
+                    // "nickname": "test"
                 }
             })
-                .then((res)=>{
+                .then((res) => {
                     console.log(res.data)
                     flagSnackbar("注册成功")
                 })
                 .catch(
                     flagSnackbar("注册失败")
                 )
-        }else {
+        } else {
             flagSnackbar("请输入信息！")
         }
+
+    }
+
+    function AuthCode() {
+        console.log("wergh")
+        // axios.post("http://192.168.0.124:8000/send_code?number=" + uTitle.value)
+        //     .then((res) => {
+        //         console.log(res.data)
+        //         flagSnackbar("获取验证码成功")
+        //     })
+        //     .catch((err) => {
+        //         console.log('err')
+        //         flagSnackbar("获取验证码失败")
+        //     })
+
+        request({
+            url: "/send_code",
+            method: 'POST',
+            params: {
+                "number":uTitle.value
+            }
+        })
+            .then((res) => {
+                console.log(res.data)
+                flagSnackbar("获取验证码成功")
+            })
+            .catch((err) => {
+                console.log('err')
+                flagSnackbar("获取验证码失败")
+            })
 
     }
 
@@ -153,7 +188,7 @@ export default function SignUp() {
                 <Typography component="h1" variant="h5">
                     注册
                 </Typography>
-                {/*<form className={classes.form} noValidate>*/}
+                {/* <form className={classes.form} noValidate> */}
                 <Grid className={classes.form} >
                     <Grid container spacing={2}>
 
@@ -191,8 +226,8 @@ export default function SignUp() {
                                 helperText={uTitle.helperText}
                                 id={uTitle.id}
                                 value={uTitle.value}
-                                error={uTitle.helperText ? true :false}
-                                onChange={(e)=>{InputChange(e,uTitle.name)}}
+                                error={uTitle.helperText ? true : false}
+                                onChange={(e) => { InputChange(e, uTitle.name) }}
                                 autoComplete="email"
                             />
                         </Grid>
@@ -207,8 +242,8 @@ export default function SignUp() {
                                 helperText={password.helperText}
                                 id={password.id}
                                 value={password.value}
-                                error={password.helperText ? true :false}
-                                onChange={(e)=>{InputChange(e,password.name)}}
+                                error={password.helperText ? true : false}
+                                onChange={(e) => { InputChange(e, password.name) }}
                                 type="password"
                                 autoComplete="current-password"
                             />
@@ -219,24 +254,24 @@ export default function SignUp() {
                                 variant="outlined"
                                 required
                                 fullWidth
-                                name={phone.name}
-                                label={phone.label}
-                                helperText={phone.helperText}
-                                id={phone.id}
-                                value={phone.value}
-                                error={phone.helperText ? true :false}
-                                onChange={(e)=>{InputChange(e,phone.name)}}
-                                type="phone"
-                                autoComplete="current-phone"
+                                name={code.name}
+                                label={code.label}
+                                helperText={code.helperText}
+                                id={code.id}
+                                value={code.value}
+                                error={code.helperText ? true : false}
+                                onChange={(e) => { InputChange(e, code.name) }}
+                                type="code"
+                                autoComplete="current-code"
                             />
                         </Grid>
 
-                        {/*<Grid item xs={12}>
+                        {/* <Grid item xs={12}>
                             <FormControlLabel
                                 control={<Checkbox value="allowExtraEmails" color="primary" />}
                                 label="I want to receive inspiration, marketing promotions and updates via email."
                             />
-                        </Grid>*/}
+                        </Grid> */}
 
                     </Grid>
                     <Button
@@ -245,13 +280,24 @@ export default function SignUp() {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        onClick={()=>{submitRegister()}}
+                        onClick={() => { AuthCode() }}
+                    >
+                        获取验证码
+                    </Button>
+                    
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        onClick={() => { submitRegister() }}
                     >
                         注册
                     </Button>
                     <Grid container justify="flex-end">
                         <Grid item>
-                            <Link href="/locker-admin/login" variant="body2">
+                            <Link href="/admin/login" variant="body2">
                                 已有账号? 去登录
                             </Link>
                         </Grid>

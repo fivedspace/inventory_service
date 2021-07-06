@@ -48,7 +48,12 @@ export default function Inputs(props) {
     const change=(item,id)=>{
         return (
             <div>
-                <Button variant="outlined" color="primary" onClick={()=>{setDialogTitle("修改商户信息");setOpen(true);setTitle(true);setType_id(id);setZxc(item)}}>
+                <Button variant="outlined" color="primary"
+                        onClick={()=>{setDialogTitle("修改商户信息");
+                            setOpen(true);
+                            setTitle(true);
+                            setType_id(id);
+                            setZxc(item)}}>
                     修改
                 </Button>
                 <Button variant="outlined" color="secondary" onClick={()=>{Delete(id)}} style={{marginLeft:'10px'}}>
@@ -71,7 +76,7 @@ export default function Inputs(props) {
     const headen = () => {
         axios.get( config.httpUrl1 )
             .then((res) => {
-                console.log(res.data)
+                // console.log(res.data)
                 setAbs(
                     res.data.type_list
                 )
@@ -83,7 +88,7 @@ export default function Inputs(props) {
     }
 
     const tableData = () => {
-        console.log(abs)
+        // console.log(abs)
         const tabData = [];
         const tableJson = abs;
         if (Array.isArray(tableJson) && tableJson.length) {
@@ -154,31 +159,31 @@ export default function Inputs(props) {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <div style={{boxSizing:'border-box',marginBottom:'50px'}}>
-                <form className={classes.root}
-                      style={{
-                          width:'100%',
-                          padding:'2px 4px',
-                          display:'flex',
-                          backgroundColor:'#ab47bc',
-                      }}
-                      noValidate autoComplete="off"
-                >
-                    <InputBase
-                        className={classes.margin}
-                        placeholder="全部商品"
-                        style={{
-                            // flex:'1',
-                            backgroundColor:'white',
-                            padding:'6px 0 7px 6px',
-                            border:'1px solid black'
-                        }}
-                        fullWidth={true}
-                        inputProps={{ 'aria-label': 'naked' }}
-                    />
-                </form>
-            </div>
-            <div style={{position:'absolute',top:'90px', right:'30px'}}>
+            {/*<div style={{boxSizing:'border-box',marginBottom:'50px'}}>*/}
+                {/*<form className={classes.root}*/}
+                {/*      style={{*/}
+                {/*          width:'100%',*/}
+                {/*          padding:'2px 4px',*/}
+                {/*          display:'flex',*/}
+                {/*          backgroundColor:'#ab47bc',*/}
+                {/*      }}*/}
+                {/*      noValidate autoComplete="off"*/}
+                {/*>*/}
+                {/*    <InputBase*/}
+                {/*        className={classes.margin}*/}
+                {/*        placeholder="全部商品"*/}
+                {/*        style={{*/}
+                {/*            // flex:'1',*/}
+                {/*            backgroundColor:'white',*/}
+                {/*            padding:'6px 0 7px 6px',*/}
+                {/*            border:'1px solid black'*/}
+                {/*        }}*/}
+                {/*        fullWidth={true}*/}
+                {/*        inputProps={{ 'aria-label': 'naked' }}*/}
+                {/*    />*/}
+                {/*</form>*/}
+            {/*</div>*/}
+            <div style={{position:'absolute',top:'-30px', right:'30px'}}>
                 <div className={classes.rightStyle}>
                     <Button variant="outlined" color="primary" onClick={()=>{setDialogTitle("添加商品信息");setOpen(true);setTitle(false);}}>添加</Button>
                 </div>

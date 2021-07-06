@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState,useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Snackbar from "../../components/Snackbar/Snackbar";
-import {AddAlert} from "@material-ui/icons";
+import { AddAlert } from "@material-ui/icons";
 import request from "../../networks/requist";
 
 function Copyright() {
@@ -45,7 +45,14 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(1),
     },
     submit: {
-        margin: theme.spacing(3, 0, 2),
+        margin: theme.spacing(2, 0, 2),
+    },
+    submit1: {
+        margin: theme.spacing(2, 5, 2),
+    },
+    submit2: {
+        height:'20px',
+        marginTop:"25px"
     },
 }));
 
@@ -55,82 +62,118 @@ export default function SignIn() {
     const [message, setMessage] = useState("");
     const [dialogOpen, setDialogOpen] = useState(false);
 
-    const [uTitle,setUTitle] = useState({id:"username",label:"邮箱地址/用户名",name:"username",value:"",helperText:""})
-    const [password,setPassword] = useState({id:"password",label:"密码",name:"password",value:"",helperText:""})
+    const [uTitle, setUTitle] = useState({ id: "username", label: "邮箱地址/用户名", name: "username", value: "", helperText: "" })
+    const [password, setPassword] = useState({ id: "password", label: "密码", name: "password", value: "", helperText: "" })
+    const [code, setCode] = useState({ id: "code", label: "验证码", name: "code", value: "", helperText: "" })
+    const [auth_code, setAuth_code] = useState([]);
+
+    
 
     const data = {
         // grant_type:"",
-        username:uTitle.value,
-        password:password.value,
+        username: uTitle.value,
+        password: password.value,
         // scope:"",
         // client_id:"",
         // client_secret:""
     }
 
-    const flagSnackbar = (messages) =>{
-        if(!dialogOpen){
+    const flagSnackbar = (messages) => {
+        if (!dialogOpen) {
             setDialogOpen(true)
             setMessage(messages)
-            setTimeout(function() {
+            setTimeout(function () {
                 setDialogOpen(false);
                 setMessage("")
             }, 6000);
         }
     }
 
-    function InputChange(e,name){
-        switch (name){
+    function InputChange(e, name) {
+        switch (name) {
 
             case "username":
                 const email = /^([a-zA-Z]|[0-9])(\w|-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
-                if(email.test(e.target.value) || e.target.value.trim()){
-                    setUTitle({id:"username",label:"邮箱地址/用户名",name:"username",value:""+e.target.value,helperText:""})
+                if (email.test(e.target.value) || e.target.value.trim()) {
+                    setUTitle({ id: "username", label: "邮箱地址/用户名", name: "username", value: "" + e.target.value, helperText: "" })
                     break;
                 }
-                setUTitle({id:"username",label:"邮箱地址/用户名",name:"username",value:""+e.target.value,helperText:"请正确输入邮箱/用户名"})
+                setUTitle({ id: "username", label: "邮箱地址/用户名", name: "username", value: "" + e.target.value, helperText: "请正确输入邮箱/用户名" })
                 break;
             case "password":
-                if(e.target.value.trim()){
-                    setPassword({id:"password",label:"密码",name:"password",value:""+e.target.value,helperText:""})
+                if (e.target.value.trim()) {
+                    setPassword({ id: "password", label: "密码", name: "password", value: "" + e.target.value, helperText: "" })
                     break;
                 }
-                setPassword({id:"password",label:"密码",name:"password",value:""+e.target.value,helperText:"密码不能为空格"})
+                setPassword({ id: "password", label: "密码", name: "password", value: "" + e.target.value, helperText: "密码不能为空格" })
+                break;
+            case "code":
+                if (e.target.value.trim()) {
+                    setCode({ id: "code", label: "请输入验证码", name: "code", value: "" + e.target.value, helperText: "" })
+                    break;
+                }
+                setCode({ id: "code", label: "请输入验证码", name: "code", value: "" + e.target.value, helperText: "验证码不能为空" })
                 break;
             default:
                 break;
         }
     }
 
-    function submitLogin(){
+    function submitLogin() {
         // console.log("登录 ？？？？")
-        if((uTitle.value && !uTitle.helperText) && (password.value && !password.helperText)){
+        if ((uTitle.value && !uTitle.helperText) && (password.value && !password.helperText)) {
 
             console.log("调用登录接口")
-            console.log(uTitle.value+password.value)
+            console.log(code.value)
 
-            const formData = new FormData();
-            formData.append("username",data.username)
-            formData.append("password",data.password)
+            // const formData = new FormData();
+            // formData.append("username", data.username)
+            // formData.append("password", data.password)
+
 
             // const token = request({
             request({
-                url: "/Admin/auth/login",
+                url: "/auth/login",
                 method: "POST",
-                data: formData,
+                data: {
+                    "number": data.username,
+                    "pwd": password.value,
+                    "client_code": code.value,
+                    "callback_url": "string"
+                },
                 // data: {username: "sun",password:"000000"},
-                headers: {"Content-Type": "application/x-www-form-urlencoded"}
-            }).then( r =>{
-                if(r.access_token){
-                    // document.cookie = "token="+r.access_token+";path=/;";
-                    // window.location.reload();
-                }else {
+                headers: { "Content-Type": "application/x-www-form-urlencoded" }
+            }).then(r => {
+                console.log(r)
+                if (r.token) {
+                    document.cookie = "token="+r.token+";path=/;";
+                    window.location.reload();
+                } else {
                     flagSnackbar("登录失败");
                 }
             })
-        }else {
+        } else {
             flagSnackbar("请输入账号信息！");
         }
     }
+
+    function AuthCode() {
+        request({
+            url: "/client_code",
+            method: 'POST',
+        })
+            .then((res) => {
+                console.log(res.client_code)
+                setAuth_code(res.client_code)
+                flagSnackbar("获取验证码成功")
+            })
+            .catch((err) => {
+                console.log('err')
+                flagSnackbar("获取验证码失败")
+            })
+
+    }
+
 
     return (
         <Container component="main" maxWidth="xs">
@@ -157,9 +200,9 @@ export default function SignIn() {
                 </Typography>
                 {/*<form className={classes.form} noValidate>*/}
                 <form className={classes.form}
-                      // action={"http://192.168.0.113:7878/Admin/auth/login/"}
-                      // method={"POST"}
-                      // onSubmit={submitLogin()}
+                // action={"http://192.168.0.113:7878/Admin/auth/login/"}
+                // method={"POST"}
+                // onSubmit={submitLogin()}
                 >
                     <TextField
                         variant="outlined"
@@ -173,7 +216,7 @@ export default function SignIn() {
                         helperText={uTitle.helperText}
                         error={uTitle.helperText ? true : false}
                         autoComplete="email"
-                        onChange={(e)=>{InputChange(e,uTitle.name)}}
+                        onChange={(e) => { InputChange(e, uTitle.name) }}
                         autoFocus
                     />
                     <TextField
@@ -189,8 +232,42 @@ export default function SignIn() {
                         error={password.helperText ? true : false}
                         type="password"
                         autoComplete="current-password"
-                        onChange={(e)=>{InputChange(e,password.name)}}
+                        onChange={(e) => { InputChange(e, password.name) }}
                     />
+                    <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        name={code.name}
+                        label={code.label}
+                        helperText={code.helperText}
+                        id={code.id}
+                        value={code.value}
+                        error={code.helperText ? true : false}
+                        onChange={(e) => { InputChange(e, code.name) }}
+                        type="code"
+                        autoComplete="current-code"
+                    />
+
+
+                    <div style={{display:'flex'}}>
+                        <Button
+                            // type="submit"
+                            // fullWidth
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit1}
+                            onClick={() => { AuthCode() }}
+                        >
+                            获取验证码
+                    </Button>
+                        <span className={classes.submit1,classes.submit2}>
+                            验证码：{auth_code}
+                        </span>
+                    </div>
+
+
                     <FormControlLabel
                         control={<Checkbox value="remember" color="primary" />}
                         label="记住我"
@@ -201,7 +278,7 @@ export default function SignIn() {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        onClick={()=>{submitLogin()}}
+                        onClick={() => { submitLogin() }}
                     >
                         登录
                     </Button>
@@ -212,7 +289,7 @@ export default function SignIn() {
                             </Link>
                         </Grid>
                         <Grid item>
-                            <Link href="/locker-admin/register" variant="body2">
+                            <Link href="/admin/register" variant="body2">
                                 {"还没有账号? 去注册"}
                             </Link>
                         </Grid>

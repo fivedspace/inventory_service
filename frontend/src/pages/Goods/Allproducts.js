@@ -68,29 +68,6 @@ export default function Inputs(props) {
             </div>
         )
     }
-    // const details=(id)=>{
-    //     return(
-    //         <div>
-    //             <Button variant="outlined" color="primary" onClick={()=>{page(id)}}>添加图片</Button>
-    //         </div>
-    //     )
-    // }
-
-    // axios.post(this.url+uri, new FormData().append("",""),{headers: {'content-type': 'multipart/form-data'}})
-    // const page=(id)=>{
-    //     console.log(id)
-    //     axios.post(config.picture,
-    //         new FormData().append("commodity_id","files"),
-    //         {headers: {'content-type': 'multipart/form-data'}})
-    //         .then((res)=>{
-    //             console.log(res.data);
-    //         })
-    //         .catch((err)=>{
-    //             console.log('err')
-    //         })
-    //
-    // }
-
     const Delete=(id)=>{
         axios.delete(config.httpUrlpro1+id)
             .then((res) => {
@@ -117,27 +94,16 @@ export default function Inputs(props) {
             })
     }
 
-    // const deta=(id)=>{
-    //     axios.get(config.httpUrlpro1+id)
-    //         .then((res) => {
-    //             console.log(res.data);
-    //
-    //         })
-    //         .catch((err) => {
-    //             console.log('err')
-    //         })
-    // }
-
     const details =(id)=> {
         return(
             <div>
-                <Button onClick={()=>{
+                <Button variant="outlined" color="inherit" onClick={()=>{
                     // deta(id);
                     setDet(id)
                     setDialogTitleq("修改商品信息");
                     setOpenq(true);
                     setTitleq(false);
-                }}>详情>></Button>
+                }}>详情</Button>
             </div>
         )
     }
@@ -183,9 +149,29 @@ export default function Inputs(props) {
     }
 
 
+    // const blurFind = ()=>{
+    //     let keyword = prompt("请输入查询关键字！")
+    //     let result = tableData.filter((item,i)=>{
+    //         if(item.includes(keyword)){
+    //             return true
+    //         }
+    //         return false
+    //     })
+    //     //实现关键词高亮
+    //     result.forEach((item,i,arr)=>{
+    //         arr[i] = arr[i].replace(new RegExp(keyword,"g"),"<span style='color:red'>"+keyword+"</span>")
+    //     })
+    //     this.setState({
+    //         arr:result,
+    //         flag:false  //更改状态
+    //     })
+    // }
+
+
 
     return (
         <div style={{position:'relative',margin:'0px 50px'}}>
+            {/*删除修改页*/}
             <Dialog
                 open={open}
                 onClose={()=>{dialogOpen()}}
@@ -222,6 +208,7 @@ export default function Inputs(props) {
                     </Button>
                 </DialogActions>
             </Dialog>
+            {/*详情页*/}
             <Dialog
                 open={openq}
                 onClose={()=>{dialogOpen()}}
@@ -258,6 +245,7 @@ export default function Inputs(props) {
                 </DialogActions>
             </Dialog>
             <div style={{boxSizing:'border-box',marginBottom:'50px'}}>
+                {/*输入框*/}
                 <div className={classes.root}
                       style={{
                           width:'100%',
@@ -269,7 +257,7 @@ export default function Inputs(props) {
                 >
                     <InputBase
                         className={classes.margin}
-                        placeholder="全部商品"
+                        placeholder="请输入类型管理中的类型ID查询"
                         style={{
                             // flex:'1',
                             backgroundColor:'white',
@@ -282,9 +270,10 @@ export default function Inputs(props) {
                             if(data.key==='Enter'){
                                 console.log(inputData.current.lastChild.value);
                                 const typeid = inputData.current.lastChild.value;
-                                axios.get(config.httpUrlType,[{"type_id": typeid}],{headers:{}})
+                                axios.get(config.httpUrlType+'?type_id='+typeid,{headers:{}})
                                     .then((res)=>{
                                         console.log(res)
+                                        setAbs(res.data)
                                     })
                                     .catch((err)=>{
                                         console.log('err')
@@ -294,11 +283,13 @@ export default function Inputs(props) {
                     />
                 </div>
             </div>
+            {/*添加按钮*/}
             <div style={{position:'absolute',top:'90px', right:'30px'}}>
                 <div className={classes.rightStyle}>
                     <Button variant="outlined" color="primary" onClick={()=>{setDialogTitle("添加商品信息");setOpen(true);setTitle(false);}}>添加</Button>
                 </div>
             </div>
+            {/*列表渲染*/}
             <Table
                 tableHead={['序号','商品名称','库存数量','备注','操作','详情']}
                 tableData={tableData()}

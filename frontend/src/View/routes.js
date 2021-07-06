@@ -23,32 +23,32 @@ const dashboardRoutes = [
     },
     {
         path: "/Allproducts",
-        name: "全部商品",
+        name: "商品管理",
         icon: ReorderIcon,
         component: Allproducts,
         layout: "/admin"
     },
     // {
-    //     path: "/DetailsPage",
-    //     name: "上传图片",
+    //     path: "/Admin",
+    //     name: "测试页",
     //     icon: AssignmentIcon,
-    //     component: DetailsPage,
+    //     component: Admin,
     //     layout: "/admin"
     // },
     {
         path: "/AllType",
         name: "类型管理",
-        icon: ReorderIcon,
+        icon: AssessmentIcon,
         component: AllType,
         layout: "/admin"
     },
-    {
-        path: "/AllSpace",
-        name: "全部规格",
-        icon: AssessmentIcon,
-        component: AllSpace,
-        layout: "/admin",
-    },
+    // {
+    //     path: "/AllSpace",
+    //     name: "全部规格",
+    //     icon: AssessmentIcon,
+    //     component: AllSpace,
+    //     layout: "/admin",
+    // },
     // {
     //   path: "/pageView",
     //   name: "无权限可以访问的页面",

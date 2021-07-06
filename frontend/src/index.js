@@ -6,10 +6,12 @@ import {BrowserRouter, Redirect, Route, Router, Switch} from "react-router-dom";
 import Cookie from 'react-cookies';
 import toSignIn from "./util/toSignIn/toSignIn";
 import config from 'config/config.json'
+import SignIn from "./pages/Login/login";
+import SignUp from "./pages/Login/regist"
 
 const hist = createBrowserHistory();
-let token = window.location.pathname.substring(16,window.location.pathname.length);
-document.cookie="token=" + token + ";path=/"
+// let token = window.location.pathname.substring(16,window.location.pathname.length);
+// document.cookie="token=" + token + ";path=/"
 const toke = Cookie.load("token")
 // document.cookie="token=token;path=/"
 
@@ -17,14 +19,19 @@ const toke = Cookie.load("token")
 
 ReactDOM.render(
     <Router history={hist} >
-        {/*{!toke ? toSignIn(document.location.href, config.callbackUrl, config.publicKey, config.singleUrl) :*/}
+        {!toke ?
+            <Switch>
+                <Route path="/admin/login" exact component={SignIn} />
+                <Route path="/admin/register" exact component={SignUp} />
+                <Redirect from="/" to="/admin/login" />
+           </Switch> :
             <BrowserRouter>
             <Switch>
                 <Route path="/admin" component={Home} />
                 <Redirect from="/" to="/admin/AllEchart" />
             </Switch>
         </BrowserRouter>
-        {/*}*/}
+        }
 
     </Router>,
     document.getElementById('root')

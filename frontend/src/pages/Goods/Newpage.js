@@ -16,15 +16,15 @@ import config from "../../config/config.json";
 
 const useStyles = makeStyles((theme) => ({
     root: {
-      '& > *': {
-        margin: theme.spacing(1),
-      },
+        '& > *': {
+            margin: theme.spacing(1),
+        },
     },
     input: {
-      display: 'block',
+        display: 'block',
     },
-    
-  }));
+
+}));
 const styles = {
     cardCategoryWhite: {
         color: "rgba(255,255,255,.62)",
@@ -48,27 +48,39 @@ makeStyles(styles);
 
 /** 商户信息修改或增加 */
 export default function MerchantProfile(props) {
-    let merchant = {type: ""};
+    let merchant = { type: "" };
     let flag = true;
-    if(props.title){
+    if (props.title) {
         // if(props.query){
         merchant = props.query
         flag = false
     }
-console.log(props)
+    // console.log(props)
     const classes = useStyles();
-    const [message] = React.useState("");
-    const [pageType, setPageType] = React.useState(flag?"新增商品信息":"修改商品信息");
+    // const [message] = React.useState("");
+    const [pageType, setPageType] = React.useState(flag ? "新增商品信息" : "修改商品信息");
     const [commodity_nameItem, setCommodity_nameItem] = React.useState({ name: 'commodity_name', tips: '商品名称', error: false, help_text: '', value: props.query.commodity_name });
     const [quantity_in_stockItem, setQuantity_in_stockItem] = React.useState({ name: 'quantity_in_stock', tips: '库存数量', error: false, help_text: '', value: props.query.quantity_in_stock });
-    const [spec_info_valItem, setSpec_info_valItem] = React.useState({ name: 'spec_info_val', tips: '规格val', error: false, help_text: '', value: ''});
+    const [spec_info_valItem, setSpec_info_valItem] = React.useState({ name: 'spec_info_val', tips: '规格val', error: false, help_text: '', value: '' });
     const [remarkItem, seTremarkItem] = React.useState({ name: 'remark', tips: '备注', error: false, help_text: '', value: props.query.remark });
     const [filesItem, setFilesItem] = React.useState({ name: 'files', tips: '文件', error: false, help_text: '', value: "" });
+    const [typeIdItem, setTypeIdItem] = React.useState({ name: 'typeId', tips: '类型ID', error: false, help_text: '', value: '' });
+    const [tc, setTC] = React.useState(false);             //设置提示框的显示隐藏
+    const [message, setMessage] = React.useState("");            //设置提示框的提示信息
 
 
     /* 设置提示框的显示数据，过期时间*/
 
-
+    const flagSnackbar = (messages) => {
+        if (!tc) {
+            setTC(true)
+            setMessage(messages)
+            setTimeout(function () {
+                setTC(false);
+                setMessage("")
+            }, 6000);
+        }
+    }
     /* 录入数据,校验并赋值*/
     function textChange(e, name) {
         switch (name) {
@@ -93,6 +105,13 @@ console.log(props)
                 }
                 setSpec_info_valItem({ name: 'spec_info_val', tips: '规格val', error: false, help_text: '', value: e.target.value.trim() })
                 break;
+            case "typeId":
+                if (e.target.value === null || e.target.value === "" || e.target.value.trim() === "") {
+                    setTypeIdItem({ name: 'typeId', tips: '请输入类型ID', error: true, help_text: '请根据类型管理中类型ID选择类型', value: e.target.value })
+                    break;
+                }
+                setTypeIdItem({ name: 'typeId', tips: '请输入类型ID', error: false, help_text: '', value: e.target.value.trim() })
+                break;
             case "remark":
                 if (e.target.value === null || e.target.value === "" || e.target.value.trim() === "") {
                     seTremarkItem({ name: 'remark', tips: '备注', error: true, help_text: '备注不能为空', value: e.target.value })
@@ -101,22 +120,22 @@ console.log(props)
                 seTremarkItem({ name: 'remark', tips: '备注', error: false, help_text: '', value: e.target.value.trim() })
                 break;
             case "files":
-                setFilesItem({ name: 'files', tips: '备注', error: false, help_text: '', value: e.target.files[0]})
+                setFilesItem({ name: 'files', tips: '备注', error: false, help_text: '', value: e.target.files[0] })
                 break;
         }
     }
-
+    // typeIdItem
     const res_data = {
         commodity_name: commodity_nameItem.value,
         quantity_in_stock: parseInt(quantity_in_stockItem.value),
         type: [
             {
-                "type_id":2
+                "type_id": typeIdItem.value
             }
         ],
         spec: [
             {
-                "spec_id":2,
+                "spec_id": 2,
                 "spec_info_val": spec_info_valItem.value
             }
         ],
@@ -127,12 +146,12 @@ console.log(props)
         quantity_in_stock: parseInt(quantity_in_stockItem.value),
         type: [
             {
-                "type_id":2
+                "type_id": typeIdItem.value
             }
         ],
         spec: [
             {
-                "spec_id":2,
+                "spec_id": 2,
                 "spec_info_val": spec_info_valItem.value
             }
         ],
@@ -141,11 +160,11 @@ console.log(props)
     }
 
     /* 新增或修改触发事件*/
-    function submitBtn(){
-        if(flag){
+    function submitBtn() {
+        if (flag) {
             //新增操作
             subAdd(res_data)
-        }else {
+        } else {
             //修改操作
             subUpdate(res_data2)
         }
@@ -153,81 +172,81 @@ console.log(props)
 
     // 新增、修改后都会改变父组件的flag，从而更新页面数据
     //新增
-    function subAdd(res_data){
+    function subAdd(res_data) {
         // console.log("sadfg")
-        if((commodity_nameItem.error && quantity_in_stockItem.error && spec_info_valItem.error && remarkItem.error) ||
-            (!commodity_nameItem.value && !quantity_in_stockItem.value && !spec_info_valItem.value && !remarkItem.value)){
-            alert("请正确录入规格信息！");
-        }else {
+        if ((commodity_nameItem.error && quantity_in_stockItem.error && spec_info_valItem.error && remarkItem.error) ||
+            (!commodity_nameItem.value && !quantity_in_stockItem.value && !spec_info_valItem.value && !remarkItem.value)) {
+            flagSnackbar("请正确录入规格信息！");
+        } else {
             console.log(res_data)
 
-            fetch(config.httpUrlpro,{
-                method:"POST",
+            fetch(config.httpUrlpro, {
+                method: "POST",
                 // mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body:JSON.stringify(res_data)
+                body: JSON.stringify(res_data)
             }).then(response => response.json()).then(json => {
-                alert("商品信息添加成功");
+                flagSnackbar("商品信息添加成功");
                 console.log(json.commodity_id)
                 console.log(filesItem.value[0])
-                if (json.commodity_id){
+                if (json.commodity_id) {
                     console.log('sdvb')
-                    const formData=new FormData()
-                    formData.append("commodity_id",json.commodity_id)
-                    formData.append("files",filesItem.value)
+                    const formData = new FormData()
+                    formData.append("commodity_id", json.commodity_id)
+                    formData.append("files", filesItem.value)
                     axios.post(config.picture,
                         formData,
-                        {headers: {'content-type': 'multipart/form-data'}})
-                        .then((res)=>{
+                        { headers: { 'content-type': 'multipart/form-data' } })
+                        .then((res) => {
                             console.log(res.data);
                         })
-                        .catch((err)=>{
+                        .catch((err) => {
                             console.log('err')
                         })
                 }
 
-            }).catch((err)=>{
-                alert("商品信息添加失败");
+            }).catch((err) => {
+                flagSnackbar("商品信息添加失败");
             })
         }
     }
     // 修改
-    function subUpdate(res_data){
-        if((commodity_nameItem.error && quantity_in_stockItem.error && spec_info_valItem.error && remarkItem.error) ||
-            (!commodity_nameItem.value && !quantity_in_stockItem.value && !spec_info_valItem.value && !remarkItem.value)){
-            alert("请正确录入商品信息！");
-        }else {
+    function subUpdate(res_data) {
+        if ((commodity_nameItem.error && quantity_in_stockItem.error && spec_info_valItem.error && remarkItem.error) ||
+            (!commodity_nameItem.value && !quantity_in_stockItem.value && !spec_info_valItem.value && !remarkItem.value)) {
+            flagSnackbar("请正确录入商品信息！");
+        } else {
             console.log(res_data)
 
-            fetch(config.httpUrlpro,{
-                method:"PATCH",
+            fetch(config.httpUrlpro, {
+                method: "PATCH",
                 // mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body:JSON.stringify(res_data)
+                body: JSON.stringify(res_data)
             }).then(response => response.json()).then(json => {
-                alert("商品信息修改成功");
-                console.log(filesItem.value[0])
-                if (json.commodity_id){
+                flagSnackbar("商品信息修改成功");
+                // console.log(filesItem.value[0])
+                if (json.commodity_id) {
                     console.log('sdvb')
-                    const formData=new FormData()
-                    formData.append("commodity_id",json.commodity_id)
-                    formData.append("files",filesItem.value)
+                    const formData = new FormData()
+                    formData.append("commodity_id", json.commodity_id)
+                    formData.append("files", filesItem.value)
                     axios.post(config.picture,
                         formData,
-                        {headers: {'content-type': 'multipart/form-data'}})
-                        .then((res)=>{
+                        { headers: { 'content-type': 'multipart/form-data' } })
+                        .then((res) => {
                             console.log(res.data);
                         })
-                        .catch((err)=>{
+                        .catch((err) => {
                             console.log('err')
                         })
                 }
-            }).catch((err)=>{
-                alert("商品信息修改失败");
+            }).catch((err) => {
+                flagSnackbar("商品信息修改失败");
             })
         }
     }
@@ -242,6 +261,8 @@ console.log(props)
                         color="info"
                         icon={AddAlert}
                         message={message}
+                        open={tc}
+                        closeNotification={() => setTC(false)}
                         close
                     />
                 </GridItem>
@@ -313,6 +334,26 @@ console.log(props)
                                     />
                                 </GridItem>
                                 <GridItem xs={12} sm={12} md={5}>
+                                    <InputLabel style={{ color: "red" }}>{typeIdItem.help_text}</InputLabel>
+                                    <CustomInput
+                                        labelText={typeIdItem.tips}
+                                        id={typeIdItem.name}
+                                        name={typeIdItem.name}
+                                        value={typeIdItem.value}
+                                        formControlProps={{
+                                            fullWidth: true
+                                        }}
+                                        inputProps={{
+                                            disabled: false,
+                                            error: typeIdItem.error,
+                                            value: typeIdItem.value,
+                                            onChange: (e) => {
+                                                textChange(e, typeIdItem.name);
+                                            }
+                                        }}
+                                    />
+                                </GridItem>
+                                <GridItem xs={12} sm={12} md={5}>
                                     <InputLabel style={{ color: "red" }}>{remarkItem.help_text}</InputLabel>
                                     <CustomInput
                                         labelText={remarkItem.tips}
@@ -341,7 +382,7 @@ console.log(props)
                                             id="contained-button-file"
                                             // multiple
                                             type="file"
-                                            onChange={(e)=>{textChange(e,filesItem.name)}}
+                                            onChange={(e) => { textChange(e, filesItem.name) }}
                                         />
                                     </div>
                                 </GridItem>
