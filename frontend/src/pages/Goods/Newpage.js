@@ -55,22 +55,19 @@ export default function MerchantProfile(props) {
         merchant = props.query
         flag = false
     }
-    // console.log(props)
     const classes = useStyles();
-    // const [message] = React.useState("");
     const [pageType, setPageType] = React.useState(flag ? "新增商品信息" : "修改商品信息");
-    const [commodity_nameItem, setCommodity_nameItem] = React.useState({ name: 'commodity_name', tips: '商品名称', error: false, help_text: '', value: props.query.commodity_name });
-    const [quantity_in_stockItem, setQuantity_in_stockItem] = React.useState({ name: 'quantity_in_stock', tips: '库存数量', error: false, help_text: '', value: props.query.quantity_in_stock });
+    const [commodity_nameItem, setCommodity_nameItem] = React.useState({ name: 'commodity_name', tips: '商品名称', error: false, help_text: '', value: props.query.commodity_name ? props.query.commodity_name : ""});
+    const [quantity_in_stockItem, setQuantity_in_stockItem] = React.useState({ name: 'quantity_in_stock', tips: '库存数量', error: false, help_text: '', value: props.query.quantity_in_stock ?  props.query.quantity_in_stock : ""});
     const [spec_info_valItem, setSpec_info_valItem] = React.useState({ name: 'spec_info_val', tips: '规格val', error: false, help_text: '', value: '' });
-    const [remarkItem, seTremarkItem] = React.useState({ name: 'remark', tips: '备注', error: false, help_text: '', value: props.query.remark });
-    const [filesItem, setFilesItem] = React.useState({ name: 'files', tips: '文件', error: false, help_text: '', value: "" });
+    const [remarkItem, seTremarkItem] = React.useState({ name: 'remark', tips: '备注', error: false, help_text: '', value: props.query.remark ? props.query.remark : ""});
+    const [filesItem, setFilesItem] = React.useState({ name: 'files', tips: '文件', error: false, help_text: '', value: [] });
+    // const [filesItem, setFilesItem] = React.useState({ name: 'files', tips: '文件', error: false, help_text: '', value: '' });
     const [typeIdItem, setTypeIdItem] = React.useState({ name: 'typeId', tips: '类型ID', error: false, help_text: '', value: '' });
     const [tc, setTC] = React.useState(false);             //设置提示框的显示隐藏
     const [message, setMessage] = React.useState("");            //设置提示框的提示信息
 
-
     /* 设置提示框的显示数据，过期时间*/
-
     const flagSnackbar = (messages) => {
         if (!tc) {
             setTC(true)
@@ -120,11 +117,19 @@ export default function MerchantProfile(props) {
                 seTremarkItem({ name: 'remark', tips: '备注', error: false, help_text: '', value: e.target.value.trim() })
                 break;
             case "files":
-                setFilesItem({ name: 'files', tips: '备注', error: false, help_text: '', value: e.target.files[0] })
+                console.log(e.target.files)
+                let Arr=[]
+                for (let i = 0;i < e.target.files.length ;i++) {
+                    Arr.push(e.target.files[i])
+                }
+                setFilesItem({ name: 'files', tips: '备注', error: false, help_text: '', value: Arr })
+                console.log(Arr)
+                // setFilesItem({ name: 'files', tips: '备注', error: false, help_text: '', value: e.target.files[0] })
                 break;
         }
     }
-    // typeIdItem
+
+
     const res_data = {
         commodity_name: commodity_nameItem.value,
         quantity_in_stock: parseInt(quantity_in_stockItem.value),
@@ -195,7 +200,9 @@ export default function MerchantProfile(props) {
                     console.log('sdvb')
                     const formData = new FormData()
                     formData.append("commodity_id", json.commodity_id)
-                    formData.append("files", filesItem.value)
+                    for (let i=0;i<filesItem.value.length;i++) {
+                        formData.append("files",filesItem.value[i])
+                    }
                     axios.post(config.picture,
                         formData,
                         { headers: { 'content-type': 'multipart/form-data' } })
@@ -234,8 +241,10 @@ export default function MerchantProfile(props) {
                     console.log('sdvb')
                     const formData = new FormData()
                     formData.append("commodity_id", json.commodity_id)
-                    formData.append("files", filesItem.value)
-                    axios.post(config.picture,
+                    for (let i=0;i<filesItem.value.length;i++) {
+                        formData.append("files",filesItem.value[i])
+                    }
+                    axios.patch(config.picture,
                         formData,
                         { headers: { 'content-type': 'multipart/form-data' } })
                         .then((res) => {
@@ -382,6 +391,7 @@ export default function MerchantProfile(props) {
                                             id="contained-button-file"
                                             // multiple
                                             type="file"
+                                            multiple="multiple"
                                             onChange={(e) => { textChange(e, filesItem.name) }}
                                         />
                                     </div>

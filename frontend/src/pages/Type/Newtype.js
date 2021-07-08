@@ -48,18 +48,18 @@ makeStyles(styles);
 
 /** 商户信息修改或增加 */
 export default function MerchantProfile(props) {
-    let merchant = {type: ""};
+    let merchant = { type: "" };
     let flag = true;
-    if(props.query && props.title){
+    if (props.query && props.title) {
         // if(props.query){
         merchant = props.query
         flag = false
     }
-    const [pageType, setPageType] = React.useState(flag?"新增规格信息":"修改规格信息");
+    const [pageType, setPageType] = React.useState(flag ? "新增规格信息" : "修改规格信息");
 
     const classes = useStyles();
     // const [message] = React.useState("");
-    const [typeItem, setTypeItem] = React.useState({ name: 'type', tips: '类型', error: false, help_text: '', value: props.query.type });
+    const [typeItem, setTypeItem] = React.useState({ name: 'type', tips: '类型', error: false, help_text: '', value: props.query.type ?  props.query.type : ""});
     const [tc, setTC] = React.useState(false);             //设置提示框的显示隐藏
     const [message, setMessage] = React.useState("");            //设置提示框的提示信息
 
@@ -96,12 +96,12 @@ export default function MerchantProfile(props) {
     }
 
 
-    function submitBtn(){
-        if(flag){
+    function submitBtn() {
+        if (flag) {
             //新增操作
             subAdd(res_data)
             // props.change(props.flag);
-        }else {
+        } else {
             //修改操作
             subUpdate(res_data)
             // props.setMerchant("")
@@ -109,51 +109,51 @@ export default function MerchantProfile(props) {
         }
     }
     /* 新增或修改触发事件*/
-//新增
-    function subAdd(res_data){
-        if(typeItem.error || !typeItem.value){
+    //新增
+    function subAdd(res_data) {
+        if (typeItem.error || !typeItem.value) {
             flagSnackbar("请正确录入规格信息！");
-        }else {
-            axios.post(config.httpUrl1,{"type": typeItem.value},{headers:{}})
-                .then((res)=>{
-                    if(res){
+        } else {
+            axios.post(config.httpUrl1, { "type": typeItem.value }, { headers: {} })
+                .then((res) => {
+                    if (res) {
                         flagSnackbar("添加规格信息成功！");
                         flag = !flag
                         setPageType("添加系统信息")
                         clearVariable();
 
                     }
-                }).catch((err)=>{
-                if(err){
-                    flagSnackbar("添加规格信息失败！");
-                }
-            })
+                }).catch((err) => {
+                    if (err) {
+                        flagSnackbar("添加规格信息失败！");
+                    }
+                })
         }
     }
     // 修改
-    function subUpdate(res_data){
-        if(typeItem.error || !typeItem.value){
+    function subUpdate(res_data) {
+        if (typeItem.error || !typeItem.value) {
             flagSnackbar("请正确录入规格信息！");
-        }else {
+        } else {
             // console.log(props.TypeId)
-            axios.patch(config.httpUrl1,{"type": typeItem.value,"type_id":props.TypeId},{headers:{}})
-                .then((res)=>{
-                    if(res){
+            axios.patch(config.httpUrl1, { "type": typeItem.value, "type_id": props.TypeId }, { headers: {} })
+                .then((res) => {
+                    if (res) {
                         flagSnackbar("修改规格信息成功！");
                         flag = !flag
                         setPageType("修改系统信息")
                         clearVariable();
                     }
-                }).catch((err)=>{
-                if(err){
-                    flagSnackbar("修改规格信息失败！");
-                }
-            })
+                }).catch((err) => {
+                    if (err) {
+                        flagSnackbar("修改规格信息失败！");
+                    }
+                })
         }
     }
 
-    function clearVariable(){
-        setTypeItem({name:'typeItem',tips:'类型',error:false,help_text:'',value:""})
+    function clearVariable() {
+        setTypeItem({ name: 'typeItem', tips: '类型', error: false, help_text: '', value: "" })
     }
 
 
@@ -161,7 +161,7 @@ export default function MerchantProfile(props) {
     return (
         <div>
             <GridContainer>
-            <GridItem xs={12} sm={12} md={4}>
+                <GridItem xs={12} sm={12} md={4}>
                     <Snackbar
                         place="tc"
                         color="info"

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Home from './View/Home'
 import { createBrowserHistory } from "history";
-import {BrowserRouter, Redirect, Route, Router, Switch} from "react-router-dom";
+import { BrowserRouter, Redirect, Route, Router, Switch } from "react-router-dom";
 import Cookie from 'react-cookies';
 import toSignIn from "./util/toSignIn/toSignIn";
 import config from 'config/config.json'
@@ -24,13 +24,13 @@ ReactDOM.render(
                 <Route path="/admin/login" exact component={SignIn} />
                 <Route path="/admin/register" exact component={SignUp} />
                 <Redirect from="/" to="/admin/login" />
-           </Switch> :
+            </Switch> :
             <BrowserRouter>
-            <Switch>
-                <Route path="/admin" component={Home} />
-                <Redirect from="/" to="/admin/AllEchart" />
-            </Switch>
-        </BrowserRouter>
+                <Switch>
+                    <Route path="/admin" component={Home} />
+                    <Redirect from="/" to="/admin/AllEchart" />
+                </Switch>
+            </BrowserRouter>
         }
 
     </Router>,

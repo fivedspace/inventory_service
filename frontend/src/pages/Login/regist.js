@@ -151,7 +151,7 @@ export default function SignUp() {
             url: "/send_code",
             method: 'POST',
             params: {
-                "number":uTitle.value
+                "number": uTitle.value
             }
         })
             .then((res) => {
@@ -284,7 +284,7 @@ export default function SignUp() {
                     >
                         获取验证码
                     </Button>
-                    
+
                     <Button
                         type="submit"
                         fullWidth

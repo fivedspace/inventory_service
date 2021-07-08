@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -51,12 +51,13 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(2, 5, 2),
     },
     submit2: {
-        height:'20px',
-        marginTop:"25px"
+        height: '20px',
+        marginTop: "25px"
     },
 }));
 
 export default function SignIn() {
+    // window.location.reload()
     const classes = useStyles();
 
     const [message, setMessage] = useState("");
@@ -67,7 +68,6 @@ export default function SignIn() {
     const [code, setCode] = useState({ id: "code", label: "验证码", name: "code", value: "", helperText: "" })
     const [auth_code, setAuth_code] = useState([]);
 
-    
 
     const data = {
         // grant_type:"",
@@ -146,7 +146,7 @@ export default function SignIn() {
             }).then(r => {
                 console.log(r)
                 if (r.token) {
-                    document.cookie = "token="+r.token+";path=/;";
+                    document.cookie = "token=" + r.token + ";path=/;";
                     window.location.reload();
                 } else {
                     flagSnackbar("登录失败");
@@ -251,7 +251,7 @@ export default function SignIn() {
                     />
 
 
-                    <div style={{display:'flex'}}>
+                    <div style={{ display: 'flex' }}>
                         <Button
                             // type="submit"
                             // fullWidth
@@ -262,7 +262,7 @@ export default function SignIn() {
                         >
                             获取验证码
                     </Button>
-                        <span className={classes.submit1,classes.submit2}>
+                        <span className={classes.submit1, classes.submit2}>
                             验证码：{auth_code}
                         </span>
                     </div>
