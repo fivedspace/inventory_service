@@ -91,3 +91,7 @@ class AllCommodity(BaseModel):
     quantity_in_stock: int = Field(..., description="库存数量")
     remark: str = Field(..., description="商品备注")
 
+
+class Data(BaseModel):
+    data: List[AllCommodity]
+    page_count: int = Field(..., description="总页数")

@@ -3,6 +3,7 @@
 from typing import List
 from core import schemas
 from sql_app import crud
+from typing import Optional
 from sqlalchemy.orm import Session
 from sql_app.database import session
 from fastapi.staticfiles import StaticFiles
@@ -137,13 +138,15 @@ async def get_commodity(commodity_id: int, db: Session = Depends(get_database)):
 
 
 # 查询所有商品
-@commodity_router.get("/commodity", response_model=List[schemas.AllCommodity])
-async def get_all_commodity(db: Session = Depends(get_database)):
-    return crud.fetchall_commodity(db=db)
+@commodity_router.get("/commodity", response_model=schemas.Data)
+async def get_all_commodity(page: int,
+                            limit: Optional[int] = 5,
+                            db: Session = Depends(get_database)):
+    return crud.fetchall_commodity(page=page, limit=limit, db=db)
 
 
 # 根据类型查商品
-@commodity_router.get("/commodity/type_commodity")
+@commodity_router.get("/type_commodity")
 async def get_type_commodity(type_id: List[int] = Query(...),
                              db: Session = Depends(get_database)):
     return crud.fetch_type_commodity(type_id=type_id, db=db)

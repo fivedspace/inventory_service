@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
 import os
+import math
+import copy
 import shutil
 from pathlib import Path
 from core import schemas
@@ -10,9 +12,38 @@ from sqlalchemy.sql import and_
 from sqlalchemy.orm import Session
 from tempfile import NamedTemporaryFile
 from fastapi import File, HTTPException
+from oslo_db.sqlalchemy import utils as sqlalchemyutils
 
 # 文件保存的目录
 save_dir = "resources/images"
+
+
+def paginate_query(query, model, limit, temp_offset, sort_key, sort_dir="asc"):
+    """
+    分页查询
+    :param model:
+    :param query
+    :param limit:
+    :param temp_offset:
+    :param sort_key:
+    :param sort_dir:
+    :param query:
+    :return:
+    """
+    if not sort_key:
+        sort_keys = []
+    elif not isinstance(sort_key, list):
+        sort_keys = [sort_key]
+    else:
+        sort_keys = sort_key
+
+    query = sqlalchemyutils.paginate_query(query,
+                                           model,
+                                           limit,
+                                           sort_keys,
+                                           sort_dir=sort_dir)
+    query = query.offset(temp_offset)
+    return query.all()
 
 
 def db_create_type(db: Session, comm_type: schemas.Type):
@@ -37,8 +68,13 @@ def db_get_type(db: Session):
     """
     fetch_type: List[Any] = db.query(Type.type_id, Type.type).all()
     type_list = []
+
     for one in fetch_type:
-        type_list.append(one)
+        data_handler = dict()
+        data_handler['type_id'] = one[0]
+        data_handler['type'] = one[1]
+        data_handler['type'] = one[1]
+        type_list.append(data_handler)
     all_type = dict()
     all_type["type_list"] = type_list
     return all_type
@@ -91,7 +127,7 @@ def db_get_datatype(db: Session):
     return fetch_datatype
 
 
-def db_create_spec(spec: schemas.Spec, db: Session):
+def db_create_spec(spec, db: Session):
     """
     添加规格
     :param spec:
@@ -473,7 +509,6 @@ def db_assign_commodity(commodity_id: int, db: Session):
     # 图片表
     get_picture = db.query(Picture.path, Picture.picture_name).filter(
         Picture.commodity_id == commodity_id).all()
-    print(get_picture)
     return {"commodity_id": local_add_comm.commodity_id,
             "commodity_name": local_add_comm.commodity_name,
             "quantity_in_stock": local_add_comm.quantity_in_stock,
@@ -483,21 +518,50 @@ def db_assign_commodity(commodity_id: int, db: Session):
             "remark": local_add_comm.remark}
 
 
-def fetchall_commodity(db: Session):
+def fetchall_commodity(page, limit, db: Session):
     """
     查询所有商品
+    :param page
+    :param limit
     :param db:
     :return:
     """
-    all_commodity = db.query(
-        Commodity.commodity_id, Commodity.commodity_name, Commodity.remark,
-        Commodity.quantity_in_stock).filter(Commodity.status == 0).all()
-    db.commit()
+    temp_offset = None
 
-    return all_commodity
+    all_commodity = db.query(Commodity).filter(Commodity.status == 0)
+
+    total_count = all_commodity.count()
+
+    page = page
+    limit = limit
+    if total_count >= 1:
+        if total_count % limit == 0:
+            page_count = total_count / limit
+        else:
+            page_count = (total_count / limit) + 1
+
+        if page > page_count:
+            page = page_count
+        temp_offset = (page - 1) * limit
+
+    resource_list = paginate_query(all_commodity, Commodity, limit,
+                                   temp_offset, sort_key="commodity_id")
+    page_count = int(math.ceil(total_count / limit))
+
+    data = list()
+    add_data = dict()
+    for resource in resource_list:
+        data_handler = copy.deepcopy(add_data)
+        data_handler['commodity_id'] = resource.commodity_id
+        data_handler['commodity_name'] = resource.commodity_name
+        data_handler['quantity_in_stock'] = resource.quantity_in_stock
+        data_handler['remark'] = resource.remark
+        data.append(data_handler)
+
+    return {"data": data, "page_count": page_count}
 
 
-def fetch_type_commodity(type_id: List, db: Session):
+def fetch_type_commodity(type_id, db: Session):
     """
     根据类型查询所有商品
     :param type_id:
@@ -517,7 +581,7 @@ def fetch_type_commodity(type_id: List, db: Session):
             for one in commodity:
                 one_comm.append(one)
     transform = set(one_comm)
-    print(transform)
+
     # 拿到所有查询类型的 commodity_id 进行查询
     all_commodity_type = list()
     local_comm_type_id = list(transform)
@@ -579,7 +643,6 @@ def db_del_commodity(commodity_id: int, db: Session):
         # 查询
         query = db.query(Commodity).filter(Commodity.status == 0). \
             filter(Commodity.commodity_id == commodity_id).first()
-        print(query)
         if query is None:
             return {"Message": "Success!"}
     else:

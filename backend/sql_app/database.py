@@ -14,9 +14,12 @@ from sqlalchemy.orm import sessionmaker
 database_app = FastAPI()
 
 pymysql.install_as_MySQLdb()
+
+user = "root"
+password = "root"
+host = "192.168.0.114"
 SQLALCHEMY_DATABASE_URL =\
-    "mysql+pymysql://root:password@tzw160702.work:3307/inventory_service"
-    # "mysql+pymysql://root:root@192.168.230.129:3306/inventory_service"
+    f"mysql+pymysql://{user}:{password}@{host}:3306/inventory_service"
 
 
 # 初始化数据库
