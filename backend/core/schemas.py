@@ -95,3 +95,32 @@ class AllCommodity(BaseModel):
 class Data(BaseModel):
     data: List[AllCommodity]
     page_count: int = Field(..., description="总页数")
+
+
+# class Details(BaseModel):
+
+
+# Login
+class SignUp(BaseModel):
+    number: str = Field(title='手机号或者邮箱', description='手机号或者邮箱')
+    pwd: str = Field(title='密码', description='密码')
+    verify_code: str = Field(title='验证码', description='验证码')
+
+
+class LogInByPwd(BaseModel):
+    number: str = Field(title='手机号或者邮箱', description='手机号或者邮箱')
+    pwd: str = Field(title='密码', description='密码')
+    client_code: str = Field(title='客户端验证码', description='客户端验证码')
+    callback_url: str = Field(title='系统回调地址', description='系统回调地址')
+
+
+class LogInByCode(BaseModel):
+    number: str = Field(title='手机号或者邮箱', description='手机号或者邮箱')
+    verify_code: str = Field(title='手机或邮箱验证码', description='手机或邮箱验证码')
+    callback_url: str = Field(title='系统回调地址', description='系统回调地址')
+
+
+class ChangePwd(BaseModel):
+    token: str = Field(title='Token', description='Token')
+    old_pwd: str = Field(title='旧密码', description='旧密码')
+    new_pwd: str = Field(title='新密码', description='新密码')

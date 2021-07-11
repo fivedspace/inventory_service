@@ -156,3 +156,43 @@ async def get_type_commodity(type_id: List[int] = Query(...),
 @commodity_router.delete("/commodity/{commodity_id}")
 async def del_commodity(commodity_id: int, db: Session = Depends(get_database)):
     return crud.db_del_commodity(commodity_id=commodity_id, db=db)
+
+
+# ---------------------------- 登录 ----------------------------------
+# 注册登录路由
+login_router = APIRouter(tags=["Login"])
+
+
+@login_router.post('/auth/login', summary="使用账号密码登录")
+def login_access_token(data: schemas.LogInByPwd):
+    return crud.load_user(data=data)
+
+
+@login_router.post('/send_code', summary="发送验证码")
+async def send_code(*, number: str):
+    return crud.send_code(number)
+
+
+@login_router.post('/auth/verify_code_login', summary="使用验证码登录")
+def verify_code_login(data: schemas.LogInByCode):
+    return crud.verify_code_login(data=data)
+
+
+@login_router.post('/auth/register', summary="使用账号+密码+验证码注册")
+async def register(data: schemas.SignUp):
+    return crud.create_user(data=data)
+
+
+@login_router.post('/client_code', summary="客户端验证码生成")
+async def client_code():
+    return crud.client_code()
+
+
+@login_router.patch('/password', summary="修改密码")
+async def change_pwd(*, data: schemas.ChangePwd):
+    return crud.change_pwd(data=data)
+
+
+@login_router.patch('/verify_code_password', summary="忘记密码")
+async def verify_code_password(*, data: schemas.SignUp):
+    return crud.verify_code_password(data=data)

@@ -17,7 +17,7 @@ pymysql.install_as_MySQLdb()
 
 user = "root"
 password = "root"
-host = "192.168.0.114"
+host = "192.168.1.11"
 SQLALCHEMY_DATABASE_URL =\
     f"mysql+pymysql://{user}:{password}@{host}:3306/inventory_service"
 

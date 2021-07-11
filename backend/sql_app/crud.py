@@ -3,9 +3,13 @@
 import os
 import math
 import copy
+import json
 import shutil
+import requests
+
 from pathlib import Path
 from core import schemas
+from login import env
 from sql_app.models import *
 from typing import List, Any
 from sqlalchemy.sql import and_
@@ -484,38 +488,43 @@ def db_assign_commodity(commodity_id: int, db: Session):
     :param db:
     :return:
     """
-    # 商品表
-    local_add_comm = db.query(
-        Commodity.commodity_id, Commodity.commodity_name,
-        Commodity.quantity_in_stock, Commodity.remark,
-    ).filter(Commodity.commodity_id == commodity_id).filter(
+    all_type_comm = db.query(Commodity.commodity_id,
+                             Commodity.commodity_name,
+                             Commodity.quantity_in_stock,
+                             Commodity.remark).filter(
+        Commodity.commodity_id == commodity_id).filter(
         Commodity.status == 0).first()
-    if local_add_comm is None:
-        raise HTTPException(status_code=404, detail="商品id错误或id不存在")
 
-    # 类型表
-    get_type = db.query(CommodityType.type_id, Type.type).outerjoin(
-        Type, CommodityType.type_id == Type.type_id).filter(
-        CommodityType.commodity_id == commodity_id).all()
+    if all_type_comm is None:
+        pass
+    else:
+        # 类型表
+        get_type = db.query(CommodityType.type_id, Type.type).outerjoin(
+            Type, CommodityType.type_id == Type.type_id).filter(
+            CommodityType.commodity_id == commodity_id).all()
 
-    # 规格表
-    get_spec = db.query(
-        Spec.spec_id, Spec.spec_name, SpecInfo.spec_info_val). \
-        outerjoin(SpecInfo, and_(Spec.spec_id == SpecInfo.spec_id)). \
-        outerjoin(CommoditySpec, and_(
-            SpecInfo.spec_info_id == CommoditySpec.spec_info_id)).filter(
-        CommoditySpec.commodity_id == commodity_id).all()
+        get_spec = db.query(
+            Spec.spec_id, Spec.spec_name, SpecInfo.spec_info_val). \
+            outerjoin(SpecInfo, and_(Spec.spec_id == SpecInfo.spec_id)). \
+            outerjoin(CommoditySpec, and_(
+            SpecInfo.spec_info_id == CommoditySpec.spec_info_id)). \
+            filter(CommoditySpec.commodity_id == commodity_id).all()
 
-    # 图片表
-    get_picture = db.query(Picture.path, Picture.picture_name).filter(
-        Picture.commodity_id == commodity_id).all()
-    return {"commodity_id": local_add_comm.commodity_id,
-            "commodity_name": local_add_comm.commodity_name,
-            "quantity_in_stock": local_add_comm.quantity_in_stock,
+        # 图片表
+        get_picture = db.query(Picture.path, Picture.picture_name).filter(
+            Picture.commodity_id == commodity_id).all()
+
+        result_data = {
+            "commodity_id": all_type_comm.commodity_id,
+            "commodity_name": all_type_comm.commodity_name,
+            "quantity_in_stock": all_type_comm.quantity_in_stock,
             "type": get_type,
             "picture": get_picture,
             "spec": get_spec,
-            "remark": local_add_comm.remark}
+            "remark": all_type_comm.remark
+        }
+
+    return result_data
 
 
 def fetchall_commodity(page, limit, db: Session):
@@ -602,6 +611,7 @@ def fetch_type_commodity(type_id, db: Session):
                 Type, CommodityType.type_id == Type.type_id).filter(
                 CommodityType.commodity_id == commodity_id).all()
 
+
             # 规格表
             get_spec = db.query(
                 Spec.spec_id, Spec.spec_name, SpecInfo.spec_info_val). \
@@ -613,6 +623,7 @@ def fetch_type_commodity(type_id, db: Session):
             # 图片表
             get_picture = db.query(Picture.path, Picture.picture_name).filter(
                 Picture.commodity_id == commodity_id).all()
+
             query = {"commodity_id": all_type_comm.commodity_id,
                      "commodity_name": all_type_comm.commodity_name,
                      "quantity_in_stock": all_type_comm.quantity_in_stock,
@@ -647,3 +658,83 @@ def db_del_commodity(commodity_id: int, db: Session):
             return {"Message": "Success!"}
     else:
         raise HTTPException(status_code=404, detail="商品id错误或id不存在")
+
+
+# ------------------------------- 登录 ---------------------------------
+# Admin
+def load_user(data):
+    url = env.SINGLE_SIGN_ON_USER + "/singin"
+    headers = {'Content-Type': 'application/json'}
+    dataload = {"number": data.number, "pwd": data.pwd,
+                "client_code": data.client_code,
+                "callback_url": data.callback_url}
+    datas = json.dumps(dataload)
+    # send data
+    response = requests.post(url=url, data=datas, headers=headers)
+
+    return json.loads(response.text)
+
+
+def send_code(number):
+    urlbase = env.SINGLE_SIGN_ON_CODE + "/verify_code"
+    headers = {'Content-Type': 'application/json'}
+    url = urlbase + f"?number={number}"
+    # send data
+    response = requests.post(url=url, headers=headers)
+
+    return json.loads(response.text)
+
+
+def verify_code_login(data):
+    url = env.SINGLE_SIGN_ON_USER + "/signin/verifycode"
+    headers = {'Content-Type': 'application/json'}
+    dataload = {"number": data.number, "verify_code": data.verify_code,
+                "callback_url": data.callback_url}
+    datas = json.dumps(dataload)
+    # send data
+    response = requests.post(url=url, data=datas, headers=headers)
+
+    return json.loads(response.text)
+
+
+def create_user(data):
+    url = env.SINGLE_SIGN_ON_USER + "/signup"
+    headers = {'Content-Type': 'application/json'}
+    dataload = {"number": data.number, "pwd": data.pwd,
+                "verify_code": data.verify_code}
+    datas = json.dumps(dataload)
+    # send data
+    response = requests.post(url=url, data=datas, headers=headers)
+
+    return json.loads(response.text)
+
+
+def client_code():
+    url = env.SINGLE_SIGN_ON_CODE + "/client_code"
+    headers = {'Content-Type': 'application/json'}
+    response = requests.get(url=url, headers=headers)
+    return json.loads(response.text)
+
+
+def change_pwd(data):
+    url = env.SINGLE_SIGN_ON_USER + "/password"
+    headers = {'Content-Type': 'application/json'}
+    dataload = {"token": data.token, "old_pwd": data.old_pwd,
+                "new_pwd": data.new_pwd}
+    datas = json.dumps(dataload)
+    # send data
+    response = requests.patch(url=url, data=datas, headers=headers)
+
+    return json.loads(response.text)
+
+
+def verify_code_password(data):
+    url = env.SINGLE_SIGN_ON_USER + "/verify_code_password"
+    headers = {'Content-Type': 'application/json'}
+    dataload = {"number": data.number, "pwd": data.pwd,
+                "verify_code": data.verify_code}
+    datas = json.dumps(dataload)
+    # send data
+    response = requests.patch(url=url, data=datas, headers=headers)
+
+    return json.loads(response.text)
