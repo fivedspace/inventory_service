@@ -32,10 +32,11 @@ export default function Inputs(props) {
     useEffect(() => {
         details()
     }, [])
+    //根据id获取商品详细信息
     const details = () => {
         axios.get(config.httpUrlpro1 + props.query)
             .then((res) => {
-                // console.log(res.data);
+                console.log(res.data);
                 setAbs(
                     res.data
                 )
@@ -44,7 +45,9 @@ export default function Inputs(props) {
                 console.log('err')
             })
     }
+    //截取类型组中后两个渲染
     const TYpe = abs.type.length > 3 ? abs.type.slice(-2) : abs.type
+    //截取规格组中后两个渲染
     const SPec = abs.spec.length >= 2 ? abs.spec.slice(-2) : abs.spec
 
 
@@ -52,22 +55,21 @@ export default function Inputs(props) {
     return (
         <div className={classes.root}>
             <div style={{ display: 'flex' }}>
+                {/*图片组中第一张图片*/}
                 <img src={
                     abs.picture[0] ?
-                        'http://120.55.58.140:8000' + '/' + abs.picture[0].path + abs.picture[0].picture_name :
+                        'http://192.168.0.124:8001' + '/' + abs.picture[0].path + abs.picture[0].picture_name :
                         mla
                 } style={imgStyles} />
+                {/*商品信息*/}
                 <div style={{ marginLeft: '10%', width: '40%' }}>
                     <h4>商品名称：{abs.commodity_name}</h4>
                     <h4>库存数量：{abs.quantity_in_stock}</h4>
                     <h4>商品类型：</h4>
+                    {/*商品类型循环渲染*/}
                     {
 
                         TYpe.map((a, index) => {
-                            // console.log(a);
-                            // console.log(index)
-
-                            // a.length>3 ? TYPE.slice(0,3) : TYPE;
                             const TYPE = a.type;
                             return (
                                 <p key={index} style={{ margin: '2px 0 2px 35%' }}>
@@ -77,6 +79,7 @@ export default function Inputs(props) {
                         })
                     }
                     <h4>商品规格：</h4>
+                    {/*商品规格循环渲染*/}
                     {
                         SPec.map((a, index) => {
                             // console.log(a);
@@ -95,12 +98,13 @@ export default function Inputs(props) {
             <div>
                 <h4>详细图片</h4>
                 <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                    {/*图片组循环渲染*/}
                     {
 
                         abs.picture.map((a, index) => {
                             // console.log(a);
                             // console.log(index)
-                            const Img = 'http://120.55.58.140:8000' + '/' + a.path + a.picture_name;
+                            const Img = 'http://192.168.0.124:8001' + '/' + a.path + a.picture_name;
                             return (
                                 // <div>
                                 <img key={index} style={imgStyles} src={Img} />

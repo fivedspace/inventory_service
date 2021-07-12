@@ -58,6 +58,7 @@ export default function SignUp() {
     const [password, setPassword] = useState({ id: "password", label: "密码", name: "password", value: "", helperText: "" })
     const [code, setCode] = useState({ id: "code", label: "请输入验证码", name: "code", value: "", helperText: "" })
 
+    //提示框
     const flagSnackbar = (messages) => {
         if (!dialogOpen) {
             setDialogOpen(true)
@@ -69,6 +70,7 @@ export default function SignUp() {
         }
     }
 
+    /* 录入数据,校验并赋值*/
     function InputChange(e, name) {
         // console.log(e.target.value)
         switch (name) {
@@ -101,6 +103,7 @@ export default function SignUp() {
         }
     }
 
+    //调取注册接口
     function submitRegister() {
         console.log("注册 ？？？")
 
@@ -135,6 +138,7 @@ export default function SignUp() {
 
     }
 
+    //调取发送验证码接口
     function AuthCode() {
         console.log("wergh")
         // axios.post("http://192.168.0.124:8000/send_code?number=" + uTitle.value)

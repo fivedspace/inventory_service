@@ -78,11 +78,11 @@ export default function MerchantProfile(props) {
         }
     }
 
+    //新增修改所传数据
     const res_data = {
         "spec_name": spec_nameItem.value,
         "spec_remark": spec_remarkItem.value,
     }
-
 
     /* 新增或修改触发事件*/
     function submitBtn() {
@@ -96,10 +96,7 @@ export default function MerchantProfile(props) {
             // props.setMerchant("")
             // props.change(props.flag);
         }
-        // 新增、修改后都会改变父组件的flag，从而更新页面数据
-        // props.change(props.flag);
     }
-
 
     //新增
     function subAdd(res_data) {
@@ -123,12 +120,13 @@ export default function MerchantProfile(props) {
                 })
         }
     }
+
     // 修改
     function subUpdate(res_data) {
         if ((spec_nameItem.error && spec_remarkItem.error) || (!spec_nameItem.value && !spec_remarkItem.value)) {
             alert("请正确录入规格信息！");
         } else {
-            axios.patch(config.spec1, { "spec_id": props.specId, "spec_name": spec_nameItem.value, "data_type_id": 4, "spec_remark": spec_remarkItem.value }, { headers: {} })
+            axios.patch(config.spec1, { "spec_id": props.specId, "spec_name": spec_nameItem.value, "data_type_id": 1, "spec_remark": spec_remarkItem.value }, { headers: {} })
                 .then((res) => {
                     if (res) {
                         alert("修改规格信息成功！");
@@ -148,11 +146,11 @@ export default function MerchantProfile(props) {
         setspec_nameItem({ name: 'spec_nameItem', tips: '规格名称', error: false, help_text: '', value: "" })
         setspec_remarkItem({ name: 'spec_remarkItem', tips: '备注', error: false, help_text: '', value: '' })
     }
-    // props.change(props.flag);
 
     return (
         <div>
             <GridContainer>
+                {/*提示框*/}
                 <GridItem xs={12} sm={12} md={4}>
                     <Snackbar
                         place="tc"
@@ -162,6 +160,7 @@ export default function MerchantProfile(props) {
                         close
                     />
                 </GridItem>
+                {/*新增修改输入数据*/}
                 <GridItem xs={12} sm={12} md={12}>
                     <Card>
                         <CardHeader color="primary">
@@ -169,6 +168,7 @@ export default function MerchantProfile(props) {
                         </CardHeader>
                         <CardBody>
                             <GridContainer>
+                                {/*规格名称*/}
                                 <GridItem xs={12} sm={12} md={5}>
                                     <InputLabel style={{ color: "red" }}>{spec_nameItem.help_text}</InputLabel>
                                     <CustomInput
@@ -189,6 +189,7 @@ export default function MerchantProfile(props) {
                                         }}
                                     />
                                 </GridItem>
+                                {/*备注*/}
                                 <GridItem xs={12} sm={12} md={5}>
                                     <InputLabel style={{ color: "red" }}>{spec_remarkItem.help_text}</InputLabel>
                                     <CustomInput
@@ -209,9 +210,9 @@ export default function MerchantProfile(props) {
                                         }}
                                     />
                                 </GridItem>
-
                             </GridContainer>
                         </CardBody>
+                        {/*提交按钮*/}
                         <CardFooter>
                             <Button color="primary" onClick={submitBtn}>提交</Button>
                         </CardFooter>

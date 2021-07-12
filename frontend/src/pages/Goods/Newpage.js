@@ -67,7 +67,7 @@ export default function MerchantProfile(props) {
     const [tc, setTC] = React.useState(false);             //设置提示框的显示隐藏
     const [message, setMessage] = React.useState("");            //设置提示框的提示信息
 
-    /* 设置提示框的显示数据，过期时间*/
+    //提示框
     const flagSnackbar = (messages) => {
         if (!tc) {
             setTC(true)
@@ -123,12 +123,13 @@ export default function MerchantProfile(props) {
                     Arr.push(e.target.files[i])
                 }
                 setFilesItem({ name: 'files', tips: '备注', error: false, help_text: '', value: Arr })
-                console.log(Arr)
+                // console.log(Arr)
                 // setFilesItem({ name: 'files', tips: '备注', error: false, help_text: '', value: e.target.files[0] })
                 break;
         }
     }
 
+    //新增接口所传数据
 
     const res_data = {
         commodity_name: commodity_nameItem.value,
@@ -140,12 +141,14 @@ export default function MerchantProfile(props) {
         ],
         spec: [
             {
-                "spec_id": 2,
+                "spec_id": 1,
                 "spec_info_val": spec_info_valItem.value
             }
         ],
         remark: remarkItem.value
     }
+
+    //修改接口所传数据
     const res_data2 = {
         commodity_name: commodity_nameItem.value,
         quantity_in_stock: parseInt(quantity_in_stockItem.value),
@@ -156,7 +159,7 @@ export default function MerchantProfile(props) {
         ],
         spec: [
             {
-                "spec_id": 2,
+                "spec_id": 1,
                 "spec_info_val": spec_info_valItem.value
             }
         ],
@@ -175,15 +178,13 @@ export default function MerchantProfile(props) {
         }
     }
 
-    // 新增、修改后都会改变父组件的flag，从而更新页面数据
     //新增
     function subAdd(res_data) {
-        // console.log("sadfg")
         if ((commodity_nameItem.error && quantity_in_stockItem.error && spec_info_valItem.error && remarkItem.error) ||
             (!commodity_nameItem.value && !quantity_in_stockItem.value && !spec_info_valItem.value && !remarkItem.value)) {
             flagSnackbar("请正确录入规格信息！");
         } else {
-            console.log(res_data)
+            // console.log(res_data)
 
             fetch(config.httpUrlpro, {
                 method: "POST",
@@ -194,10 +195,11 @@ export default function MerchantProfile(props) {
                 body: JSON.stringify(res_data)
             }).then(response => response.json()).then(json => {
                 flagSnackbar("商品信息添加成功");
-                console.log(json.commodity_id)
-                console.log(filesItem.value[0])
+                // console.log(json.commodity_id)
+
+                //新增商品成功后新增图片
                 if (json.commodity_id) {
-                    console.log('sdvb')
+                    // console.log('sdvb')
                     const formData = new FormData()
                     formData.append("commodity_id", json.commodity_id)
                     for (let i=0;i<filesItem.value.length;i++) {
@@ -219,13 +221,14 @@ export default function MerchantProfile(props) {
             })
         }
     }
+
     // 修改
     function subUpdate(res_data) {
         if ((commodity_nameItem.error && quantity_in_stockItem.error && spec_info_valItem.error && remarkItem.error) ||
             (!commodity_nameItem.value && !quantity_in_stockItem.value && !spec_info_valItem.value && !remarkItem.value)) {
             flagSnackbar("请正确录入商品信息！");
         } else {
-            console.log(res_data)
+            // console.log(res_data)
 
             fetch(config.httpUrlpro, {
                 method: "PATCH",
@@ -236,9 +239,10 @@ export default function MerchantProfile(props) {
                 body: JSON.stringify(res_data)
             }).then(response => response.json()).then(json => {
                 flagSnackbar("商品信息修改成功");
-                // console.log(filesItem.value[0])
+
+                //修改商品成功后修改图片
                 if (json.commodity_id) {
-                    console.log('sdvb')
+                    // console.log('sdvb')
                     const formData = new FormData()
                     formData.append("commodity_id", json.commodity_id)
                     for (let i=0;i<filesItem.value.length;i++) {
@@ -264,6 +268,7 @@ export default function MerchantProfile(props) {
     return (
         <div>
             <GridContainer>
+                {/*提示框*/}
                 <GridItem xs={12} sm={12} md={4}>
                     <Snackbar
                         place="tc"
@@ -275,6 +280,7 @@ export default function MerchantProfile(props) {
                         close
                     />
                 </GridItem>
+                {/*输入信息*/}
                 <GridItem xs={12} sm={12} md={12}>
                     <Card>
                         <CardHeader color="primary">
@@ -282,6 +288,7 @@ export default function MerchantProfile(props) {
                         </CardHeader>
                         <CardBody>
                             <GridContainer>
+                                {/*商品名称*/}
                                 <GridItem xs={12} sm={12} md={5}>
                                     <InputLabel style={{ color: "red" }}>{commodity_nameItem.help_text}</InputLabel>
                                     <CustomInput
@@ -302,6 +309,7 @@ export default function MerchantProfile(props) {
                                         }}
                                     />
                                 </GridItem>
+                                {/*库存数量*/}
                                 <GridItem xs={12} sm={12} md={5}>
                                     <InputLabel style={{ color: "red" }}>{quantity_in_stockItem.help_text}</InputLabel>
                                     <CustomInput
@@ -322,6 +330,7 @@ export default function MerchantProfile(props) {
                                         }}
                                     />
                                 </GridItem>
+                                {/*规格*/}
                                 <GridItem xs={12} sm={12} md={5}>
                                     <InputLabel style={{ color: "red" }}>{spec_info_valItem.help_text}</InputLabel>
                                     <CustomInput
@@ -342,6 +351,7 @@ export default function MerchantProfile(props) {
                                         }}
                                     />
                                 </GridItem>
+                                {/*类型*/}
                                 <GridItem xs={12} sm={12} md={5}>
                                     <InputLabel style={{ color: "red" }}>{typeIdItem.help_text}</InputLabel>
                                     <CustomInput
@@ -362,6 +372,7 @@ export default function MerchantProfile(props) {
                                         }}
                                     />
                                 </GridItem>
+                                {/*备注*/}
                                 <GridItem xs={12} sm={12} md={5}>
                                     <InputLabel style={{ color: "red" }}>{remarkItem.help_text}</InputLabel>
                                     <CustomInput
@@ -382,7 +393,7 @@ export default function MerchantProfile(props) {
                                         }}
                                     />
                                 </GridItem>
-                                {/*添加图片*/}
+                                {/*图片*/}
                                 <GridItem xs={12} sm={12} md={5}>
                                     <div className={classes.root}>
                                         <input

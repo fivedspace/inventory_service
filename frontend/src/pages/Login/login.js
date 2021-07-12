@@ -68,7 +68,6 @@ export default function SignIn() {
     const [code, setCode] = useState({ id: "code", label: "验证码", name: "code", value: "", helperText: "" })
     const [auth_code, setAuth_code] = useState([]);
 
-
     const data = {
         // grant_type:"",
         username: uTitle.value,
@@ -78,6 +77,7 @@ export default function SignIn() {
         // client_secret:""
     }
 
+    /* 设置提示框的显示数据，过期时间*/
     const flagSnackbar = (messages) => {
         if (!dialogOpen) {
             setDialogOpen(true)
@@ -89,9 +89,9 @@ export default function SignIn() {
         }
     }
 
+    /* 录入数据,校验并赋值*/
     function InputChange(e, name) {
         switch (name) {
-
             case "username":
                 const email = /^([a-zA-Z]|[0-9])(\w|-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
                 if (email.test(e.target.value) || e.target.value.trim()) {
@@ -119,6 +119,7 @@ export default function SignIn() {
         }
     }
 
+    //调取登录接口 成功后保存token 并跳至首页
     function submitLogin() {
         // console.log("登录 ？？？？")
         if ((uTitle.value && !uTitle.helperText) && (password.value && !password.helperText)) {
@@ -157,6 +158,7 @@ export default function SignIn() {
         }
     }
 
+    //调取获取验证码接口
     function AuthCode() {
         request({
             url: "/client_code",
@@ -179,7 +181,7 @@ export default function SignIn() {
         <Container component="main" maxWidth="xs">
             <CssBaseline />
             <div className={classes.paper}>
-
+                {/*提示框*/}
                 <Grid item >
                     <Snackbar
                         place="tc"
@@ -204,6 +206,7 @@ export default function SignIn() {
                 // method={"POST"}
                 // onSubmit={submitLogin()}
                 >
+                    {/*用户名*/}
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -219,6 +222,7 @@ export default function SignIn() {
                         onChange={(e) => { InputChange(e, uTitle.name) }}
                         autoFocus
                     />
+                    {/*密码*/}
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -234,6 +238,7 @@ export default function SignIn() {
                         autoComplete="current-password"
                         onChange={(e) => { InputChange(e, password.name) }}
                     />
+                    {/*验证码*/}
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -249,8 +254,7 @@ export default function SignIn() {
                         type="code"
                         autoComplete="current-code"
                     />
-
-
+                    {/*验证码*/}
                     <div style={{ display: 'flex' }}>
                         <Button
                             // type="submit"

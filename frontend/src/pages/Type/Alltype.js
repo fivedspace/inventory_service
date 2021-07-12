@@ -1,6 +1,5 @@
 import React,{useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
 import Table from '../../components/Table/Table';
 import Dialog from "@material-ui/core/Dialog";
@@ -10,6 +9,9 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import Newtype from "./Newtype";
 import config from "../../config/config.json";
 import axios from "axios";
+import GridItem from "../../components/Grid/GridItem";
+import Snackbar from "../../components/Snackbar/Snackbar";
+import {AddAlert} from "_@material-ui_icons@4.11.2@@material-ui/icons";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -26,11 +28,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
-
-
-
-
 export default function Inputs(props) {
     const classes = useStyles();
 
@@ -41,10 +38,27 @@ export default function Inputs(props) {
     const [zxc, setZxc] = useState({});
     const [type_id, setType_id] = useState({});
 
+    const [tc, setTC] = React.useState(false);             //设置提示框的显示隐藏
+    const [message, setMessage] = React.useState("");            //设置提示框的提示信息
 
     useEffect(()=>{
         headen()
     },[])
+
+    //提示框
+    const flagSnackbar = (messages) => {
+        if (!tc) {
+            setTC(true)
+            setMessage(messages)
+            setTimeout(function () {
+                setTC(false);
+                setMessage("")
+            }, 6000);
+        }
+    }
+
+
+    //修改删除按钮
     const change=(item,id)=>{
         return (
             <div>
@@ -63,20 +77,26 @@ export default function Inputs(props) {
         )
     }
 
+    //删除接口
     const Delete=(id)=>{
-        axios.delete(config.httpUrl2+id)
-            .then((res) => {
-                console.log(res.data)
-            })
-            .catch((err) => {
-                console.log('err')
-            })
+        // eslint-disable-next-line no-restricted-globals
+        if(confirm('是否确认删除？')) {
+            axios.delete(config.httpUrl2 + id)
+                .then((res) => {
+                    console.log(res.data)
+                    flagSnackbar('删除成功')
+                    window.history.go(0)
+                })
+                .catch((err) => {
+                    flagSnackbar('此类型已被占用，无法删除')
+                })
+        }
     }
 
+    //所有类型数据
     const headen = () => {
         axios.get( config.httpUrl1 )
             .then((res) => {
-                // console.log(res.data)
                 setAbs(
                     res.data.type_list
                 )
@@ -84,11 +104,10 @@ export default function Inputs(props) {
             .catch((err) => {
                 console.log('err')
             })
-        // console.log(abs)
     }
 
+    //列表渲染
     const tableData = () => {
-        // console.log(abs)
         const tabData = [];
         const tableJson = abs;
         if (Array.isArray(tableJson) && tableJson.length) {
@@ -98,8 +117,6 @@ export default function Inputs(props) {
                         i+1,
                         tableJson[i].type_id,
                         tableJson[i].type,
-                        // tableJson[i].data_type,
-                        // tableJson[i].spec_remark,
                         change(tableJson[i],tableJson[i].type_id)
                         // <SearchTwoToneIcon color="secondary" onClick={()=>{setMerchantOneItem(tableJson[i]);setOpen(true);setDialogTitle("查看公私钥")}} className={classes.pointer} titleAccess="查看公钥"/>
                     ]
@@ -109,21 +126,32 @@ export default function Inputs(props) {
             tabData.push([
                 tableJson.type_id,
                 tableJson.type,
-                // tableJson.data_type,
-                // tableJson.spec_remark,
             ])
         }
         return tabData
     }
+
+    //弹出框
     function dialogOpen(){
         setOpen(false);
         window.history.go(0);
     }
 
-
-
     return (
         <div style={{position:'relative',margin:'0px 50px'}}>
+            {/*提示框*/}
+            <GridItem xs={12} sm={12} md={4}>
+                <Snackbar
+                    place="tc"
+                    color="info"
+                    icon={AddAlert}
+                    message={message}
+                    open={tc}
+                    closeNotification={() => setTC(false)}
+                    close
+                />
+            </GridItem>
+            {/*新增修改弹出框*/}
             <Dialog
                 open={open}
                 onClose={()=>{dialogOpen()}}
@@ -159,35 +187,13 @@ export default function Inputs(props) {
                     </Button>
                 </DialogActions>
             </Dialog>
-            {/*<div style={{boxSizing:'border-box',marginBottom:'50px'}}>*/}
-                {/*<form className={classes.root}*/}
-                {/*      style={{*/}
-                {/*          width:'100%',*/}
-                {/*          padding:'2px 4px',*/}
-                {/*          display:'flex',*/}
-                {/*          backgroundColor:'#ab47bc',*/}
-                {/*      }}*/}
-                {/*      noValidate autoComplete="off"*/}
-                {/*>*/}
-                {/*    <InputBase*/}
-                {/*        className={classes.margin}*/}
-                {/*        placeholder="全部商品"*/}
-                {/*        style={{*/}
-                {/*            // flex:'1',*/}
-                {/*            backgroundColor:'white',*/}
-                {/*            padding:'6px 0 7px 6px',*/}
-                {/*            border:'1px solid black'*/}
-                {/*        }}*/}
-                {/*        fullWidth={true}*/}
-                {/*        inputProps={{ 'aria-label': 'naked' }}*/}
-                {/*    />*/}
-                {/*</form>*/}
-            {/*</div>*/}
+            {/*添加按钮*/}
             <div style={{position:'absolute',top:'-30px', right:'30px'}}>
                 <div className={classes.rightStyle}>
                     <Button variant="outlined" color="primary" onClick={()=>{setDialogTitle("添加商品信息");setOpen(true);setTitle(false);}}>添加</Button>
                 </div>
             </div>
+            {/*列表渲染*/}
             <Table
                 tableHead={['序号','类型ID','类型','操作']}
                 tableData={tableData()}

@@ -48,11 +48,11 @@ makeStyles(styles);
 
 /** 商户信息修改或增加 */
 export default function MerchantProfile(props) {
-    let merchant = { type: "" };
+    // let merchant = { type: "" };
     let flag = true;
     if (props.query && props.title) {
         // if(props.query){
-        merchant = props.query
+        // merchant = props.query
         flag = false
     }
     const [pageType, setPageType] = React.useState(flag ? "新增规格信息" : "修改规格信息");
@@ -75,9 +75,6 @@ export default function MerchantProfile(props) {
         }
     }
 
-
-
-
     /* 录入数据,校验并赋值*/
     function textChange(e, name) {
         switch (name) {
@@ -91,11 +88,12 @@ export default function MerchantProfile(props) {
         }
     }
 
+    //新增修改类型所传数据
     const res_data = {
         "type": typeItem.value,
     }
 
-
+    /* 新增或修改触发事件*/
     function submitBtn() {
         if (flag) {
             //新增操作
@@ -108,7 +106,7 @@ export default function MerchantProfile(props) {
             // props.change(props.flag);
         }
     }
-    /* 新增或修改触发事件*/
+
     //新增
     function subAdd(res_data) {
         if (typeItem.error || !typeItem.value) {
@@ -130,6 +128,7 @@ export default function MerchantProfile(props) {
                 })
         }
     }
+
     // 修改
     function subUpdate(res_data) {
         if (typeItem.error || !typeItem.value) {
@@ -161,6 +160,7 @@ export default function MerchantProfile(props) {
     return (
         <div>
             <GridContainer>
+                {/*提示框*/}
                 <GridItem xs={12} sm={12} md={4}>
                     <Snackbar
                         place="tc"
@@ -172,11 +172,13 @@ export default function MerchantProfile(props) {
                         close
                     />
                 </GridItem>
+                {/*新增修改输入数据*/}
                 <GridItem xs={12} sm={12} md={12}>
                     <Card>
                         <CardHeader color="primary">
                             <h4 className={classes.cardTitleWhite}>{pageType}</h4>
                         </CardHeader>
+                        {/*类型名称*/}
                         <CardBody>
                             <GridContainer>
                                 <GridItem xs={12} sm={12} md={5}>
@@ -201,6 +203,7 @@ export default function MerchantProfile(props) {
                                 </GridItem>
                             </GridContainer>
                         </CardBody>
+                        {/*提交按钮*/}
                         <CardFooter>
                             <Button color="primary" onClick={submitBtn}>提交</Button>
                         </CardFooter>

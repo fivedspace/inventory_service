@@ -40,6 +40,7 @@ export default function Inputs() {
         headen()
     },[])
 
+    //修改按钮
     const change=(item,id)=>{
         return (
             <div>
@@ -50,6 +51,7 @@ export default function Inputs() {
         )
     }
 
+     //所有规格数据接口
      const headen = () => {
         axios.get( config.spec1 )
             .then((res) => {
@@ -61,9 +63,9 @@ export default function Inputs() {
             .catch((err) => {
                 console.log('err')
             })
-         // console.log(abs)
     }
 
+    //列表渲染
     const tableData = () => {
         // console.log(abs)
         const tabData = [];
@@ -92,7 +94,7 @@ export default function Inputs() {
         return tabData
     }
 
-
+    //弹出框
     function dialogOpen(){
         setOpen(false);
         window.history.go(0);
@@ -100,12 +102,12 @@ export default function Inputs() {
 
     return (
         <div style={{position:'relative',margin:'0px 50px'}}>
+            {/*弹出框*/}
             <Dialog
                 open={open}
                 onClose={()=>{dialogOpen()}}
                 aria-labelledby="scroll-dialog-title"
-                aria-describedby="scroll-dialog-description"
-            >
+                aria-describedby="scroll-dialog-description">
                 <DialogContent dividers>
                     {
                         dialogTitle === "查看公私钥"
@@ -129,36 +131,13 @@ export default function Inputs() {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <div style={{boxSizing:'border-box',marginBottom:'50px'}}>
-                <form className={classes.root}
-                      style={{
-                          width:'100%',
-                          padding:'2px 4px',
-                          display:'flex',
-                          backgroundColor:'#ab47bc',
-                      }}
-                      noValidate autoComplete="off"
-                >
-                    <InputBase
-                        className={classes.margin}
-                        placeholder="全部规格"
-                        style={{
-                            // flex:'1',
-                            backgroundColor:'white',
-                            padding:'6px 0 7px 6px',
-                            border:'1px solid black'
-                        }}
-                        fullWidth={true}
-                        inputProps={{ 'aria-label': 'naked' }}
-                    />
-                </form>
-            </div>
-            <div style={{position:'absolute',top:'90px', right:'30px'}}>
+            {/*添加按钮*/}
+            <div style={{position:'absolute',top:'-30px', right:'30px'}}>
                 <Button variant="outlined" color="primary" onClick={()=>{setDialogTitle("添加规格信息");setOpen(true);setTitle(false);}}>
                     新增
                 </Button>
             </div>
-
+            {/*列表渲染*/}
             <Table
                 tableHead={['序号','规格名称','规格数据类型','备注','操作']}
                 tableData={tableData()}

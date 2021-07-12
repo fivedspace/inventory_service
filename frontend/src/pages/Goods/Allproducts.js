@@ -54,36 +54,38 @@ export default function Inputs(props) {
     const [page, setPage] = React.useState(1);
 
     useEffect(() => {
-        headen();
-        // PAGE(page)
+        // headen();
+        PAGE(page)
     }, [])
 
-    // const handlePageChange = (event,value) => {
-    //     setPage(value)
-    //     PAGE(value)
-    // }
+    const handlePageChange = (event,value) => {
+        setPage(value)
+        PAGE(value)
+    }
 
-    // const PAGE = (a) => {
-    //     axios.get('http://192.168.0.124:8001/commodity', {
-    //         params: {
-    //             page: a,
-    //             limit: 5,
-    //         }
-    //     })
-    //         .then((res) => {
-    //             console.log(res.data)
-    //             setAbs(
-    //                 res.data.data,
-    //             );
-    //             setPag(
-    //                 res.data.page_count
-    //             )
-    //         })
-    //         .catch((err) => {
-    //             console.log('err')
-    //         })
-    // }
+    //分页接口
+    const PAGE = (a) => {
+        axios.get(config.httpUrlpro, {
+            params: {
+                page: a,
+                limit: 8,
+            }
+        })
+            .then((res) => {
+                // console.log(res.data)
+                setAbs(
+                    res.data.data,
+                );
+                setPag(
+                    res.data.page_count
+                )
+            })
+            .catch((err) => {
+                console.log('err')
+            })
+    }
 
+    //提示框
     const flagSnackbar = (messages) => {
         if (!tc) {
             setTC(true)
@@ -95,7 +97,7 @@ export default function Inputs(props) {
         }
     }
 
-
+    //修改删除按钮
     const change = (item, id) => {
         return (
             <div>
@@ -118,6 +120,8 @@ export default function Inputs(props) {
             </div>
         )
     }
+
+    //删除接口
     const Delete = (id) => {
         // eslint-disable-next-line no-restricted-globals
         if(confirm('是否确认删除？')) {
@@ -137,18 +141,20 @@ export default function Inputs(props) {
 
     const inputData = useRef(null);
 
-    const headen = () => {
-        axios.get(config.httpUrlpro1)
-            .then((res) => {
-                setAbs(
-                    res.data
-                )
-            })
-            .catch((err) => {
-                console.log('err')
-            })
-    }
+    //所有商品数据接口
+    // const headen = () => {
+    //     axios.get(config.httpUrlpro1)
+    //         .then((res) => {
+    //             setAbs(
+    //                 res.data
+    //             )
+    //         })
+    //         .catch((err) => {
+    //             console.log('err')
+    //         })
+    // }
 
+    //详情页按钮
     const details = (id) => {
         return (
             <div>
@@ -163,6 +169,7 @@ export default function Inputs(props) {
         )
     }
 
+    //列表数据渲染
     const tableData = () => {
         // console.log(abs)
         const tabData = [];
@@ -175,9 +182,7 @@ export default function Inputs(props) {
                         // tableJson[i].commodity_id,
                         tableJson[i].commodity_name,
                         tableJson[i].quantity_in_stock,
-                        // tableJson[i].type,
                         tableJson[i].remark,
-                        // details(tableJson[i].commodity_id),
                         change(tableJson[i], tableJson[i].commodity_id),
                         details(tableJson[i].commodity_id)
                         // <SearchTwoToneIcon color="secondary" onClick={()=>{setMerchantOneItem(tableJson[i]);setOpen(true);setDialogTitle("查看公私钥")}} className={classes.pointer} titleAccess="查看公钥"/>
@@ -188,12 +193,13 @@ export default function Inputs(props) {
             tabData.push([
                 tableJson.commodity_name,
                 tableJson.quantity_in_stock,
-                tableJson.type,
                 tableJson.remark,
             ])
         }
         return tabData
     }
+
+    //弹出框
     function dialogOpen() {
         setOpen(false);
         setOpenq(false);
@@ -205,6 +211,7 @@ export default function Inputs(props) {
 
     return (
         <div style={{ position: 'relative', margin: '0px 50px' }}>
+            {/*提示框*/}
             <GridItem xs={12} sm={12} md={4}>
                 <Snackbar
                     place="tc"
@@ -216,6 +223,7 @@ export default function Inputs(props) {
                     close
                 />
             </GridItem>
+
             {/*删除修改页*/}
             <Dialog
                 open={open}
@@ -244,7 +252,6 @@ export default function Inputs(props) {
                                 proId={proId}
                                 title={title}
                             />)
-                        // 对话框显示新增修改入口
                     }
                 </DialogContent>
                 <DialogActions>
@@ -253,6 +260,7 @@ export default function Inputs(props) {
                     </Button>
                 </DialogActions>
             </Dialog>
+
             {/*详情页*/}
             <Dialog
                 open={openq}
@@ -280,7 +288,6 @@ export default function Inputs(props) {
                                 query={det}
                                 title={titleq}
                             />)
-                        // 对话框显示新增修改入口
                     }
                 </DialogContent>
                 <DialogActions>
@@ -329,22 +336,27 @@ export default function Inputs(props) {
                     />
                 </div>
             </div>
+
             {/*添加按钮*/}
             <div style={{ position: 'absolute', top: '90px', right: '30px' }}>
                 <div className={classes.rightStyle}>
                     <Button variant="outlined" color="primary" onClick={() => { setDialogTitle("添加商品信息"); setOpen(true); setTitle(false); }}>添加</Button>
                 </div>
             </div>
+
             {/*列表渲染*/}
             <Table
                 tableHead={['序号', '商品名称', '库存数量', '备注', '操作', '详情']}
                 tableData={tableData()}
             />
+
+            {/*分页*/}
             <div className={classes.root}>
-                <Pagination count={5} variant="outlined" color="primary"
-                            // onChange={handlePageChange}
+                <Pagination count={pag} variant="outlined" color="primary"
+                            onChange={handlePageChange}
                 />
-                共<span>{5}</span>页
+                <span>共 {pag} 页</span>
+                <span>当前第 {page} 页</span>
             </div>
         </div>
     );

@@ -42,13 +42,13 @@ const dashboardRoutes = [
         component: AllType,
         layout: "/admin"
     },
-    // {
-    //     path: "/AllSpace",
-    //     name: "全部规格",
-    //     icon: AssessmentIcon,
-    //     component: AllSpace,
-    //     layout: "/admin",
-    // },
+    {
+        path: "/AllSpace",
+        name: "全部规格",
+        icon: AssessmentIcon,
+        component: AllSpace,
+        layout: "/admin",
+    },
     // {
     //   path: "/pageView",
     //   name: "无权限可以访问的页面",
