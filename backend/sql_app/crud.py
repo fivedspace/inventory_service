@@ -502,6 +502,12 @@ def db_assign_commodity(commodity_id: int, db: Session):
         get_type = db.query(CommodityType.type_id, Type.type).outerjoin(
             Type, CommodityType.type_id == Type.type_id).filter(
             CommodityType.commodity_id == commodity_id).all()
+        types = list()
+        for type in get_type:
+            data_type = dict()
+            data_type["type_id"] = type.type_id
+            data_type["type"] = type.type
+            types.append(data_type)
 
         get_spec = db.query(
             Spec.spec_id, Spec.spec_name, SpecInfo.spec_info_val). \
@@ -509,22 +515,33 @@ def db_assign_commodity(commodity_id: int, db: Session):
             outerjoin(CommoditySpec, and_(
             SpecInfo.spec_info_id == CommoditySpec.spec_info_id)). \
             filter(CommoditySpec.commodity_id == commodity_id).all()
+        specs = list()
+        for spec in get_spec:
+            data_spec = dict()
+            data_spec["spec_id"] = spec.spec_id
+            data_spec["spec_name"] = spec.spec_name
+            data_spec["spec_info_val"] = spec.spec_info_val
+            specs.append(data_spec)
 
         # 图片表
         get_picture = db.query(Picture.path, Picture.picture_name).filter(
             Picture.commodity_id == commodity_id).all()
+        pictures = list()
+        for picture in get_picture:
+            data_picture = dict()
+            data_picture["picture_name"] = picture.picture_name
+            data_picture["path"] = picture.path
+            pictures.append(data_picture)
 
-        result_data = {
+        return {
             "commodity_id": all_type_comm.commodity_id,
             "commodity_name": all_type_comm.commodity_name,
             "quantity_in_stock": all_type_comm.quantity_in_stock,
-            "type": get_type,
-            "picture": get_picture,
-            "spec": get_spec,
+            "type": types,
+            "picture": pictures,
+            "spec": specs,
             "remark": all_type_comm.remark
         }
-
-    return result_data
 
 
 def fetchall_commodity(page, limit, db: Session):
@@ -610,7 +627,12 @@ def fetch_type_commodity(type_id, db: Session):
             get_type = db.query(CommodityType.type_id, Type.type).outerjoin(
                 Type, CommodityType.type_id == Type.type_id).filter(
                 CommodityType.commodity_id == commodity_id).all()
-
+            types = list()
+            for type in get_type:
+                data_type = dict()
+                data_type["type_id"] = type.type_id
+                data_type["type"] = type.type
+                types.append(data_type)
 
             # 规格表
             get_spec = db.query(
@@ -619,17 +641,30 @@ def fetch_type_commodity(type_id, db: Session):
                 outerjoin(CommoditySpec, and_(
                     SpecInfo.spec_info_id == CommoditySpec.spec_info_id)). \
                 filter(CommoditySpec.commodity_id == commodity_id).all()
+            specs = list()
+            for spec in get_spec:
+                data_spec = dict()
+                data_spec["spec_id"] = spec.spec_id
+                data_spec["spec_name"] = spec.spec_name
+                data_spec["spec_info_val"] = spec.spec_info_val
+                specs.append(data_spec)
 
             # 图片表
             get_picture = db.query(Picture.path, Picture.picture_name).filter(
                 Picture.commodity_id == commodity_id).all()
+            pictures = list()
+            for picture in get_picture:
+                data_picture = dict()
+                data_picture["picture_name"] = picture.picture_name
+                data_picture["path"] = picture.path
+                pictures.append(data_picture)
 
             query = {"commodity_id": all_type_comm.commodity_id,
                      "commodity_name": all_type_comm.commodity_name,
                      "quantity_in_stock": all_type_comm.quantity_in_stock,
-                     "type": get_type,
-                     "picture": get_picture,
-                     "spec": get_spec,
+                     "type": types,
+                     "picture": pictures,
+                     "spec": specs,
                      "remark": all_type_comm.remark}
             all_commodity_type.append(query)
     return all_commodity_type
