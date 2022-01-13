@@ -282,6 +282,15 @@ def create_warehouse_in(db: Session, data: schemas.ReqWareHouseIn):
             item_data.append({"type": item.type})
             propertys.append(item_data)
 
+    warehouse_in_data = models.WareHouseIn(
+        warehouseIn_time=data.warehouseIn_time,
+        amount=data.purchase_quantity,
+        warehouse_id=data.warehouse_id
+    )
+    db.add(warehouse_in_data)
+    save(db)
+    db.refresh(warehouse_in_data)
+
     # 数据库没有商品
     freight_data = models.Freight(
         freight_name=data.freight_name,
@@ -290,7 +299,7 @@ def create_warehouse_in(db: Session, data: schemas.ReqWareHouseIn):
         manufacture_time=data.manufacture_time,
         freight_price=data.freight_price,
         warehouse_id=data.warehouse_id,
-        recently_warehouseIn_time=data.warehouseIn_time,
+        warehouse_in_id=warehouse_in_data.id,
         property=json.dumps(propertys)
     )
 
@@ -298,17 +307,11 @@ def create_warehouse_in(db: Session, data: schemas.ReqWareHouseIn):
         # 数据库有商品
         freight_data = models.Freight(
             freight_quantity=data.purchase_quantity + freight_query.freight_quantity,
-            recently_warehouseIn_time=data.warehouseIn_time,
+            warehouse_in_id=warehouse_in_data.id,
             property=json.dumps(propertys)
         )
 
-    warehouse_in_data = models.WareHouseIn(
-        warehouseIn_time=data.warehouseIn_time,
-        amount=data.purchase_quantity,
-        warehouse_id=data.warehouse_id
-    )
-
-    db.add(freight_data, warehouse_in_data)
+    db.add(freight_data)
     save(db)
     db.refresh(freight_data, warehouse_in_data)
     return freight_data
@@ -335,17 +338,20 @@ def create_warehouse_out(db: Session, data: schemas.ReqWareHouseOut):
     if data.shipment > freight_query.freight_quantity:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "货物的总数量小于出货量")
 
-    freight_data = models.Freight(
-        freight_quantity=freight_query.freight_query - data.shipment
-    )
-
     warehouseOut_data = models.WareHouseOut(
         warehouseOut_time=data.warehouseOut_time,
         amount=data.shipment,
         freight_id=data.freight_id,
         warehouse_id=data.warehouse_id,
         appcation_id=data.appcation_id
-        # warehouseOut_number=str(round(time.time() * 1000))
+    )
+    db.add(warehouseOut_data)
+    save(db)
+    db.refresh(warehouse_query)
+
+    freight_data = models.Freight(
+        freight_quantity=freight_query.freight_query - data.shipment,
+        warehouse_out_id=warehouseOut_data.id
     )
 
     db.add(freight_data, warehouseOut_data)
