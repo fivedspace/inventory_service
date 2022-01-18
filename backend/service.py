@@ -120,17 +120,17 @@ def create_user(db: Session, data):
 
 
 # WareHouse
-def list_warehouse(db, application_id, paginate, filter, sort):
+def list_warehouse(db, paginate, filter, sort):
     paginate = json.loads(paginate)
     filter = json.loads(filter)
     sort = json.loads(sort)
 
-    data = crud.list_warehouse(db, application_id, paginate, filter, sort)
+    data = crud.list_warehouse(db, paginate, filter, sort)
     return data
 
 
-def get_warehouse(db, application_id, id):
-    data = crud.get_warehouse(db, application_id, id)
+def get_warehouse(db, id):
+    data = crud.get_warehouse(db, id)
     return data
 
 
@@ -142,13 +142,13 @@ def create_warehouse_out(db, data):
     return crud.create_warehouse_out(db, data)
 
 
-def update_warehouse(db, application_id, id, data):
-    data = crud.update_warehouse(db, application_id, id, data)
+def update_warehouse(db, id, data):
+    data = crud.update_warehouse(db, id, data)
     return data
 
 
-def del_warehouse(db, application_id, id):
-    crud.del_warehouse(db, application_id, id)
+def del_warehouse(db, id):
+    crud.del_warehouse(db, id)
     return {"msg": "删除仓库成功"}
 
 

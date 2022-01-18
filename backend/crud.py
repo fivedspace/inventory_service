@@ -93,14 +93,8 @@ def create_admin(db: Session, data):
 
 
 # WareHouse
-def list_warehouse(db: Session, appcation_id, paginate, filter, sort):
-    result = db.query(models.Application).filter(models.Application.id == appcation_id,
-                                                 models.Application.is_delete == False).first()
-    if not result:
-        raise HTTPException(status.HTTP_404_NOT_FOUND,
-                            f"The appcation_id:{appcation_id} is not found")
-
-    query = db.query(models.WareHouse).filter(models.WareHouse.appcation_id == appcation_id)
+def list_warehouse(db: Session, paginate, filter, sort):
+    query = db.query(models.WareHouse)
     filters = []
     for f_data in filter:
         if "value" in f_data:
@@ -129,15 +123,9 @@ def list_warehouse(db: Session, appcation_id, paginate, filter, sort):
             "size": paginate['limit']}
 
 
-def get_warehouse(db: Session, application_id, id):
-    application_data = db.query(models.Application).filter(models.Application.id == application_id,
-                                                           models.Application.is_delete == False).first()
+def get_warehouse(db: Session, id):
     result = db.query(models.WareHouse).filter(models.WareHouse.id == id,
-                                               models.WareHouse.appcation_id == application_id,
                                                models.WareHouse.is_del == False).first()
-    if not application_data:
-        raise HTTPException(status.HTTP_404_NOT_FOUND,
-                            f"The application_id:{application_id} is not found")
     if not result:
         raise HTTPException(status.HTTP_404_NOT_FOUND,
                             f"The warehouse_id:{id} is not found")
@@ -162,14 +150,9 @@ def create_warehouse(db: Session, data: schemas.RespWareHouseBase):
     return data
 
 
-def update_warehouse(db: Session, id, application_id, data: schemas.ReqCreateWareHouse):
-    application = db.query(models.Application).filter(models.Application.id == application_id,
-                                                      models.Application.is_delete == False).first()
+def update_warehouse(db: Session, id, data: schemas.ReqCreateWareHouse):
     query = db.query(models.WareHouse).filter(models.WareHouse.id == id,
-                                              models.WareHouse.appcation_id == application_id,
                                               models.WareHouse.is_del == False).first()
-    if not application:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, f"The application_id:{application_id} is not found")
 
     if not query:
         raise HTTPException(status.HTTP_404_NOT_FOUND, f"The WareHouse_id:{id} is not found")
@@ -185,15 +168,10 @@ def update_warehouse(db: Session, id, application_id, data: schemas.ReqCreateWar
     return query
 
 
-def del_warehouse(db: Session, application_id, id):
+def del_warehouse(db: Session, id):
     m = db.query(models.WareHouse).filter(models.WareHouse.id == id,
-                                          models.WareHouse.appcation_id == application_id,
                                           models.
                                           WareHouse.is_del == False).first()
-    application = db.query(models.Application).filter(models.Application.id == application_id,
-                                                      models.Application.is_delete == False).first()
-    if not application:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, f"The application_id:{application_id} is not found")
 
     if not m:
         raise HTTPException(status.HTTP_404_NOT_FOUND,
