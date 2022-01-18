@@ -64,19 +64,19 @@ async def register(data: schemas.SignUp, db: Session = Depends(get_db)):
 warehouse_router = APIRouter()
 
 
-@warehouse_router.get("/{application_id}", response_model=schemas.WarehousePage, summary="查询该应用系统下所有仓库")
-async def list_warehouse(*, application_id: int, db: Session = Depends(get_db), paginate='{"page":1,"limit":10}',
+@warehouse_router.get("", response_model=schemas.WarehousePage, summary="查询该应用系统下所有仓库")
+async def list_warehouse(*, db: Session = Depends(get_db), paginate='{"page":1,"limit":10}',
                          filter='[{"fieldname":"id","option":"is_not_null"}]',
                          sort='[{"field":"id","direction":"desc"}]'):
-    return service.list_warehouse(db, application_id, paginate, filter, sort)
+    return service.list_warehouse(db, paginate, filter, sort)
 
 
-@warehouse_router.get("/{application_id}/{id}", response_model=schemas.RespWareHouse, summary="根据id查询仓库信息")
-async def get_warehouse(*, application_id: int, id: int, db: Session = Depends(get_db)):
+@warehouse_router.get("/{id}", response_model=schemas.RespWareHouse, summary="根据id查询仓库信息")
+async def get_warehouse(*, id: int, db: Session = Depends(get_db)):
     """
     :return:
     """
-    return service.get_warehouse(db, application_id,  id)
+    return service.get_warehouse(db, id)
 
 
 @warehouse_router.post("", response_model=schemas.RespWareHouse, summary="添加仓库信息")
@@ -90,14 +90,14 @@ async def create_warehouse(*, data: schemas.RespWareHouseBase, db: Session = Dep
     return service.create_warehouse(db, data)
 
 
-@warehouse_router.put("/{application_id}/{id}", response_model=schemas.RespWareHouse, summary="修改仓库信息")
-async def update_warehouse(*, application_id, id: int, data: schemas.ReqCreateWareHouse, db: Session = Depends(get_db)):
-    return service.update_warehouse(db, application_id, id, data)
+@warehouse_router.put("/{id}", response_model=schemas.RespWareHouse, summary="修改仓库信息")
+async def update_warehouse(*, id: int, data: schemas.ReqCreateWareHouse, db: Session = Depends(get_db)):
+    return service.update_warehouse(db, id, data)
 
 
-@warehouse_router.delete("/{application_id}/{id}", summary="删除仓库信息")
-async def delete_warehouse(*, application_id: int, id: int, db: Session = Depends(get_db)):
-    return service.del_warehouse(db, application_id, id)
+@warehouse_router.delete("/{id}", summary="删除仓库信息")
+async def delete_warehouse(*, id: int, db: Session = Depends(get_db)):
+    return service.del_warehouse(db, id)
 
 
 # Freight
