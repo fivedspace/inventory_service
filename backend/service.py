@@ -226,10 +226,3 @@ def encry_local_prv_key(local_prv_key, charset="utf-8"):
 def uploading(db, data):
     return crud.uploading(db, data)
 
-
-# def list_uploading(db, paginate, filter, sort):
-#     paginate = json.loads(paginate)
-#     filter = json.loads(filter)
-#     # 默认查询删除
-#     sort = json.loads(sort)
-#     return crud.list_uploading(db, paginate, filter, sort)
