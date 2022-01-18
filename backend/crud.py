@@ -1,7 +1,9 @@
 import json
 import random
 import time
+import base64
 from sqlalchemy.sql.expression import or_
+import requests
 from database import engine
 from sqlalchemy.orm import Session
 from common import get_password_hash
@@ -410,7 +412,6 @@ def del_freight(db: Session, warehouse_id, id):
 # application
 def create_application(db, app):
     application = models.Application(name=app.name,
-                                     key=app.key,
                                      email=app.email,
                                      admin_name=app.admin_name,
                                      admin_phone=app.admin_phone,
@@ -498,94 +499,70 @@ def del_application(db, id):
 
 
 # 上传
-def uploading(db, data):
-    if data.type == "image":
-        upload = db.query(models.Image).filter(models.Image.name == data.name).first()
-        if upload:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{data.name}以存在")
-        query = models.Image(
-            name=data.name,
-            value=data.value,
-            uuid=str(uuid.uuid1())
-        )
-    elif data.type == "video":
-        upload = db.query(models.Video).filter(models.Video.name == data.name).first()
-        if upload:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{data.name}以存在")
-        query = models.Video(
-            name=data.name,
-            value=data.value,
-            uuid=str(uuid.uuid1())
-        )
-    elif data.type == 'audio':
-        upload = db.query(models.Audio).filter(models.Audio.name == data.name).first()
-        if upload:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{data.name}以存在")
-        query = models.Audio(
-            name=data.name,
-            value=data.value,
-            uuid=str(uuid.uuid1())
-        )
-    elif data.type == 'text':
-        upload = db.query(models.Texts).filter(models.Texts.name == data.name).first()
-        if upload:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{data.name}以存在")
-        query = models.Texts(
-            name=data.name,
-            value=data.value,
-            uuid=str(uuid.uuid1())
-        )
-    elif data.type == 'int':
-        upload = db.query(models.Int).filter(models.Int.name == data.name).first()
-        if upload:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{data.name}以存在")
-        query = models.Int(
-            name=data.name,
-            value=data.value,
-            uuid=str(uuid.uuid1())
-        )
-    elif data.type == 'float':
-        upload = db.query(models.Float).filter(models.Float.name == data.name).first()
-        if upload:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{data.name}以存在")
-        query = models.Float(
-            name=data.name,
-            value=data.value,
-            uuid=str(uuid.uuid1())
-        )
-    else:
-        raise HTTPException(status.HTTP_404_NOT_FOUND,
-                            f"The type :{data.type} is error /(image,video,audio,text,int,float)")
-    db.add(query)
-    save(db)
-    db.refresh(query)
-    return {"msg": '上传成功', "data": query}
+def uploading(db, data: List[schemas.uploadingBase]):
+    query_data = []
+    for item in data:
+        Type = item.type.lower()
+        if Type == "image":
+            upload = db.query(models.Image).filter(models.Image.name == item.name).first()
+            if upload:
+                raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{item.name}以存在")
+            query = models.Image(
+                name=item.name,
+                value=item.value,
+                uuid=str(uuid.uuid1())
+            )
+        elif Type == "video":
+            upload = db.query(models.Video).filter(models.Video.name == item.name).first()
+            if upload:
+                raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{item.name}以存在")
+            query = models.Video(
+                name=item.name,
+                value=item.value,
+                uuid=str(uuid.uuid1())
+            )
+        elif Type == 'audio':
+            upload = db.query(models.Audio).filter(models.Audio.name == item.name).first()
+            if upload:
+                raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{item.name}以存在")
+            query = models.Audio(
+                name=item.name,
+                value=item.value,
+                uuid=str(uuid.uuid1())
+            )
+        elif Type == 'text':
+            upload = db.query(models.Texts).filter(models.Texts.name == item.name).first()
+            if upload:
+                raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{item.name}以存在")
+            query = models.Texts(
+                name=item.name,
+                value=item.value,
+                uuid=str(uuid.uuid1())
+            )
+        elif Type == 'int':
+            upload = db.query(models.Int).filter(models.Int.name == item.name).first()
+            if upload:
+                raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{item.name}以存在")
+            query = models.Int(
+                name=item.name,
+                value=item.value,
+                uuid=str(uuid.uuid1())
+            )
+        elif Type == 'float':
+            upload = db.query(models.Float).filter(models.Float.name == item.name).first()
+            if upload:
+                raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{item.name}以存在")
+            query = models.Float(
+                name=item.name,
+                value=item.value,
+                uuid=str(uuid.uuid1())
+            )
+        else:
+            raise HTTPException(status.HTTP_404_NOT_FOUND,
+                                f"The type :{Type} is error /(image,video,audio,text,int,float)")
+        db.add(query)
+        save(db)
+        db.refresh(query)
+        query_data.append({"name": query.name, "uuid": query.uuid, "value": query.value, "type": Type})
+    return query_data
 
-
-# def list_uploading(db, paginate, filter, sort):
-#     query = db.query(models.File)
-#     filters = []
-#     for f_data in filter:
-#         if "value" in f_data:
-#             j_data = {'field': f_data["fieldname"], 'op': f_data["option"], 'value': f_data["value"]}
-#         else:
-#             j_data = {'field': f_data["fieldname"], 'op': f_data["option"]}
-#         filters.append(j_data)
-#     filtered_query = apply_filters(query, filters)
-#     count = len(filtered_query.all())
-#
-#     sorts = []
-#     for s_data in sort:
-#         js_data = {"field": s_data['field'], "direction": s_data['direction']}
-#         sorts.append(js_data)
-#     data = apply_sort(filtered_query, sorts)
-#
-#     paginated_query, pagination = apply_pagination(
-#         data, paginate['page'], paginate['limit']
-#     )
-#
-#     result = paginated_query.all()
-#     page_count = int(math.ceil(count / paginate['limit']))
-#
-#     return {"data": result, "count": count, "page": paginate['page'], "page_count": page_count,
-#             "size": paginate['limit']}

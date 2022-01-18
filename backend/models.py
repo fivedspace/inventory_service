@@ -142,10 +142,9 @@ class Application(Base, BaseTime):
     __tablename__ = 'is_application'
     id = Column(Integer, primary_key=True, comment="主键id")
     name = Column(Text, comment="应用系统名称")
-    key = Column(Text)
-    email = Column(Text)
-    admin_name = Column(Text)
-    admin_phone = Column(Text)
+    email = Column(Text, comment="管理员邮箱")
+    admin_name = Column(Text, comment="管理员名称")
+    admin_phone = Column(Text, comment="管理员电话")
     ip = Column(Text)
     status = Column(BIGINT)
     is_delete = Column(Boolean, default=False)

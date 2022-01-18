@@ -198,12 +198,6 @@ uploading_router = APIRouter()
 
 
 # 上传文件
-# @uploading_router.get("", response_model=schemas.uploadingPage, summary="查询所有上传文件")
-# def list_uploading(db: Session = Depends(get_db), paginate='{"page":1,"limit":10}',
-#                       filter='[{"fieldname":"id","option":"is_not_null"}]', sort='[{"field":"id","direction":"desc"}]'):
-#     return service.list_uploading(db, paginate, filter, sort)
-
-
-@uploading_router.post("", response_model=schemas.uploading, summary="上传文件")
-def uploading(data: schemas.uploadingBase, db: Session = Depends(get_db)):
+@uploading_router.post("", response_model=List[schemas.uploading], summary="上传文件")
+def uploading(data: List[schemas.uploadingBase], db: Session = Depends(get_db)):
     return service.uploading(db, data)
