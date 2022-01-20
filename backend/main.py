@@ -17,7 +17,7 @@ app.include_router(api.code_router, tags=["AUth Common"], prefix="/auth")
 app.include_router(api.admin_router, tags=["Admin"], prefix="/admin")
 app.include_router(api.warehouse_router, tags=["WareHouse"], prefix="/warehouse")
 app.include_router(api.freight_router, tags=["Freight"], prefix="/freight")
-app.include_router(api.application_router, prefix="/application")
+app.include_router(api.application_router, tags=["Applications"], prefix="/application")
 app.include_router(api.uploading_router, tags=['uploading'], prefix="/uploading")
 
 

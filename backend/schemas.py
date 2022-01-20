@@ -169,6 +169,7 @@ class ReqWareHouseOut(BaseModel):
 # application
 class ApplicationBase(BaseModel):
     name: str = Field(title='应用系统名称', description='应用系统名称')
+    key: str = Field(title='约定字符串用于签名', description='应用与订单系统约定的值')
     email: str = Field(title='系统的邮箱', description='系统的邮箱')
     admin_name: str = Field(title='系统管理员姓名', description='系统管理员姓名')
     admin_phone: str = Field(title='系统管理员手机号', description='系统管理员手机号')

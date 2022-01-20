@@ -1,26 +1,11 @@
-import time
-from typing import List
-from sqlalchemy.sql.expression import null
-import models
-# import util.util
 from database import SessionLocal
 from util.utli import *
-from loguru import logger
 import env
-import requests
-# from util.org import OrderBox
-from util.verify_code import get_email_code
-from fastapi.encoders import jsonable_encoder
 import hashlib
-import qrcode
+from fastapi import HTTPException, status
 import os
-import random
-import string
-import re
 from util.auth import CommonReq
-from util import connection_manager
 from util.Redis import Redis
-# from util.utli import operators_ex_util, verify_phone, paging_data_integration
 import json
 import crud
 RE_PHONE = r"^1[3|4|5|6|7|8][0-9]{9}$"  # 手机号校验正则表达式
@@ -183,36 +168,56 @@ def del_freight(db: Session, warehouse_id, id):
 
 
 # applicaitons related service
-def create_application(db, app):
-    return crud.create_application(db, app)
+def create_application(app: schemas.ApplicationBase):
+    data = {
+        "name": app.name,
+        "key": app.key,
+        "email": app.email,
+        "admin_name": app.admin_name,
+        "admin_phone": app.admin_phone,
+        "ip": app.ip,
+        "remark": app.remark
+    }
+    request = CommonReq(url=env.APPLICATIONS_BASE, method="post", data=json.dumps(data))
+    return request.data
 
 
-def list_applications(db, paginate, filter, sort):
-    paginate = json.loads(paginate)
-    filter = json.loads(filter)
-    # 默认查询删除
-    filter.append({"fieldname": "is_delete", "option": "==", "value": 0})
-    sort = json.loads(sort)
-    data = crud.list_applications(db, paginate, filter, sort)
-    return data
+def list_applications(paginate, filter, sort):
+    data = {"paginate": paginate, "filter": filter, "sort": sort}
+    request = CommonReq(url=env.APPLICATIONS_BASE, method="get", data=data)
+    request_data = request.data
+    return {"page": request_data["page"], "size": request_data["page_size"], "count": request_data["data_count"], "page_count": request_data["page_count"], "data": request_data["data"]}
 
 
-def get_application(db, id):
-    return crud.get_application(db, id)
+def get_application(id):
+    url = env.APPLICATIONS_BASE + f"{id}"
+    request = CommonReq(url=url, method="get")
+    if not request.data:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, f"The id:{id} is not found")
+    return request.data
 
 
-def update_application(db, id, app):
-    return crud.update_application(db, id, app)
+def update_application(id, app: schemas.ApplicationBase):
+    url = env.APPLICATIONS_BASE + f"{id}"
+    data = {
+        "name": app.name,
+        "key": app.key,
+        "email": app.email,
+        "admin_name": app.admin_name,
+        "admin_phone": app.admin_phone,
+        "ip": app.ip,
+        "remark": app.remark
+    }
+    request = CommonReq(url=url, method="put", data=json.dumps(data))
+    if not request.data:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, f"The id: {id} is not found")
+    return request.data
 
 
-def del_application(db, id):
-    app_info = crud.del_application(db, id)
-    if app_info is not None:
-        if app_info.is_delete:
-            return "success"
-        else:
-            return "failed"
-    return app_info
+def del_application(id):
+    url = env.APPLICATIONS_BASE + f"{id}"
+    request = CommonReq(url=url, method="delete")
+    return request.data
 
 
 def encry_local_prv_key(local_prv_key, charset="utf-8"):

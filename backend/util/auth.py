@@ -27,4 +27,9 @@ class CommonReq:
             response_data = requests.get(url=url, params=data, headers=headers)
         elif method == "PATCH":
             response_data = requests.patch(url=url, data=data, headers=headers)
+        elif method == "PUT":
+            response_data = requests.put(url=url, data=data, headers=headers)
+        elif method == "DELETE":
+            response_data = requests.delete(url=url, params=data, headers=headers)
+
         self.data = json.loads(response_data.text)
