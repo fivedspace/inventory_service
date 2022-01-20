@@ -143,55 +143,42 @@ application_router = APIRouter()
 # 新增系统
 @application_router.post("",
                          response_model=schemas.Application,
-                         tags=["applications"],
                          summary="新增应用系统")
-def create_application(app: schemas.ApplicationBase,
-                       db: Session = Depends(get_db)):
-    return service.create_application(db, app)
+def create_application(app: schemas.ApplicationBase):
+    return service.create_application(app)
 
 
 # 查询所有系统信息
 # filter_mes  过滤参数,例如：查询某个时间段的订单信息,等具体需求出来再写
 @application_router.get("",
-                        tags=["applications"],
                         response_model=schemas.ApplicationPage,
                         summary="列出所有应用系统信息")
-def list_applications(db: Session = Depends(get_db), paginate='{"page":1,"limit":10}',
+def list_applications(paginate='{"page":1,"limit":10}',
                       filter='[{"fieldname":"id","option":"is_not_null"}]', sort='[{"field":"id","direction":"desc"}]'):
-    return service.list_applications(db, paginate, filter, sort)
+    return service.list_applications(paginate, filter, sort)
 
 
 # 根据id查询系统信息
 @application_router.get("/{id}",
-                        tags=["applications"],
                         response_model=schemas.Application,
                         summary="根据id查詢应用系統信息")
-def get_application(id: int, db: Session = Depends(get_db)):
-    return service.get_application(db, id)
+def get_application(id: int):
+    return service.get_application(id)
 
 
 # 修改系统信息
 @application_router.put("/{id}",
-                        tags=["applications"],
                         response_model=schemas.Application,
                         summary="修改应用系统信息")
 def update_application(id: int,
-                       app: schemas.ApplicationBase,
-                       db: Session = Depends(get_db)):
-    return service.update_application(db, id, app)
+                       app: schemas.ApplicationBase):
+    return service.update_application(id, app)
 
 
 # 删除系统信息
-@application_router.delete("/{id}", tags=["applications"], summary="删除一个系统信息")
-def del_application(id: int, db: Session = Depends(get_db)):
-    result = service.del_application(db, id)
-    if result is not None:
-        if result == "success":
-            return {"msg": "删除成功"}
-        elif result == "fail":
-            return {"msg": "删除失败，未知错误"}
-    else:
-        return {"msg": "删除失败，系统不存在"}
+@application_router.delete("/{id}", summary="删除一个系统信息")
+def del_application(id: int):
+    return service.del_application(id)
 
 
 uploading_router = APIRouter()
