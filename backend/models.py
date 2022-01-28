@@ -90,7 +90,7 @@ class WareHouse(Base, BaseTime):
     warehouse_name = Column(String(255), comment="仓库名称")
     is_del = Column(Boolean(), default=0, comment="删除仓库(0:未删除,1:已删除)")
     del_time = Column(DateTime(timezone=True))
-    appcation_id = Column(Integer, ForeignKey('is_application.id'), comment="应用系统id")
+    appcation_id = Column(Integer, comment="应用系统id")
 
 
 # 货物
@@ -98,16 +98,14 @@ class Freight(Base, BaseTime):
     __tablename__ = "is_freight"
 
     id = Column(Integer, primary_key=True, comment="主键id")
-    appcation_id = Column(Integer, ForeignKey('is_application.id'), comment="应用系统id")
+    appcation_id = Column(Integer, comment="应用系统id")
     freight_name = Column(String(255), comment="货物名称")
     freight_quantity = Column(String(255), comment="货物总数量")
     manufacture_factory = Column(String(255), comment="生产厂家")
-    manufacture_time = Column(DateTime, comment="生产日期")
+    manufacture_time = Column(DateTime(timezone=True), comment="生产日期")
     freight_price = Column(Integer, comment="货物单价")
-    # recently_warehouseOut_time = Column(DateTime, ForeignKey("is_warehouse_out.warehouseOut_time"), comment="最近出库时间")
-    # recently_warehouseIn_time = Column(DateTime, ForeignKey("is_warehouse_in.warehouseIn_time"), comment="最近入库时间")
-    warehouse_out_id = Column(Integer, ForeignKey("is_warehouse_out.id"), comment="最近出库记录的id")
-    warehouse_in_id = Column(Integer, ForeignKey("is_warehouse_in.id"), comment="最近入库记录的id")
+    warehouse_out_id = Column(Integer, comment="最近出库记录的id")
+    warehouse_in_id = Column(Integer, comment="最近入库记录的id")
     warehouse_id = Column(Integer, ForeignKey("is_warehouse.id"), comment="仓库编码")
     is_del = Column(Boolean(), default=0, comment="删除货物(0:未删除,1:已删除)")
     del_time = Column(DateTime(timezone=True), comment="删除时间")
@@ -119,10 +117,11 @@ class WareHouseIn(Base, BaseTime):
     __tablename__ = "is_warehouse_in"
 
     id = Column(Integer, primary_key=True, comment="主键id")
-    warehouseIn_time = Column(DateTime, comment="入库日期")
+    warehouseIn_time = Column(DateTime(timezone=True), comment="入库日期")
     amount = Column(String(255), comment="入库货物数量")
+    name = Column(String(255), comment="货物名称")
     warehouse_id = Column(Integer, ForeignKey("is_warehouse.id"), comment="仓库编码")
-    appcation_id = Column(Integer, ForeignKey('is_application.id'), comment="应用系统id")
+    appcation_id = Column(Integer, comment="应用系统id")
 
 
 # 出库
@@ -130,25 +129,11 @@ class WareHouseOut(Base, BaseTime):
     __tablename__ = "is_warehouse_out"
 
     id = Column(Integer, primary_key=True, comment="主键id")
-    warehouseOut_time = Column(DateTime, comment="出库日期")
+    warehouseOut_time = Column(DateTime(timezone=True), comment="出库日期")
     amount = Column(String(255), comment="出库货物数量")
     freight_id = Column(Integer, ForeignKey('is_freight.id'), comment='货物编码')
     warehouse_id = Column(Integer, ForeignKey("is_warehouse.id"), comment="仓库编码")
-    appcation_id = Column(Integer, ForeignKey('is_application.id'), comment="应用系统id")
-
-
-# 应用系统
-class Application(Base, BaseTime):
-    __tablename__ = 'is_application'
-    id = Column(Integer, primary_key=True, comment="主键id")
-    name = Column(Text, comment="应用系统名称")
-    email = Column(Text, comment="管理员邮箱")
-    admin_name = Column(Text, comment="管理员名称")
-    admin_phone = Column(Text, comment="管理员电话")
-    ip = Column(Text)
-    status = Column(BIGINT)
-    is_delete = Column(Boolean, default=False)
-    remark = Column(Text)
+    appcation_id = Column(Integer, comment="应用系统id")
 
 
 class Image(Base, BaseTime):

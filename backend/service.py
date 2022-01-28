@@ -109,7 +109,7 @@ def list_warehouse(db, paginate, filter, sort):
     paginate = json.loads(paginate)
     filter = json.loads(filter)
     sort = json.loads(sort)
-
+    filter.append({"fieldname": "is_del", "option": "==", "value": 0})
     data = crud.list_warehouse(db, paginate, filter, sort)
     return data
 

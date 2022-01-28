@@ -1,9 +1,9 @@
 import json
-import random
-import time
-import base64
-from sqlalchemy.sql.expression import or_
-import requests
+
+from loguru import logger
+
+import env
+from util.auth import CommonReq
 from database import engine
 from sqlalchemy.orm import Session
 from common import get_password_hash
@@ -134,9 +134,8 @@ def get_warehouse(db: Session, id):
 
 
 def create_warehouse(db: Session, data: schemas.RespWareHouseBase):
-    application = db.query(models.Application).filter(models.Application.id == data.appcation_id,
-                                                      models.Application.is_delete == False).first()
-    if not application:
+    appcation = CommonReq(url=f"{env.APPLICATIONS_BASE}{data.appcation_id}", method="get").data
+    if not appcation:
         raise HTTPException(status.HTTP_404_NOT_FOUND,
                             f"The application_id:{data.appcation_id} is not found")
     data = models.WareHouse(
@@ -209,6 +208,10 @@ def list_freight(db: Session, paginate, filter, sort):
     result = paginated_query.all()
     page_count = int(math.ceil(count / paginate['limit']))
 
+    for res in result:
+        res.property = json.loads(res.property)
+
+    print(result)
     return {"data": result, "count": count, "page": paginate['page'], "page_count": page_count,
             "size": paginate['limit']}
 
@@ -222,8 +225,7 @@ def get_freight(db: Session, id) -> models.Freight:
 
 
 def create_warehouse_in(db: Session, data: schemas.ReqWareHouseIn):
-    appcation = db.query(models.Application).filter(models.Application.id == data.appcation_id,
-                                                    models.Application.is_delete == False).first()
+    appcation = CommonReq(url=f"{env.APPLICATIONS_BASE}{data.appcation_id}", method="get").data
     if not appcation:
         raise HTTPException(status.HTTP_404_NOT_FOUND, f"The application_id: {data.appcation_id} is not found")
     warehouse = db.query(models.WareHouse).filter(models.WareHouse.id == data.warehouse_id,
@@ -234,72 +236,83 @@ def create_warehouse_in(db: Session, data: schemas.ReqWareHouseIn):
 
     freight_query = db.query(models.Freight).filter(models.Freight.freight_name == data.freight_name,
                                                     models.Freight.warehouse_id == data.warehouse_id,
-                                                    models.Freight.warehouse_id == data.appcation_id,
+                                                    models.Freight.appcation_id == data.appcation_id,
                                                     models.Freight.is_del == False).first()
 
     propertys = []
-    if len(data.property):
-        for item, index in data.property:
-            if item.type == "image":
-                m = models.Image
-            elif item.type == "video":
-                m = models.Video
-            elif item.type == 'audio':
-                m = models.Audio
-            elif item.type == 'text':
-                m = models.Text
-            elif item.type == 'int':
-                m = models.Int
-            elif item.type == 'float':
-                m = models.Float
-            else:
-                raise HTTPException(status.HTTP_404_NOT_FOUND,
-                                    f"The property[{index}].type :{item.type} is error /(image,video,audio,text,int,float)")
+    if data.property:
+        if len(data.property):
+            f_index = 0
+            for item in data.property:
+                if item.type == "image":
+                    m = models.Image
+                elif item.type == "video":
+                    m = models.Video
+                elif item.type == 'audio':
+                    m = models.Audio
+                elif item.type == 'text':
+                    m = models.Text
+                elif item.type == 'int':
+                    m = models.Int
+                elif item.type == 'float':
+                    m = models.Float
+                else:
+                    raise HTTPException(status.HTTP_404_NOT_FOUND,
+                                        f"The property[{f_index}].type :{item.type} is error /(image,video,audio,text,int,float)")
 
-            item_data = db.query(m).filter(m.uuid == item.uuid).first()
-            if not item_data:
-                raise HTTPException(status.HTTP_404_NOT_FOUND, f"The property[{index}].uuid :{item.type} is not found")
-            item_data.append({"type": item.type})
-            propertys.append(item_data)
+                item_data = db.query(m).filter(m.uuid == item.uuid).first()
+                if not item_data:
+                    raise HTTPException(status.HTTP_404_NOT_FOUND,
+                                        f"The property[{f_index}].uuid :{item.type} is not found")
+                item_data.append({"type": item.type})
+                propertys.append(item_data)
+                f_index += 1
 
     warehouse_in_data = models.WareHouseIn(
         warehouseIn_time=data.warehouseIn_time,
         amount=data.purchase_quantity,
-        warehouse_id=data.warehouse_id
+        warehouse_id=data.warehouse_id,
+        appcation_id=data.warehouse_id,
+        name=data.freight_name
     )
     db.add(warehouse_in_data)
     save(db)
-    db.refresh(warehouse_in_data)
-
-    # 数据库没有商品
-    freight_data = models.Freight(
-        freight_name=data.freight_name,
-        freight_quantity=data.purchase_quantity,
-        manufacture_factory=data.manufacture_factory,
-        manufacture_time=data.manufacture_time,
-        freight_price=data.freight_price,
-        warehouse_id=data.warehouse_id,
-        warehouse_in_id=warehouse_in_data.id,
-        property=json.dumps(propertys)
-    )
-
     if freight_query:
         # 数据库有商品
+        freight_query.freight_quantity = int(data.purchase_quantity) + int(freight_query.freight_quantity)
+        freight_query.warehouse_in_id = warehouse_in_data.id
+        if freight_query.property is not None:
+            if not len(json.loads(freight_query.property)):
+                freight_query.property = json.dumps(propertys)
+        else:
+            freight_query.property = json.dumps(propertys)
+        db.add(freight_query)
+        save(db)
+        freight_query.property = json.loads(freight_query.property)
+        print(freight_query.property)
+        return freight_query
+    else:
+        # 数据库没有商品
         freight_data = models.Freight(
-            freight_quantity=data.purchase_quantity + freight_query.freight_quantity,
+            freight_name=data.freight_name,
+            freight_quantity=data.purchase_quantity,
+            manufacture_factory=data.manufacture_factory,
+            manufacture_time=data.manufacture_time,
+            freight_price=data.freight_price,
+            warehouse_id=data.warehouse_id,
             warehouse_in_id=warehouse_in_data.id,
+            appcation_id=data.appcation_id,
             property=json.dumps(propertys)
         )
-
-    db.add(freight_data)
-    save(db)
-    db.refresh(freight_data, warehouse_in_data)
-    return freight_data
+        db.add(freight_data)
+        save(db)
+        print(freight_data)
+        freight_data.property = propertys
+        return freight_data
 
 
 def create_warehouse_out(db: Session, data: schemas.ReqWareHouseOut):
-    appcation = db.query(models.Application).filter(models.Application.id == data.appcation_id,
-                                                    models.Application.is_delete == False).first()
+    appcation = CommonReq(url=f"{env.APPLICATIONS_BASE}{data.appcation_id}", method="get").data
     if not appcation:
         raise HTTPException(status.HTTP_404_NOT_FOUND, f"The appcation_id:{data.appcation_id} is not found")
     warehouse_query = db.query(models.WareHouse).filter(models.WareHouse.id == data.warehouse_id,
@@ -323,7 +336,8 @@ def create_warehouse_out(db: Session, data: schemas.ReqWareHouseOut):
         amount=data.shipment,
         freight_id=data.freight_id,
         warehouse_id=data.warehouse_id,
-        appcation_id=data.appcation_id
+        appcation_id=data.appcation_id,
+        name=data.freight_name
     )
     db.add(warehouseOut_data)
     save(db)
@@ -355,8 +369,8 @@ def update_freight(db: Session, id, data: schemas.ReqCreateFreight):
                             f"The freight_id:{id} is not found")
     if data.freight_name:
         query.freight_name = data.freight_name
-    if data.freight_amount:
-        query.freight_quantity = data.freight_amount
+    if data.freight_quantity:
+        query.freight_quantity = data.freight_quantity
     if data.manufacture_factory:
         query.manufacture_factory = data.manufacture_factory
     if data.manufacture_time:
@@ -385,95 +399,6 @@ def del_freight(db: Session, warehouse_id, id):
     m.del_time = datetime.now()
     db.add(m)
     save(db)
-
-
-# application
-def create_application(db, app):
-    application = models.Application(name=app.name,
-                                     email=app.email,
-                                     admin_name=app.admin_name,
-                                     admin_phone=app.admin_phone,
-                                     ip=app.ip,
-                                     remark=app.remark)
-    db.add(application)
-    save(db)
-    db.refresh(application)
-    return application
-
-
-def list_applications(db, paginate, filter, sort):
-    query = db.query(models.Application)
-    filters = []
-    for f_data in filter:
-        if "value" in f_data:
-            j_data = {'field': f_data["fieldname"], 'op': f_data["option"], 'value': f_data["value"]}
-        else:
-            j_data = {'field': f_data["fieldname"], 'op': f_data["option"]}
-        filters.append(j_data)
-    filtered_query = apply_filters(query, filters)
-    count = len(filtered_query.all())
-
-    sorts = []
-    for s_data in sort:
-        js_data = {"field": s_data['field'], "direction": s_data['direction']}
-        sorts.append(js_data)
-    data = apply_sort(filtered_query, sorts)
-
-    paginated_query, pagination = apply_pagination(
-        data, paginate['page'], paginate['limit']
-    )
-
-    result = paginated_query.all()
-    page_count = int(math.ceil(count / paginate['limit']))
-
-    return {"data": result, "count": count, "page": paginate['page'], "page_count": page_count,
-            "size": paginate['limit']}
-
-
-def get_application(db, id):
-    data = db.query(models.Application).filter(
-        models.Application.id == id,
-        models.Application.is_delete == False).first()
-    if not data:
-        raise HTTPException(status.HTTP_404_NOT_FOUND,
-                            f"The appcation_id: {id} is not found")
-
-    return data
-
-
-def update_application(db, id, app):
-    app_info = db.query(models.Application).filter(
-        models.Application.id == id,
-        models.Application.is_delete == False).first()
-    if not app_info:
-        raise HTTPException(status.HTTP_404_NOT_FOUND,
-                            f"The appcation_id: {id} is not found")
-
-    if app.name is not None: app_info.name = app.name
-    if app.key is not None: app_info.key = app.key
-    if app.email is not None: app_info.email = app.email
-    if app.admin_name is not None: app_info.admin_name = app.admin_name
-    if app.admin_phone is not None: app_info.admin_phone = app.admin_phone
-    if app.ip is not None: app_info.ip = app.ip
-    if app.remark is not None: app_info.remark = app.remark
-
-    db.add(app_info)
-    save(db)
-    db.refresh(app_info)
-    return app_info
-
-
-def del_application(db, id):
-    app_info = db.query(models.Application).filter(
-        models.Application.id == id,
-        models.Application.is_delete == False).first()
-    if not app_info:
-        return None
-    app_info.is_delete = True
-    db.add(app_info)
-    save(db)
-    db.refresh(app_info)
-    return app_info
 
 
 # 上传
@@ -543,4 +468,3 @@ def uploading(db, data: List[schemas.uploadingBase]):
         db.refresh(query)
         query_data.append({"name": query.name, "uuid": query.uuid, "value": query.value, "type": Type})
     return query_data
-

@@ -1,0 +1,5 @@
+2022-01-27 14:30:04.270 | INFO     | crud:create_warehouse_in:244 - name='111' type='image' uuid='111'
+2022-01-27 14:30:39.496 | INFO     | crud:create_warehouse_in:244 - name='111' type='image' uuid='111'
+2022-01-27 14:30:39.497 | INFO     | crud:create_warehouse_in:244 - name='222' type='image' uuid='222'
+2022-01-27 14:34:49.836 | INFO     | crud:create_warehouse_in:244 - name='111' type='image' uuid='111'
+2022-01-27 14:34:49.837 | INFO     | crud:create_warehouse_in:244 - name='222' type='image' uuid='222'
