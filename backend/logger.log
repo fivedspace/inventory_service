@@ -3,3 +3,30 @@
 2022-01-27 14:30:39.497 | INFO     | crud:create_warehouse_in:244 - name='222' type='image' uuid='222'
 2022-01-27 14:34:49.836 | INFO     | crud:create_warehouse_in:244 - name='111' type='image' uuid='111'
 2022-01-27 14:34:49.837 | INFO     | crud:create_warehouse_in:244 - name='222' type='image' uuid='222'
+2022-01-30 13:35:19.804 | ERROR    | crud:create_warehouse_in:302 - <class 'list'>
+2022-01-30 13:37:10.578 | ERROR    | crud:create_warehouse_in:302 - <class 'list'>
+2022-01-30 13:42:41.153 | ERROR    | crud:create_warehouse_in:302 - [<models.Image object at 0x0000022B91BA16A0>]
+2022-01-30 13:45:29.243 | INFO     | crud:create_warehouse_in:303 - <models.Image object at 0x00000293B76216A0>
+2022-01-30 13:58:38.658 | INFO     | crud:create_warehouse_in:303 - {'created_at': datetime.datetime(2022, 1, 30, 10, 33, 7), 'updated_at': datetime.datetime(2022, 1, 30, 10, 33, 7), 'id': 3, 'name': 'ԶԶ', 'uuid': 'f5406328-8174-11ec-9a32-b42e99ae899a', 'value': 'C:\\fakepath\\R-C.jpg', 'type': 'image'}
+2022-01-30 14:00:23.888 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
+2022-01-30 14:03:04.600 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
+2022-01-30 14:03:29.189 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
+2022-01-30 14:03:29.194 | INFO     | crud:create_warehouse_in:307 - {'created_at': datetime.datetime(2022, 1, 30, 10, 33, 7), 'updated_at': datetime.datetime(2022, 1, 30, 10, 33, 7), 'id': 3, 'name': 'ԶԶ', 'uuid': 'f5406328-8174-11ec-9a32-b42e99ae899a', 'value': 'C:\\fakepath\\R-C.jpg', 'type': 'image'}
+2022-01-30 14:03:55.106 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
+2022-01-30 14:03:55.112 | ERROR    | crud:create_warehouse_in:306 - [{'created_at': datetime.datetime(2022, 1, 30, 10, 33, 7), 'updated_at': datetime.datetime(2022, 1, 30, 10, 33, 7), 'id': 3, 'name': 'ԶԶ', 'uuid': 'f5406328-8174-11ec-9a32-b42e99ae899a', 'value': 'C:\\fakepath\\R-C.jpg', 'type': 'image'}]
+2022-01-30 14:04:19.694 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
+2022-01-30 14:04:19.704 | ERROR    | crud:create_warehouse_in:306 - [{'created_at': datetime.datetime(2022, 1, 30, 10, 33, 7), 'updated_at': datetime.datetime(2022, 1, 30, 10, 33, 7), 'id': 3, 'name': 'ԶԶ', 'uuid': 'f5406328-8174-11ec-9a32-b42e99ae899a', 'value': 'C:\\fakepath\\R-C.jpg', 'type': 'image'}]
+2022-01-30 14:05:27.266 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
+2022-01-30 14:05:27.276 | ERROR    | crud:create_warehouse_in:306 - [{'id': 3, 'name': 'ԶԶ', 'uuid': 'f5406328-8174-11ec-9a32-b42e99ae899a', 'value': 'C:\\fakepath\\R-C.jpg', 'type': 'image'}]
+2022-01-30 14:09:19.907 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
+2022-01-30 14:09:54.163 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
+2022-01-30 14:14:48.449 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
+2022-01-30 14:16:10.982 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
+2022-01-30 14:20:05.906 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
+2022-01-30 14:20:11.726 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
+2022-01-30 14:23:24.820 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
+2022-01-30 14:23:24.838 | INFO     | crud:create_warehouse_in:301 - <models.Freight object at 0x000001D7B1FCB610>
+2022-01-30 14:33:27.742 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
+2022-01-30 14:33:27.762 | INFO     | crud:create_warehouse_in:301 - <models.Freight object at 0x000001D7B24E88B0>
+2022-01-30 14:33:37.842 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
+2022-01-30 14:33:37.855 | INFO     | crud:create_warehouse_in:301 - <models.Freight object at 0x000001D7B24FD280>

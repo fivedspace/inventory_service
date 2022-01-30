@@ -100,7 +100,7 @@ class Freight(Base, BaseTime):
     id = Column(Integer, primary_key=True, comment="主键id")
     appcation_id = Column(Integer, comment="应用系统id")
     freight_name = Column(String(255), comment="货物名称")
-    freight_quantity = Column(String(255), comment="货物总数量")
+    freight_quantity = Column(Integer, comment="货物总数量")
     manufacture_factory = Column(String(255), comment="生产厂家")
     manufacture_time = Column(DateTime(timezone=True), comment="生产日期")
     freight_price = Column(Integer, comment="货物单价")
@@ -130,10 +130,11 @@ class WareHouseOut(Base, BaseTime):
 
     id = Column(Integer, primary_key=True, comment="主键id")
     warehouseOut_time = Column(DateTime(timezone=True), comment="出库日期")
-    amount = Column(String(255), comment="出库货物数量")
+    amount = Column(Integer, comment="出库货物数量")
     freight_id = Column(Integer, ForeignKey('is_freight.id'), comment='货物编码')
     warehouse_id = Column(Integer, ForeignKey("is_warehouse.id"), comment="仓库编码")
     appcation_id = Column(Integer, comment="应用系统id")
+    name = Column(String(255), comment="货物名称")
 
 
 class Image(Base, BaseTime):
@@ -143,6 +144,7 @@ class Image(Base, BaseTime):
     name = Column(String(255))
     uuid = Column(String(255))
     value = Column(String(255), comment="路径")
+    type = Column(String)
 
 
 class Video(Base, BaseTime):
@@ -152,6 +154,7 @@ class Video(Base, BaseTime):
     name = Column(String(255))
     uuid = Column(String(255))
     value = Column(String(255), comment="路径")
+    type = Column(String)
 
 
 class Audio(Base, BaseTime):
@@ -161,6 +164,7 @@ class Audio(Base, BaseTime):
     name = Column(String(255))
     uuid = Column(String(255))
     value = Column(String(255), comment="路径")
+    type = Column(String)
 
 
 class Texts(Base, BaseTime):
@@ -170,6 +174,7 @@ class Texts(Base, BaseTime):
     name = Column(String(255))
     uuid = Column(String(255))
     value = Column(String(255), comment="路径")
+    type = Column(String)
 
 
 class Int(Base, BaseTime):
@@ -179,6 +184,7 @@ class Int(Base, BaseTime):
     name = Column(String(255))
     uuid = Column(String(255))
     value = Column(String(255), comment="路径")
+    type = Column(String)
 
 
 class Float(Base, BaseTime):
@@ -188,3 +194,4 @@ class Float(Base, BaseTime):
     name = Column(String(255))
     value = Column(String(255), comment="路径")
     uuid = Column(String(255))
+    type = Column(String)

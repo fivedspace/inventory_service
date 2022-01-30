@@ -103,7 +103,7 @@ class WarehousePage(BasePage):
 # Freight
 class ReqCreateFreight(BaseModel):
     freight_name: str = Field(title="货物名称", description="货物名称")
-    freight_quantity: str = Field(title="货物总数量", description="货物总数量")
+    freight_quantity: int = Field(title="货物总数量", description="货物总数量")
     manufacture_factory: str = Field(title="生产厂家", description="生产厂家")
     manufacture_time: datetime = Field(title="生产时间", description="生产时间")
     freight_price: int = Field(title="货物单价", description="货物单价")
@@ -141,7 +141,7 @@ class WareHouseInBase(BaseModel):
 
 class ReqWareHouseIn(BaseModel):
     freight_name: str = Field(title="货物名称", description="货物名称")
-    purchase_quantity: str = Field(title="入货数量", description="入货数量")
+    purchase_quantity: int = Field(title="入货数量", description="入货数量")
     manufacture_factory: str = Field(title="生产厂家", description="生产厂家")
     manufacture_time: datetime = Field(title="生产时间", description="生产时间")
     freight_price: int = Field(title="货物单价", description="货物单价")
@@ -158,7 +158,7 @@ class ReqWareHouseIn(BaseModel):
 class ReqWareHouseOut(BaseModel):
     freight_id: int = Field(title="货物id", description="货物id")
     freight_name: str = Field(title="货物名称", description="货物名称")
-    shipment: str = Field(title="出货数量", description="出货数量")
+    shipment: int = Field(title="出货数量", description="出货数量")
     warehouseOut_time: datetime = Field(title="出库时间", description="出库时间")
     warehouse_id: int = Field(title="仓库id", description="仓库id")
     appcation_id: int = Field(title="应用系统id", description="应用系统id")
