@@ -211,16 +211,15 @@ def list_freight(db: Session, paginate, filter, sort):
     for res in result:
         res.property = json.loads(res.property)
 
-    print(result)
     return {"data": result, "count": count, "page": paginate['page'], "page_count": page_count,
             "size": paginate['limit']}
 
 
 def get_freight(db: Session, id) -> models.Freight:
-    data = db.query(models.Freight).filter(models.Freight.id == id, models.Freight.is_del == False)
+    data = db.query(models.Freight).filter(models.Freight.id == id, models.Freight.is_del == False).first()
     if not data:
         raise HTTPException(status.HTTP_404_NOT_FOUND, f"The freight_id:{id} is not found")
-
+    data.property = json.loads(data.property)
     return data
 
 
@@ -242,8 +241,7 @@ def create_warehouse_in(db: Session, data: schemas.ReqWareHouseIn):
     propertys = []
     if data.property:
         if len(data.property):
-            f_index = 0
-            for item in data.property:
+            for f_index, item in enumerate(data.property):
                 if item.type == "image":
                     m = models.Image
                 elif item.type == "video":
@@ -258,15 +256,20 @@ def create_warehouse_in(db: Session, data: schemas.ReqWareHouseIn):
                     m = models.Float
                 else:
                     raise HTTPException(status.HTTP_404_NOT_FOUND,
-                                        f"The property[{f_index}].type :{item.type} is error /(image,video,audio,text,int,float)")
+                                        f"The name为{item.name}, type :{item.type} is error /(image,video,audio,text,int,float)")
 
                 item_data = db.query(m).filter(m.uuid == item.uuid).first()
                 if not item_data:
                     raise HTTPException(status.HTTP_404_NOT_FOUND,
-                                        f"The property[{f_index}].uuid :{item.type} is not found")
-                item_data.append({"type": item.type})
-                propertys.append(item_data)
-                f_index += 1
+                                        f"The name为{item.name}, uuid :{item.uuid} is not found")
+
+                if not (item_data.name == item.name):
+                    raise HTTPException(status.HTTP_404_NOT_FOUND,
+                                        f"The name为{item.name}, name :{item.name} is not found")
+                item_dict = item_data.to_dict()
+                del item_dict["created_at"]
+                del item_dict["updated_at"]
+                propertys.append(item_dict)
 
     warehouse_in_data = models.WareHouseIn(
         warehouseIn_time=data.warehouseIn_time,
@@ -279,17 +282,25 @@ def create_warehouse_in(db: Session, data: schemas.ReqWareHouseIn):
     save(db)
     if freight_query:
         # 数据库有商品
-        freight_query.freight_quantity = int(data.purchase_quantity) + int(freight_query.freight_quantity)
+        freight_query.freight_quantity = data.purchase_quantity + freight_query.freight_quantity
         freight_query.warehouse_in_id = warehouse_in_data.id
-        if freight_query.property is not None:
-            if not len(json.loads(freight_query.property)):
-                freight_query.property = json.dumps(propertys)
-        else:
-            freight_query.property = json.dumps(propertys)
+        if data.property:  # 接受的数据中自定义属性不为空
+            if len(data.property):  # 接受数据中有自定义属性
+                if freight_query.property is not None:  # 货物中自定义属性不为空
+                    props = json.loads(freight_query.property)
+                    if len(props):  # 货物中有自定义属性
+                        for item in propertys:
+                            props.append(item)
+
+                        freight_query.property = json.dumps(props)
+                    else:
+                        freight_query.property = json.dumps(propertys)
+                else:
+                    freight_query.property = json.dumps(propertys)
+        logger.info(freight_query)
         db.add(freight_query)
         save(db)
         freight_query.property = json.loads(freight_query.property)
-        print(freight_query.property)
         return freight_query
     else:
         # 数据库没有商品
@@ -306,8 +317,7 @@ def create_warehouse_in(db: Session, data: schemas.ReqWareHouseIn):
         )
         db.add(freight_data)
         save(db)
-        print(freight_data)
-        freight_data.property = propertys
+        freight_data.property = json.loads(freight_data.property)
         return freight_data
 
 
@@ -316,19 +326,20 @@ def create_warehouse_out(db: Session, data: schemas.ReqWareHouseOut):
     if not appcation:
         raise HTTPException(status.HTTP_404_NOT_FOUND, f"The appcation_id:{data.appcation_id} is not found")
     warehouse_query = db.query(models.WareHouse).filter(models.WareHouse.id == data.warehouse_id,
-                                                        models.WareHouse.is_del == False)
-
-    freight_query = db.query(models.Freight).filter(models.Freight.id == data.freight_id,
-                                                    models.Freight.is_del == False)
-    if not freight_query:
-        raise HTTPException(status.HTTP_404_NOT_FOUND,
-                            f"The freight_id:{data.freight_id} is not found")
-
+                                                        models.WareHouse.is_del == False).first()
     if not warehouse_query:
         raise HTTPException(status.HTTP_404_NOT_FOUND,
                             f"The warehouse_id:{data.warehouse_id} is not found")
 
-    if data.shipment > freight_query.freight_quantity:
+    freight_query = db.query(models.Freight).filter(models.Freight.id == data.freight_id,
+                                                    models.Freight.warehouse_id == data.warehouse_id,
+                                                    models.Freight.appcation_id == data.appcation_id,
+                                                    models.Freight.is_del == False).first()
+    if not freight_query:
+        raise HTTPException(status.HTTP_404_NOT_FOUND,
+                            f"The freight_id:{data.freight_id} is not found")
+    print(type(data.shipment), type(freight_query.freight_quantity))
+    if int(data.shipment) > int(freight_query.freight_quantity):
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "货物的总数量小于出货量")
 
     warehouseOut_data = models.WareHouseOut(
@@ -341,45 +352,46 @@ def create_warehouse_out(db: Session, data: schemas.ReqWareHouseOut):
     )
     db.add(warehouseOut_data)
     save(db)
-    db.refresh(warehouse_query)
+    # db.refresh(warehouse_query)
 
-    freight_data = models.Freight(
-        freight_quantity=freight_query.freight_query - data.shipment,
-        warehouse_out_id=warehouseOut_data.id
-    )
-
-    db.add(freight_data, warehouseOut_data)
+    freight_query.freight_quantity = int(freight_query.freight_quantity) - int(data.shipment)
+    freight_query.warehouse_out_id = warehouseOut_data.id
+    db.add(freight_query)
     save(db)
-    db.refresh(freight_data, warehouseOut_data)
+    freight_query.property = json.loads(freight_query.property)
     return freight_query
 
 
-def update_freight(db: Session, id, data: schemas.ReqCreateFreight):
+def update_freight(db: Session, id, data: schemas.ReqWareHouseIn):
     warehouse_query = db.query(models.WareHouse).filter(models.WareHouse.id == data.warehouse_id,
-                                                        models.WareHouse.is_del == False)
+                                                        models.WareHouse.is_del == False).first()
     if not warehouse_query:
         raise HTTPException(status.HTTP_404_NOT_FOUND,
                             f"The warehouse_id:{data.warehouse_id} is not found")
     query = db.query(models.Freight).filter(models.Freight.id == id,
                                             models.Freight.warehouse_id == data.warehouse_id,
-                                            models.Freight.is_del == False)
+                                            models.Freight.is_del == False).first()
 
     if not query:
         raise HTTPException(status.HTTP_404_NOT_FOUND,
                             f"The freight_id:{id} is not found")
     if data.freight_name:
         query.freight_name = data.freight_name
-    if data.freight_quantity:
-        query.freight_quantity = data.freight_quantity
+    if data.purchase_quantity:
+        query.freight_quantity = data.purchase_quantity
     if data.manufacture_factory:
         query.manufacture_factory = data.manufacture_factory
     if data.manufacture_time:
         query.manufacture_time = data.manufacture_time
     if data.freight_price:
         query.freight_price = data.freight_price
+    if data.property:
+        query.property = json.dumps(data.property)
     db.add(query)
     save(db)
     db.refresh(query)
+    print(data)
+    query.property = json.loads(query.property)
     return query
 
 
@@ -390,8 +402,8 @@ def del_freight(db: Session, warehouse_id, id):
         raise HTTPException(status.HTTP_404_NOT_FOUND,
                             f"The warehouse_id:{warehouse_id} is not found")
     m = db.query(models.Freight).filter(models.Freight.id == id,
-                                        models.
-                                        Freight.is_del == False)
+                                        models.Freight.warehouse_id == warehouse_id,
+                                        models.Freight.is_del == False).first()
     if not m:
         raise HTTPException(status.HTTP_404_NOT_FOUND,
                             f"The freight_id:{id} is not found")
@@ -413,7 +425,8 @@ def uploading(db, data: List[schemas.uploadingBase]):
             query = models.Image(
                 name=item.name,
                 value=item.value,
-                uuid=str(uuid.uuid1())
+                uuid=str(uuid.uuid1()),
+                type=Type
             )
         elif Type == "video":
             upload = db.query(models.Video).filter(models.Video.name == item.name).first()
@@ -422,7 +435,8 @@ def uploading(db, data: List[schemas.uploadingBase]):
             query = models.Video(
                 name=item.name,
                 value=item.value,
-                uuid=str(uuid.uuid1())
+                uuid=str(uuid.uuid1()),
+                type=Type
             )
         elif Type == 'audio':
             upload = db.query(models.Audio).filter(models.Audio.name == item.name).first()
@@ -431,7 +445,8 @@ def uploading(db, data: List[schemas.uploadingBase]):
             query = models.Audio(
                 name=item.name,
                 value=item.value,
-                uuid=str(uuid.uuid1())
+                uuid=str(uuid.uuid1()),
+                type=Type
             )
         elif Type == 'text':
             upload = db.query(models.Texts).filter(models.Texts.name == item.name).first()
@@ -440,7 +455,8 @@ def uploading(db, data: List[schemas.uploadingBase]):
             query = models.Texts(
                 name=item.name,
                 value=item.value,
-                uuid=str(uuid.uuid1())
+                uuid=str(uuid.uuid1()),
+                type=Type
             )
         elif Type == 'int':
             upload = db.query(models.Int).filter(models.Int.name == item.name).first()
@@ -449,7 +465,8 @@ def uploading(db, data: List[schemas.uploadingBase]):
             query = models.Int(
                 name=item.name,
                 value=item.value,
-                uuid=str(uuid.uuid1())
+                uuid=str(uuid.uuid1()),
+                type=Type
             )
         elif Type == 'float':
             upload = db.query(models.Float).filter(models.Float.name == item.name).first()
@@ -458,7 +475,8 @@ def uploading(db, data: List[schemas.uploadingBase]):
             query = models.Float(
                 name=item.name,
                 value=item.value,
-                uuid=str(uuid.uuid1())
+                uuid=str(uuid.uuid1()),
+                type=Type
             )
         else:
             raise HTTPException(status.HTTP_404_NOT_FOUND,
