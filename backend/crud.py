@@ -249,7 +249,7 @@ def create_warehouse_in(db: Session, data: schemas.ReqWareHouseIn):
                 elif item.type == 'audio':
                     m = models.Audio
                 elif item.type == 'text':
-                    m = models.Text
+                    m = models.Texts
                 elif item.type == 'int':
                     m = models.Int
                 elif item.type == 'float':
@@ -421,68 +421,80 @@ def uploading(db, data: List[schemas.uploadingBase]):
         if Type == "image":
             upload = db.query(models.Image).filter(models.Image.name == item.name).first()
             if upload:
-                raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{item.name}以存在")
-            query = models.Image(
-                name=item.name,
-                value=item.value,
-                uuid=str(uuid.uuid1()),
-                type=Type
-            )
+                upload.value = item.value
+            else:
+                query = models.Image(
+                    name=item.name,
+                    value=item.value,
+                    uuid=str(uuid.uuid1()),
+                    type=Type
+                )
         elif Type == "video":
             upload = db.query(models.Video).filter(models.Video.name == item.name).first()
             if upload:
-                raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{item.name}以存在")
-            query = models.Video(
-                name=item.name,
-                value=item.value,
-                uuid=str(uuid.uuid1()),
-                type=Type
-            )
+                upload.value = item.value
+            else:
+                query = models.Video(
+                    name=item.name,
+                    value=item.value,
+                    uuid=str(uuid.uuid1()),
+                    type=Type
+                )
         elif Type == 'audio':
             upload = db.query(models.Audio).filter(models.Audio.name == item.name).first()
             if upload:
-                raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{item.name}以存在")
-            query = models.Audio(
-                name=item.name,
-                value=item.value,
-                uuid=str(uuid.uuid1()),
-                type=Type
-            )
+                upload.value = item.value
+            else:
+                query = models.Audio(
+                    name=item.name,
+                    value=item.value,
+                    uuid=str(uuid.uuid1()),
+                    type=Type
+                )
         elif Type == 'text':
             upload = db.query(models.Texts).filter(models.Texts.name == item.name).first()
             if upload:
-                raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{item.name}以存在")
-            query = models.Texts(
-                name=item.name,
-                value=item.value,
-                uuid=str(uuid.uuid1()),
-                type=Type
-            )
+                upload.value = item.value
+            else:
+                query = models.Texts(
+                    name=item.name,
+                    value=item.value,
+                    uuid=str(uuid.uuid1()),
+                    type=Type
+                )
         elif Type == 'int':
             upload = db.query(models.Int).filter(models.Int.name == item.name).first()
             if upload:
-                raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{item.name}以存在")
-            query = models.Int(
-                name=item.name,
-                value=item.value,
-                uuid=str(uuid.uuid1()),
-                type=Type
-            )
+                upload.value = item.value
+            else:
+                query = models.Int(
+                    name=item.name,
+                    value=item.value,
+                    uuid=str(uuid.uuid1()),
+                    type=Type
+                )
         elif Type == 'float':
             upload = db.query(models.Float).filter(models.Float.name == item.name).first()
             if upload:
-                raise HTTPException(status.HTTP_404_NOT_FOUND, f"上传文件名称{item.name}以存在")
-            query = models.Float(
-                name=item.name,
-                value=item.value,
-                uuid=str(uuid.uuid1()),
-                type=Type
-            )
+                upload.value = item.value
+            else:
+                query = models.Float(
+                    name=item.name,
+                    value=item.value,
+                    uuid=str(uuid.uuid1()),
+                    type=Type
+                )
         else:
             raise HTTPException(status.HTTP_404_NOT_FOUND,
                                 f"The type :{Type} is error /(image,video,audio,text,int,float)")
-        db.add(query)
-        save(db)
-        db.refresh(query)
-        query_data.append({"name": query.name, "uuid": query.uuid, "value": query.value, "type": Type})
+        if upload:
+            db.add(upload)
+            save(db)
+            db.refresh(upload)
+            query_data.append({"name": upload.name, "uuid": upload.uuid, "value": upload.value, "type": Type})
+        else:
+            db.add(query)
+            save(db)
+            db.refresh(query)
+            query_data.append({"name": query.name, "uuid": query.uuid, "value": query.value, "type": Type})
     return query_data
