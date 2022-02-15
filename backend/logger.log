@@ -30,3 +30,5 @@
 2022-01-30 14:33:27.762 | INFO     | crud:create_warehouse_in:301 - <models.Freight object at 0x000001D7B24E88B0>
 2022-01-30 14:33:37.842 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
 2022-01-30 14:33:37.855 | INFO     | crud:create_warehouse_in:301 - <models.Freight object at 0x000001D7B24FD280>
+2022-01-30 15:21:14.024 | INFO     | crud:create_warehouse_in:262 - <class 'models.Image'>
+2022-02-10 14:55:02.491 | INFO     | crud:create_warehouse_in:300 - <models.Freight object at 0x000001D190CEFB20>

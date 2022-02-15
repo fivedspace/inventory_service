@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, DateTime, Boolean, Text, Table, ForeignKey, func, BIGINT
+from sqlalchemy import Column, String, Integer, DateTime, Boolean, TEXT, Table, ForeignKey, func, BIGINT
 from sqlalchemy.orm import relationship
 
 from database import Base
@@ -143,7 +143,7 @@ class Image(Base, BaseTime):
     id = Column(Integer, primary_key=True, comment="主键id")
     name = Column(String(255))
     uuid = Column(String(255))
-    value = Column(String(255), comment="路径")
+    value = Column(TEXT, comment="路径")
     type = Column(String)
 
 
@@ -153,7 +153,7 @@ class Video(Base, BaseTime):
     id = Column(Integer, primary_key=True, comment="主键id")
     name = Column(String(255))
     uuid = Column(String(255))
-    value = Column(String(255), comment="路径")
+    value = Column(TEXT, comment="路径")
     type = Column(String)
 
 
@@ -163,7 +163,7 @@ class Audio(Base, BaseTime):
     id = Column(Integer, primary_key=True, comment="主键id")
     name = Column(String(255))
     uuid = Column(String(255))
-    value = Column(String(255), comment="路径")
+    value = Column(TEXT, comment="路径")
     type = Column(String)
 
 
@@ -173,7 +173,7 @@ class Texts(Base, BaseTime):
     id = Column(Integer, primary_key=True, comment="主键id")
     name = Column(String(255))
     uuid = Column(String(255))
-    value = Column(String(255), comment="路径")
+    value = Column(TEXT, comment="路径")
     type = Column(String)
 
 
@@ -183,7 +183,7 @@ class Int(Base, BaseTime):
     id = Column(Integer, primary_key=True, comment="主键id")
     name = Column(String(255))
     uuid = Column(String(255))
-    value = Column(String(255), comment="路径")
+    value = Column(TEXT, comment="路径")
     type = Column(String)
 
 
@@ -192,6 +192,6 @@ class Float(Base, BaseTime):
 
     id = Column(Integer, primary_key=True, comment="主键id")
     name = Column(String(255))
-    value = Column(String(255), comment="路径")
+    value = Column(TEXT, comment="路径")
     uuid = Column(String(255))
     type = Column(String)
