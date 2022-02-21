@@ -144,7 +144,7 @@ class Image(Base, BaseTime):
     name = Column(String(255))
     uuid = Column(String(255))
     value = Column(TEXT, comment="路径")
-    type = Column(String)
+    type = Column(String(255))
 
 
 class Video(Base, BaseTime):
@@ -154,7 +154,7 @@ class Video(Base, BaseTime):
     name = Column(String(255))
     uuid = Column(String(255))
     value = Column(TEXT, comment="路径")
-    type = Column(String)
+    type = Column(String(255))
 
 
 class Audio(Base, BaseTime):
@@ -164,7 +164,7 @@ class Audio(Base, BaseTime):
     name = Column(String(255))
     uuid = Column(String(255))
     value = Column(TEXT, comment="路径")
-    type = Column(String)
+    type = Column(String(255))
 
 
 class Texts(Base, BaseTime):
@@ -174,7 +174,7 @@ class Texts(Base, BaseTime):
     name = Column(String(255))
     uuid = Column(String(255))
     value = Column(TEXT, comment="路径")
-    type = Column(String)
+    type = Column(String(255))
 
 
 class Int(Base, BaseTime):
@@ -184,7 +184,7 @@ class Int(Base, BaseTime):
     name = Column(String(255))
     uuid = Column(String(255))
     value = Column(TEXT, comment="路径")
-    type = Column(String)
+    type = Column(String(255))
 
 
 class Float(Base, BaseTime):
@@ -194,4 +194,4 @@ class Float(Base, BaseTime):
     name = Column(String(255))
     value = Column(TEXT, comment="路径")
     uuid = Column(String(255))
-    type = Column(String)
+    type = Column(String(255))
