@@ -117,7 +117,7 @@ async def get_freight(*, id: int, db: Session = Depends(get_db)):
 
 
 @freight_router.put('/{id}', response_model=schemas.RespFreight, summary="修改仓库下货物信息")
-async def update_freight(*, id: int, data: schemas.ReqWareHouseIn, db: Session = Depends(get_db)):
+async def update_freight(*, id: int, data: schemas.ReqUpdateFreight, db: Session = Depends(get_db)):
     return service.update_freight(db, id, data)
 
 

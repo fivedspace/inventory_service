@@ -154,6 +154,21 @@ class ReqWareHouseIn(BaseModel):
         orm_mode = True
 
 
+class ReqUpdateFreight(BaseModel):
+    freight_name: str = Field(title="货物名称", description="货物名称")
+    purchase_quantity: int = Field(title="入货数量", description="入货数量")
+    manufacture_factory: str = Field(title="生产厂家", description="生产厂家")
+    manufacture_time: datetime = Field(title="生产时间", description="生产时间")
+    freight_price: int = Field(title="货物单价", description="货物单价")
+    warehouseIn_time: datetime = Field(title="入库时间", description="入库时间")
+    warehouse_id: int = Field(title="仓库id", description="仓库id")
+    appcation_id: int = Field(title="应用系统id", description="应用系统id")
+    property: List[uploading] = Field(None, title="货物属性", description='货物属性')
+
+    class Config:
+        orm_mode = True
+
+
 # WareHouseOut
 class ReqWareHouseOut(BaseModel):
     freight_id: int = Field(title="货物id", description="货物id")
