@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<style type="text/css">
+	body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+	</style>
+    <script type="text/javascript" src="http://api.map.baidu.com/getscript?v=2.0&ak=4MGgYqxOTjRe7w9mXx5uBjaUipOHY0e6&services=&t=20210225162129"></script>
+
+
+	<title>地图展示</title>
+</head>
+<body>
+	<div id="allmap"></div>
+</body>
+</html>
+<script type="text/javascript">
+window.navigator.geolocation.getCurrentPosition(success,error);
+   //获取地理信息成功时的回调函数
+    function success(position) {
+        alert("成功获取您的地理信息");
+ 
+        //获取经度维度信息
+        //coords属性
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+        //打印纬度,经度信息
+        console.log(latitude);
+        console.log(longitude);
+        // 百度地图API功能
+        var map = new BMap.Map("allmap");    // 创建Map实例
+        var point = new BMap.Point(longitude, latitude); //将标注点转化成地图上的点
+        map.centerAndZoom(point, 11);  // 初始化地图,设置中心点坐标和地图级别
+        var marker = new BMap.Marker(point); //将点转化成标注点
+        map.addOverlay(marker);  //将标注点添加到地图上
+        //添加地图类型控件
+        map.addControl(new BMap.MapTypeControl({
+            mapTypes:[
+                BMAP_NORMAL_MAP,
+                BMAP_HYBRID_MAP
+            ]}));	  
+        map.setCurrentCity("北京");          // 设置地图显示的城市 此项是必须设置的
+        map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+    }
+    
+    //获取地理信息失败时的回调函数
+    function error(msg) {
+        alert("获取您的地理信息失败");
+    }
+	
+</script>
