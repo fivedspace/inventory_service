@@ -5,8 +5,10 @@ import { getCookie, removeCookie} from '/submodule/util/cookie'
 export default function Home() {
   useEffect(() => {
     if(!getCookie('token')){
-      Router.replace('/queryCargo/queryCargo')
+      Router.replace('/userAuth/login')
+      return
     }
+    Router.replace('/queryCargo/queryCargo')
   })
 
   return (

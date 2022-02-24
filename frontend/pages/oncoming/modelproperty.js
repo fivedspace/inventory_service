@@ -47,9 +47,9 @@ export default function modelproperty(props) {
 
     const { handleproperty, imports, pro, type } = props;
     const { titleText, amendButtons } = imports;
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState('');
-    const [ property, setproperty ] = useState(pro ? pro : []);
+    const [open, setOpen] = useState(false);//选择属性类型弹窗的状态
+    const [value, setValue] = useState('');//选择属性类型的值
+    const [ property, setproperty ] = useState(pro ? pro : []);//传入的属性数据
     const [ amend, setamend ] = useState(type ? false : true);//提交按钮状态
 
 
@@ -179,7 +179,6 @@ export default function modelproperty(props) {
     // 动态加载属性组件
     const PropertyModel = () =>{
         let arr = [];
-        console.log(property,'model')
         property.map((item,index) => {
             switch(item.type){
                     case "图片":
