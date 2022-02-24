@@ -44,7 +44,6 @@ export default function imageCut(props) {
       reader.onload = function(evt) {
         res = evt.target.result;
         let data = Object.assign({},item, {value : res})
-        console.log(data)
         setitem(data);
         handleProperty(data);
       }

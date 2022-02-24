@@ -43,7 +43,6 @@ export default function queryCargo(props) {
 	const [hint, setHint] = useState({ open: false, severity: 'success', message: '提示信息!' })//弹窗状态
 	const [dialogOpen, setDialogOpen] = useState(false);//对话框
 	const [disabled, setDisabled] = useState(true);//详情输入框禁用
-	const [amendDisabled, setamendDisabled] = useState(true);//自定义属性修改按钮禁用
 	const [detailData, setDetailData] = useState({})//详情中返回所有输入框的值
 	const [propertyData, setpropertyData] = useState([])
 
@@ -163,7 +162,7 @@ export default function queryCargo(props) {
 	function hintOpen(message, severity) {//弹窗
 		setHint({ open: true, severity, message });
 	}
-	// useEffect(requestPackage({creatRequest: true}), [])
+
 	useEffect(() => {
 		requestPackage({ creatRequest: true })
 	}, [])
@@ -236,7 +235,6 @@ export default function queryCargo(props) {
 	/* 修改货物信息 */
 	async function submit() {
 		if (disabled) { setDisabled(false); return }
-		// console.log(detailData)
 		const { created_at,updated_at,freight_name,freight_quantity,manufacture_factory,manufacture_time,freight_price,warehouse_id,appcation_id,id } = detailData
 		const [res, err] = await request.put('/freight/'+id,{
 			'freight_name': freight_name,

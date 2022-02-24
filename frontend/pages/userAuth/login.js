@@ -262,7 +262,7 @@ export default function SignIn() {
         // console.log(res);
         hintOpen("登录成功", "success");
         setCookie("token", res.token);
-        setTimeout(() => {Router.replace("/repertory/repertory")}, 1000);
+        setTimeout(() => {Router.replace("/queryCargo/queryCargo")}, 1000);
       } else {
         hintOpen(res.message, "warning");
       }
