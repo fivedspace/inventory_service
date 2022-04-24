@@ -8,6 +8,8 @@ HOST_IP = "192.168.2.8"
 
 HOST_PORT = 8002
 
+IMAGES_IP = f'http://{HOST_IP}:{HOST_PORT}/'
+
 # 单点登录桥接配置   SINGLE_SIGN_ON
 SINGLE_SIGN_ON_IP = "http://192.168.2.8"
 SINGLE_SIGN_ON_PORT = "8008"
@@ -23,5 +25,5 @@ APPLICATIONS_BASE = APPLICATIONS_IP+":"+APPLICATIONS_PORT + '/v1/applications/'
 # -------- redis 配置 ----------
 REDIS_HOST: str = "localhost"
 REDIS_PASSWORD: str = ""
-REDIS_DB: int = 1
+REDIS_DB: int = 2
 REDIS_PORT: int = 6379

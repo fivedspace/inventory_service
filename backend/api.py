@@ -1,5 +1,6 @@
+import logging
 from typing import List
-from fastapi import Request, APIRouter, Depends, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi import APIRouter, Depends
 import schemas
 import service
 from database import SessionLocal
@@ -185,6 +186,16 @@ uploading_router = APIRouter()
 
 
 # 上传文件
+
+@uploading_router.get("", response_model=schemas.uploadingPage, summary="查询上传文件")
+def list_uploading(*, Type: str, paginate='{"page":1,"limit":10}',
+                   filter='[{"fieldname":"id","option":"is_not_null"}]',
+                   sort='[{"field":"id","direction":"desc"}]',
+                   db: Session = Depends(get_db)):
+    return service.get_uploading(db, Type, paginate, filter, sort)
+
+
 @uploading_router.post("", response_model=List[schemas.uploading], summary="上传文件")
 def uploading(data: List[schemas.uploadingBase], db: Session = Depends(get_db)):
+    logging.info(f'上传文件的数据: {data}')
     return service.uploading(db, data)

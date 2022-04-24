@@ -1,3 +1,5 @@
+import logging
+
 from database import SessionLocal
 from util.utli import *
 import env
@@ -22,7 +24,7 @@ def get_db():
 
 
 def static_folder():
-    p = os.path.abspath("./static/")
+    p = os.path.abspath("./mediafile/")
     if not os.path.exists(p):
         os.makedirs(p)
     return p
@@ -32,14 +34,15 @@ def static_folder():
 def send_code(number):
     urlbase = env.SINGLE_SIGN_ON_CODE + "/verify_code"
     url = urlbase + f"?number={number}"
+    logging.info(f'发送验证码的路径：{url}')
     # send data
     response = CommonReq(url=url, method="post")
-
     return response.data
 
 
 def client_code():
     url = env.SINGLE_SIGN_ON_CODE + "/client_code"
+    logging.info(f'发送客户验证码的路径：{url}')
     response = CommonReq(url=url, method="get")
     return response.data
 
@@ -230,4 +233,14 @@ def encry_local_prv_key(local_prv_key, charset="utf-8"):
 # 上传
 def uploading(db, data):
     return crud.uploading(db, data)
+
+
+def get_uploading(db, Type, paginate, filter, sort):
+    paginate = json.loads(paginate)
+    filter = json.loads(filter)
+    # filter.append({"fieldname": "is_del", "option": "==", "value": 0})
+    sort = json.loads(sort)
+
+    data = crud.get_uploading(db, Type, paginate, filter, sort)
+    return data
 

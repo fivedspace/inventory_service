@@ -73,6 +73,10 @@ class uploading(uploadingBase):
         orm_mode = True
 
 
+class uploadingPage(BasePage):
+    data: List[uploading] = Field(title="文件列表", description="文件列表")
+
+
 #  WareHouse
 class ReqCreateWareHouse(BaseModel):
     warehouse_name: str = Field(title="仓库名称", description="仓库名称")
@@ -104,8 +108,8 @@ class WarehousePage(BasePage):
 class ReqCreateFreight(BaseModel):
     freight_name: str = Field(title="货物名称", description="货物名称")
     freight_quantity: int = Field(title="货物总数量", description="货物总数量")
-    manufacture_factory: str = Field(title="生产厂家", description="生产厂家")
-    manufacture_time: datetime = Field(title="生产时间", description="生产时间")
+    manufacture_factory: str = Field(None, title="生产厂家", description="生产厂家")
+    manufacture_time: datetime = Field(None, title="生产时间", description="生产时间")
     freight_price: int = Field(title="货物单价", description="货物单价")
     warehouse_out_id: int = Field(None, title="最近出库记录id", description="最近出库记录id")
     warehouse_in_id: int = Field(None, title="最近入库记录id", description="最近入库记录id")
@@ -142,8 +146,8 @@ class WareHouseInBase(BaseModel):
 class ReqWareHouseIn(BaseModel):
     freight_name: str = Field(title="货物名称", description="货物名称")
     purchase_quantity: int = Field(title="入货数量", description="入货数量")
-    manufacture_factory: str = Field(title="生产厂家", description="生产厂家")
-    manufacture_time: datetime = Field(title="生产时间", description="生产时间")
+    manufacture_factory: str = Field(None, title="生产厂家", description="生产厂家")
+    manufacture_time: datetime = Field(None, title="生产时间", description="生产时间")
     freight_price: int = Field(title="货物单价", description="货物单价")
     warehouseIn_time: datetime = Field(title="入库时间", description="入库时间")
     warehouse_id: int = Field(title="仓库id", description="仓库id")
