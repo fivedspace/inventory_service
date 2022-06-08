@@ -191,6 +191,7 @@ class ApplicationBase(BaseModel):
     admin_name: str = Field(title='系统管理员姓名', description='系统管理员姓名')
     admin_phone: str = Field(title='系统管理员手机号', description='系统管理员手机号')
     ip: str = Field(title='应用系统的ip地址', description='应用系统的ip')
+    app_id: str = Field(title='应用id', description='微信分配的app_id')
     remark: str = Field(None, title='备注', description='json格式备注')
 
 
