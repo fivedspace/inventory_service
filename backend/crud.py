@@ -1,4 +1,5 @@
 import json
+import logging
 import time
 
 from loguru import logger
@@ -209,6 +210,7 @@ def list_freight(db: Session, paginate, filter, sort):
     result = paginated_query.all()
     page_count = int(math.ceil(count / paginate['limit']))
 
+    res_data = []
     for res in result:
         arr_prop = []
         props = json.loads(res.property)
@@ -218,15 +220,13 @@ def list_freight(db: Session, paginate, filter, sort):
             item_dict = prop_query.to_dict()
             del item_dict["created_at"]
             del item_dict["updated_at"]
-            if items["type"] == 'image' or items["type"] == 'video' or items["type"] == 'audio':
-                fo = open(item_dict['value'], "rb")
-                s = fo.read()
-                item_dict['value'] = s
-                fo.close()
-                arr_prop.append(item_dict)
-        res.property = arr_prop
+            item_dict['value'] = env.IMAGES_IP + item_dict['value']
+            arr_prop.append(item_dict)
+        arrs = res
+        arrs.property = arr_prop
+        res_data.append(arrs)
 
-    return {"data": result, "count": count, "page": paginate['page'], "page_count": page_count,
+    return {"data": res_data, "count": count, "page": paginate['page'], "page_count": page_count,
             "size": paginate['limit']}
 
 
@@ -242,12 +242,7 @@ def get_freight(db: Session, id) -> models.Freight:
         item_dict = prop_query.to_dict()
         del item_dict["created_at"]
         del item_dict["updated_at"]
-        if items["type"] == 'image' or items["type"] == 'video' or items["type"] == 'audio':
-            fo = open(item_dict['value'], "r")
-            s = fo.read()
-            item_dict['value'] = s
-            fo.close()
-            arr_prop.append(item_dict)
+        arr_prop.append(item_dict)
     data.property = arr_prop
     return data
 
@@ -304,10 +299,10 @@ def create_warehouse_in(db: Session, data):
 
         if len(props):  # 货物中自定义属性不为空
             if len(propertys):  # 接受数据中有自定义属性
-                for index,item in enumerate(propertys):
+                for index, item in enumerate(propertys):
                     for item1 in json.loads(freight_query.property):
                         if item['uuid'] == item1['uuid']:
-                            raise HTTPException(status.HTTP_404_NOT_FOUND,f'uuid:{item["uuid"]}, 属性已存在')
+                            raise HTTPException(status.HTTP_404_NOT_FOUND, f'uuid:{item["uuid"]}, 属性已存在')
                     props.append(item)
                 freight_query.property = json.dumps(props)
         logger.info(freight_query)
@@ -319,12 +314,7 @@ def create_warehouse_in(db: Session, data):
             item_dict = prop_query.to_dict()
             del item_dict["created_at"]
             del item_dict["updated_at"]
-            if items["type"] == 'image' or items["type"] == 'video' or items["type"] == 'audio':
-                fo = open(item_dict['value'], "r")
-                s = fo.read()
-                item_dict['value'] = s
-                fo.close()
-                arr_prop.append(item_dict)
+            arr_prop.append(item_dict)
         freight_query.property = arr_prop
         return freight_query
     else:
@@ -348,12 +338,7 @@ def create_warehouse_in(db: Session, data):
             item_dict = prop_query.to_dict()
             del item_dict["created_at"]
             del item_dict["updated_at"]
-            if items["type"] == 'image' or items["type"] == 'video' or items["type"] == 'audio':
-                fo = open(item_dict['value'], "r")
-                s = fo.read()
-                item_dict['value'] = s
-                fo.close()
-                arr_prop.append(item_dict)
+            arr_prop.append(item_dict)
         freight_data.property = arr_prop
         return freight_data
 
@@ -402,12 +387,7 @@ def create_warehouse_out(db: Session, data: schemas.ReqWareHouseOut):
         item_dict = prop_query.to_dict()
         del item_dict["created_at"]
         del item_dict["updated_at"]
-        if items["type"] == 'image' or items["type"] == 'video' or items["type"] == 'audio':
-            fo = open(item_dict['value'], "r")
-            s = fo.read()
-            item_dict['value'] = s
-            fo.close()
-            arr_prop.append(item_dict)
+        arr_prop.append(item_dict)
     freight_query.property = arr_prop
     return freight_query
 
@@ -445,12 +425,7 @@ def update_freight(db: Session, id, data):
             item_dict = prop_query.to_dict()
             del item_dict["created_at"]
             del item_dict["updated_at"]
-            if item["type"] == 'image' or item["type"] == 'video' or item["type"] == 'audio':
-                fo = open(item_dict['value'], "rb")
-                s = fo.read()
-                item_dict['value'] = s
-                fo.close()
-                array_prop.append(item_dict)
+            array_prop.append(item_dict)
 
         query.property = json.dumps(arr_prop)
     else:
@@ -461,12 +436,7 @@ def update_freight(db: Session, id, data):
             item_dict = prop_query.to_dict()
             del item_dict["created_at"]
             del item_dict["updated_at"]
-            if items["type"] == 'image' or items["type"] == 'video' or items["type"] == 'audio':
-                fo = open(item_dict['value'], "rb")
-                s = fo.read()
-                item_dict['value'] = s
-                fo.close()
-                array_prop.append(item_dict)
+            array_prop.append(item_dict)
     db.add(query)
     save(db)
     db.refresh(query)
@@ -498,95 +468,93 @@ def uploading(db, data: List[schemas.uploadingBase]):
     query_data = []
     for item in data:
         Type = item.type.lower()
-        if Type == "image":
-            prop = db.query(models.Image).filter(models.Image.name == item.name).first()
-            if prop:
-                raise HTTPException(status.HTTP_404_NOT_FOUND, f'属性名：{item.name} 已存在')
-            data = item.value.split(',')
-            suffix = cutOut_CH(data[0], '/', ';')
-            name = f'mediafile/image/{str(round(time.time() * 1000))}.{suffix}'
-            with open(name, 'w') as f:
-                f.write(item.value)
-            query = models.Image(
-                name=item.name,
-                value=name,
-                uuid=str(uuid.uuid1()),
-                type=Type
-            )
-        elif Type == "video":
-            prop = db.query(models.Video).filter(models.Video.name == item.name).first()
-            if prop:
-                raise HTTPException(status.HTTP_404_NOT_FOUND, f'属性名：{item.name} 已存在')
-            data = item.value.split(',')
-            suffix = cutOut_CH(data[0], '/', ';')
-            name = f'mediafile/video/{str(round(time.time() * 1000))}.{suffix}'
-            with open(name, 'w') as f:
-                f.write(item.value)
-            query = models.Video(
-                name=item.name,
-                value=name,
-                uuid=str(uuid.uuid1()),
-                type=Type
-            )
-        elif Type == 'audio':
-            prop = db.query(models.Audio).filter(models.Audio.name == item.name).first()
-            if prop:
-                raise HTTPException(status.HTTP_404_NOT_FOUND, f'属性名：{item.name} 已存在')
-            data = item.value.split(',')
-            suffix = cutOut_CH(data[0], '/', ';')
-            name = f'mediafile/audio/{str(round(time.time() * 1000))}.{suffix}'
-            with open(name, 'w') as f:
-                f.write(item.value)
-            query = models.Audio(
-                name=item.name,
-                value=name,
-                uuid=str(uuid.uuid1()),
-                type=Type
-            )
-        elif Type == 'text':
-            prop = db.query(models.Texts).filter(models.Texts.name == item.name).first()
-            if prop:
-                raise HTTPException(status.HTTP_404_NOT_FOUND, f'属性名：{item.name} 已存在')
-            query = models.Texts(
-                name=item.name,
-                value=item.value,
-                uuid=str(uuid.uuid1()),
-                type=Type
-            )
-        elif Type == 'int':
-            prop = db.query(models.Int).filter(models.Int.name == item.name).first()
-            if prop:
-                raise HTTPException(status.HTTP_404_NOT_FOUND, f'属性名：{item.name} 已存在')
-            else:
-                query = models.Int(
-                    name=item.name,
-                    value=item.value,
-                    uuid=str(uuid.uuid1()),
-                    type=Type
-                )
-        elif Type == 'float':
-            prop = db.query(models.Float).filter(models.Float.name == item.name).first()
-            if prop:
-                raise HTTPException(status.HTTP_404_NOT_FOUND, f'属性名：{item.name} 已存在')
-
-            query = models.Float(
-                name=item.name,
-                value=item.value,
-                uuid=str(uuid.uuid1()),
-                type=Type
-            )
-        else:
+        model = prop_models({'type': Type})
+        if not model:
             raise HTTPException(status.HTTP_404_NOT_FOUND,
                                 f"The type :{Type} is error /(image,video,audio,text,int,float)")
+        prop = db.query(model).filter(model.name == item.name).first()
+        if prop:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, f'属性名：{item.name} 已存在')
+        if Type == "image" or Type == "video" or Type == "audio":
+            query = file_operate(item, Type)
+            query_data.append({"name": query.name, "uuid": query.uuid, "value": env.IMAGES_IP + query.value, "type": Type})
+        else:
+            query = model(
+                name=item.name,
+                value=item.value,
+                uuid=str(uuid.uuid1()),
+                type=Type
+            )
+            query_data.append({"name": query.name, "uuid": query.uuid, "value": item.value, "type": Type})
+        logger.info(f"query_data: {query_data}")
         db.add(query)
         save(db)
         db.refresh(query)
-        query_data.append({"name": query.name, "uuid": query.uuid, "value": item.value, "type": Type})
     return query_data
+
+
+def get_uploading(db: Session, Type, paginate, filter, sort):
+    Type = Type.lower()
+    model = prop_models({'type': Type})
+    if not model:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, 'Type类型错误, 只有(int、 float、 text、image、 video、 audio)类型')
+    query = db.query(model)
+
+    filters = []
+    for f_data in filter:
+        if "value" in f_data:
+            j_data = {'field': f_data["fieldname"], 'op': f_data["option"], 'value': f_data["value"]}
+        else:
+            j_data = {'field': f_data["fieldname"], 'op': f_data["option"]}
+        filters.append(j_data)
+
+    filtered_query = apply_filters(query, filters)
+    count = len(filtered_query.all())
+
+    sorts = []
+    for s_data in sort:
+        js_data = {"field": s_data['field'], "direction": s_data['direction']}
+        sorts.append(js_data)
+    data = apply_sort(filtered_query, sorts)
+
+    paginated_query, pagination = apply_pagination(
+        data, paginate['page'], paginate['limit']
+    )
+
+    result = paginated_query.all()
+    logger.info(f'result: {result}')
+    res = []
+    for item in result:
+        item_dict = item.to_dict()
+        del item_dict['id']
+        del item_dict['updated_at'],
+        del item_dict['created_at']
+        item_dict['value'] = env.IMAGES_IP + item.value
+        res.append(item_dict)
+    logger.info(f'res: {res}')
+    page_count = int(math.ceil(count / paginate['limit']))
+    return {"count": count, "page": paginate['page'], "page_count": page_count,
+            "size": paginate['limit'], "data": res}
 
 
 def cutOut_CH(str: str, query1, query2):
     return str[str.find(query1) + 1:str.find(query2)]
+
+
+def file_operate(item, Type):
+    data = item.value.split(',')
+    suffix = cutOut_CH(data[0], '/', ';')
+    name = f'mediafile/{Type}/{str(round(time.time() * 1000))}.{suffix}'
+    image_data = base64.b64decode(data[1])
+    with open(name, 'wb') as f:
+        f.write(image_data)
+
+    query = prop_models({"type": Type})
+    return query(
+                name=item.name,
+                value=f'{name}',
+                uuid=str(uuid.uuid1()),
+                type=Type)
 
 
 def prop_models(model):
@@ -604,3 +572,4 @@ def prop_models(model):
     elif model['type'] == 'float':
         m = models.Float
     return m
+

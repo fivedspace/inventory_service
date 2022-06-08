@@ -101,7 +101,7 @@ class Freight(Base, BaseTime):
     appcation_id = Column(Integer, comment="应用系统id")
     freight_name = Column(String(255), comment="货物名称")
     freight_quantity = Column(Integer, comment="货物总数量")
-    manufacture_factory = Column(String(255), comment="生产厂家")
+    manufacture_factory = Column(String(255), default=None, comment="生产厂家")
     manufacture_time = Column(DateTime(timezone=True), comment="生产日期")
     freight_price = Column(Integer, comment="货物单价")
     warehouse_out_id = Column(Integer, comment="最近出库记录的id")
