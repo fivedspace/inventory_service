@@ -199,5 +199,4 @@ def list_uploading(*, Type: str, paginate='{"page":1,"limit":10}',
 
 @uploading_router.post("", response_model=List[schemas.uploading], summary="上传文件")
 def uploading(data: List[schemas.uploadingBase], db: Session = Depends(get_db)):
-    logger.info(f'上传文件的数据: {data}')
     return service.uploading(db, data)
