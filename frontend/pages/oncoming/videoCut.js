@@ -56,7 +56,6 @@ export default function videoCut(props) {
     let data = Object.assign({},item, {name : val})
     setitem(data);
     handleProperty(data);
-    // console.log(e.target.value)
   }
 
   return (
