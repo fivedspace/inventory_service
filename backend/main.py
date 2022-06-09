@@ -9,7 +9,7 @@ from starlette.staticfiles import StaticFiles
 
 app = FastAPI(docs_url="/inventory/docs", openapi_url="/inventory/openapi.json")
 
-app.mount("/mediafile", StaticFiles(directory=static_folder()), name="mediafile")  # 挂载静态文件，指定目录
+app.mount("/inventory/mediafile", StaticFiles(directory=static_folder()), name="mediafile")  # 挂载静态文件，指定目录
 
 app.include_router(api.code_router, tags=["AUth Common"], prefix="/inventory/auth")
 app.include_router(api.admin_router, tags=["Admin"], prefix="/inventory/admin")
