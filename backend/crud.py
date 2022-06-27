@@ -486,10 +486,10 @@ def uploading(db, data: List[schemas.uploadingBase]):
                 type=Type
             )
             query_data.append({"name": query.name, "uuid": query.uuid, "value": item.value, "type": Type})
-        logger.info(f"query_data: {query_data}")
         db.add(query)
         save(db)
         db.refresh(query)
+    logger.info(f"上传图片成功 :{query_data}")
     return query_data
 
 
