@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 import env
 
 link_mysql = env.MYSQL_USERNAME + ":" + env.MYSQL_PASSWORD + "@" + env.MYSQL_IP + ":" + env.MYSQL_PORT + "/" + env.MYSQL_DATABASE
-engine = create_engine("mysql+pymysql://" + link_mysql)
+engine = create_engine("mysql+pymysql://" + link_mysql, pool_pre_ping=True, pool_recycle=86400)
 
 # 相对路径下创建sqlite
 # engine = create_engine('sqlite:///locker_machine.db')
