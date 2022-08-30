@@ -10,6 +10,7 @@ from util.auth import CommonReq
 from util.Redis import Redis
 import json
 import crud
+
 RE_PHONE = r"^1[3|4|5|6|7|8][0-9]{9}$"  # 手机号校验正则表达式
 RE_EMAIL = r"^[a-z0-9][\w.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$"  # 邮箱校验正则表达式
 redis = Redis()
@@ -83,7 +84,6 @@ def login(data):
 
 # 使用验证码登录
 def verify_code_login(data):
-
     url = env.SINGLE_SIGN_ON_USER + "/signin/verifycode"
     dataload = {"number": data.number, "verify_code": data.verify_code, "callback_url": data.callback_url}
     datas = json.dumps(dataload)
@@ -192,7 +192,8 @@ def list_applications(paginate, filter, sort):
     data = {"paginate": paginate, "filter": filter, "sort": sort}
     request = CommonReq(url=env.APPLICATIONS_BASE, method="get", data=data)
     request_data = request.data
-    return {"page": request_data["page"], "size": request_data["page_size"], "count": request_data["data_count"], "page_count": request_data["page_count"], "data": request_data["data"]}
+    return {"page": request_data["page"], "size": request_data["page_size"], "count": request_data["data_count"],
+            "page_count": request_data["page_count"], "data": request_data["data"]}
 
 
 def get_application(id):
@@ -242,9 +243,6 @@ def uploading(db, data):
 def get_uploading(db, Type, paginate, filter, sort):
     paginate = json.loads(paginate)
     filter = json.loads(filter)
-    # filter.append({"fieldname": "is_del", "option": "==", "value": 0})
     sort = json.loads(sort)
-
     data = crud.get_uploading(db, Type, paginate, filter, sort)
     return data
-
